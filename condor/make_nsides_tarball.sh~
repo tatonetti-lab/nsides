@@ -1,2 +1,0 @@
-#tar cvfz nsides_test.tgz keras_models mlp_ve .keras/keras.json
-tar cvfz nsides_test.tgz keras_models
