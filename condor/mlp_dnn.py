@@ -1,5 +1,3 @@
-from __future__ import print_function, division
-
 from keras.layers import Input, Dense, Dropout
 from keras.models import Model
 from keras import metrics
