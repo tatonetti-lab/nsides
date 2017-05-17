@@ -38,7 +38,7 @@ parser.add_argument('--batch-size',
                     help='Number of reports per training batch', 
                     action='store', 
                     dest='batch_size', 
-                    default=100)
+                    default=10000)
 parser.add_argument('--learning-rate', 
                     help='Optimization algorithm step size', 
                     action='store', 
@@ -69,6 +69,11 @@ parser.add_argument('--n-epochs',
                     action='store',
                     default=100,
                     dest='nb_epochs')
+parser.add_argument('--run-on-cpu',
+                    help='If true, run MLP model on CPU instead of GPU',
+                    action='store_true',
+                    default=False,
+                    dest='run_on_cpu')
 args = parser.parse_args()
 
 runIndices = [
@@ -172,8 +177,10 @@ def run_lr(gpu=True):
     end = time.time()
     print("  INFO: TIME TO TRAIN RNN: {0}s".format(end - start))
 
-run_lr(gpu=False)
-run_lr(gpu=True)
+if run_on_cpu:
+    run_lr(gpu=False)
+else:
+    run_lr(gpu=True)
 
 if args.compare:
     y_train_sklearn = np.argmax(y_train, axis=1)
