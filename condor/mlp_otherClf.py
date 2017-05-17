@@ -110,8 +110,8 @@ y_test = y[all_test_inds]
 X_test = X[all_test_inds]
 y_train = y[mask,:]
 X_train = X[mask,:]
-del(X)
-del(y)
+#del(X)
+#del(y)
 del(test_neg_ind)
 del(test_pos_ind)
 del(all_test_inds)
@@ -142,6 +142,7 @@ def run_lr(gpu=True):
                       callbacks=[early_stopping])
             info("  INFO: Evaluating accuracy on test set")
             predict_mlp_keras = model.predict_proba(X_test)
+            np.save("scores_tflr_"+model_num+".npy",model.predict_proba(X))
             print ("\n")
             auc = metrics.roc_auc_score(np.argmax(y_test, axis=1), predict_mlp_keras[:,1])
             acc = model.evaluate(X_test, y_test, batch_size=args.batch_size)[1]
@@ -168,6 +169,7 @@ def run_lr(gpu=True):
                   callbacks=[early_stopping])
         info("  INFO: Evaluating accuracy on test set")
         predict_mlp_keras = model.predict_proba(X_test)
+        np.save("scores_tflr_"+model_num+".npy",model.predict_proba(X))
         print ("\n")
         auc =  metrics.roc_auc_score(np.argmax(y_test, axis=1), predict_mlp_keras[:,1])
         info("  INFO: AUC = {0}".format(auc))
@@ -195,6 +197,7 @@ if args.compare:
     bdt = AdaBoostClassifier()
     bdt.fit(X_train, y_train_sklearn)
     pred = bdt.predict(X_test)
+    np.save("scores_adaboost_"+model_num+".npy",bdt.predict_proba(X))
     acc = metrics.accuracy_score(y_test_sklearn, pred)
     auc = metrics.roc_auc_score(y_test_sklearn, pred)
     print("  ACCURACY: {0}".format(acc))
@@ -214,6 +217,7 @@ if args.compare:
     rfc = RandomForestClassifier()
     rfc.fit(X_train, y_train_sklearn)
     pred = rfc.predict(X_test)
+    np.save("scores_rf_"+model_num+".npy",rfc.predict_proba(X))
     acc = metrics.accuracy_score(y_test_sklearn, pred)
     auc = metrics.roc_auc_score(y_test_sklearn, pred)
     print("  ACCURACY: {0}".format(acc))
@@ -222,7 +226,28 @@ if args.compare:
                  'acc': acc}
     joblib.dump(rfc, "randomforest_fit_{0}.pkl".format(model_num))
     end = time.time()
-    print("TIME TO TRAIN ADABOOST CLASSIFIER: {0}s".format(end - start))
+    print("TIME TO TRAIN RANDOM FOREST CLASSIFIER: {0}s".format(end - start))
+
+
+    ############################
+    # LOGISTIC REGRESSION CLASSIFIER #
+    ############################
+    if args.verbose:
+        print("Fitting logistic regression (scikit-learn) classifier")
+    start = time.time()
+    lr = LogisticRegression(penalty='l1')
+    lr.fit(X_train, y_train_sklearn)
+    pred = lr.predict(X_test)
+    np.save("scores_lr_"+model_num+".npy",lr.predict_proba(X))
+    acc = metrics.accuracy_score(y_test_sklearn, pred)
+    auc = metrics.roc_auc_score(y_test_sklearn, pred)
+    print("  ACCURACY: {0}".format(acc))
+    print("  AUROC:    {0}".format(auc))
+    log['rf'] = {'auc': auc, 
+                 'acc': acc}
+    joblib.dump(lr, "lr_fit_{0}.pkl".format(model_num))
+    end = time.time()
+    print("TIME TO TRAIN LOGISTIC REGRESSION CLASSIFIER: {0}s".format(end - start))
 
 
 logfname = "results_{0}_{1}.json".format(model_num, int(time.time()))
