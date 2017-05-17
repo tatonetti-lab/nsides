@@ -2,6 +2,7 @@
 
 tar xvfz nsides_test.tgz
 
+python get_data.py
 
 /usr/local/bin/pip install --user h5py
 /usr/local/bin/pip install --user keras
