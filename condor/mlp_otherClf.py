@@ -28,7 +28,7 @@ def info(infostr):
         print(infostr)
 
 
-parser = argparse.ArgumentParser(description='Keras MLP model for DDI PSM.')
+parser = argparse.ArgumentParser(description='Classifiers for DDI PSM.')
 parser.add_argument('--model-number',
                     help='Numerical ID of the drug against which to fit the model',
                     action='store',
