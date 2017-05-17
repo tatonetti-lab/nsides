@@ -23,4 +23,5 @@ An example local workflow on OSG follows:
  * `/usr/local/bin/pip install --user wget`
 3. `python get_data.py`
 4. `python prepare_data.py --model-num 0`
+5. `python prepare_data_separate_reports.py --model-num 0`
 
