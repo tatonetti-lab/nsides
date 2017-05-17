@@ -8,7 +8,7 @@ The scripts in this folder accomplish the following workflow:
   * `prepare_data_separate_reports.py` separates reports into positive and negative outcomes, used for training model
 3. Run the models.  The output should be each report and the model score.
   * `mlp_dnn.py` runs the deep neural network multilayer perceptron
-  * `mlp_otherClf.py` runs logistic regression using TensorFlow, AdaBoost and RandomForest using scikit-learn
+  * `mlp_otherClf.py` uses TensorFlow to run Logistic Regression and scikit-learn to run AdaBoost, RandomForest and Logistic Regression
 4. Evaluate the model by calculating propensity score adjusted proportional reporting ratios (PRRs) for each reaction. Output matrix should have dimensions (reactions x  number of models+non-adjusted PRR).
 
 The script to run the job is `nsides_cpu_run1.sh` which contains the workflow described above.  The script also installs the following python packages: `h5py5`, `keras`. The job is submitted to condor via `nsides_cpu_run1.submit` or `nsides_gpu_run1.submit` depending if GPU resources are intended to be used.
