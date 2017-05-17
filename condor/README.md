@@ -24,6 +24,5 @@ An example local workflow on OSG follows:
 3. `python get_data.py`
 4. `python prepare_data.py --model-num 0`
 5. `python prepare_data_separate_reports.py --model-num 0`
-6. `python prepare_data_separate_reports.py --model-num 0`
-7. `python mlp_dnn.py --run-on-cpu --model-number 0`
+6. `python mlp_dnn.py --run-on-cpu --model-number 0`
 
