@@ -1,2 +1,2 @@
 # nsides
-Exploring drug-drug interactions on a massive scale.
+Exploring drug interactions on a massive scale.
