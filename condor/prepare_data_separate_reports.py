@@ -81,21 +81,6 @@ del posReportsCSR
 del negReportsCSR
 del allReportsCSR
 
-for outcomeblock in range(0,50):
-    thisOutcomeBlock = np.load("AEOLUS_all_reports_outcomes_"+str(outcomeblock)+".npy").item()
-    if outcomeblock == 0:
-        allOutcomes = thisOutcomeBlock
-    else:
-        allOutcomes = sparse.vstack((allOutcomes,thisOutcomeBlock))
-
-allOutcomesCSR = allOutcomes.tocsr()
-del allOutcomes
-allOutcomesCSR = allOutcomesCSR[0:4855498]
-io.mmwrite("modelCSR_"+str(runIndices[args.model_num])+"_outcomes.mtx",allOutcomesCSR,field='integer')
-
-del allOutcomesCSR
-
-
 #def load_sparse_csr(filename):
 #    loader = np.load(filename)
 #    return sparse.csr_matrix((  loader['data'], loader['indices'], loader['indptr']),
