@@ -44,8 +44,8 @@ model_num = str(runIndices[int(args.model_num)])
 def comb_loss(y_true, y_pred):
     return losses.mean_squared_error(y_true, y_pred) + losses.categorical_crossentropy(y_true, y_pred)
 #2764 -> 2863
-pos_reports = io.mmread('../mxnet/modelCSR_'+model_num+'_posreports.mtx')
-neg_reports = io.mmread('../mxnet/modelCSR_'+model_num+'_negreports.mtx')
+pos_reports = io.mmread('modelCSR_'+model_num+'_posreports.mtx')
+neg_reports = io.mmread('modelCSR_'+model_num+'_negreports.mtx')
 
 pos_reports = pos_reports.tocsr()
 neg_reports = neg_reports.tocsr()
