@@ -1,9 +1,10 @@
 from keras.layers import Input, Dense, Dropout
-from keras.models import Model
+from keras.models import Model, Sequential
 from keras import metrics
 from keras import losses
 from keras.utils import np_utils
 from keras import regularizers
+from keras.callbacks import EarlyStopping
 import tensorflow as tf
 
 from scipy import io
@@ -22,8 +23,12 @@ parser.add_argument('--run-on-cpu',
                     action='store_true',
                     default=False,
                     dest='run_on_cpu')
+parser.add_argument('--run-comparisons',
+                    help='Boolean flag: do or do not run 3 shallow classifiers',
+                    action='store_true',
+                    default=False,
+                    dest='compare')
 args = parser.parse_args()
-
 
 runIndices = [
     2451,2465,2571,2512,2200,2431,2596,2875,2889,2912,2882,1931,2973,2975,
@@ -54,30 +59,23 @@ runTimes = 0
 
 neg_ind = np.arange(neg_reports.shape[0])
 
+log = dict()
+
 
 if args.run_on_cpu:
     with tf.device("/cpu:0"):
         for i in range(0,20):
-
-            encoding_dim = 2
-            n_hidden_1 = 200
-            n_hidden_2 = 50
-
-            input_data = Input(shape=(pos_reports.shape[1],))
-            #encoded_1 = Dense(n_hidden_1, activation='relu', activity_regularizer=regularizers.l1(1e-4), use_bias=False)(input_data)
-            encoded_1 = Dense(n_hidden_1, activation='relu', use_bias=False)(input_data)
-            #encoded_DO = Dropout(0.5)(encoded_1)
-            encoded_2 = Dense(n_hidden_2, activation='relu', use_bias=False)(encoded_1)
-            #encoded_DO_2 = Dropout(0.5)(encoded_2)
-            encoded_3 = Dense(encoding_dim, activation='relu', use_bias=False)(encoded_2)
-            encoded_out = Dense(2, activation='softmax', use_bias=False)(encoded_3)
-
-            autoencoder = Model(input=input_data, output=encoded_out)
-            encoder = Model(input=input_data, output=encoded_3)
-
-            autoencoder.compile(optimizer='adam', loss=comb_loss, metrics=[metrics.categorical_crossentropy,
-                                                                           metrics.mean_squared_error,
-                                                                           'accuracy'])
+            
+            
+            print("  INFO: RUNNING TENSORFLOW WITHOUT GPU")
+            print("  INFO: Constructing logistic regression model")
+            model = Sequential()
+            # Dense(64) is a fully-connected layer with 64 hidden units.
+            # in the first layer, you must specify the expected input data shape (k)
+            model.add(Dense(output_dim=2, input_dim=pos_reports.shape[1], activation='softmax'))
+            model.compile(loss='categorical_crossentropy',
+                          optimizer='adam',
+                          metrics=['accuracy','categorical_crossentropy'])
 
             multFac = float(neg_reports.shape[0])/float(pos_reports.shape[0])
             if runTimes > multFac:
@@ -109,16 +107,15 @@ if args.run_on_cpu:
 
             print "Neg reports:", len(np.where(outcomes == 0)[0])
             print "Pos reports:", len(np.where(outcomes == 1)[0])
-
-            #early_stopping = EarlyStopping(monitor='val_loss', patience=2000, verbose=1)
-
-            #autoencoder.fit(all_reports, outcomes_cat, epochs=5000, batch_size=100000, shuffle=True, callbacks=[TensorBoard(log_dir='/tmp/autoencoder')], validation_split=0.2)
-            autoencoder.fit(all_reports,
-                            outcomes_cat,
-                            epochs=5000,
-                            batch_size=100000,
-                            shuffle=True,
-                            validation_split=0.2)
+            early_stopping = EarlyStopping(monitor='val_loss', patience=500)
+            print("  INFO: Fitting MLP model to training data")
+            model.fit(all_reports,
+                      outcomes_cat, 
+                      epochs=5000,
+                      batch_size=100000,
+                      shuffle=True,
+                      callbacks=[early_stopping],
+                      validation_split=0.2)
 
             del neg_reports_subset
             del outcomes
@@ -127,34 +124,33 @@ if args.run_on_cpu:
             X = np.load("model_"+model_num+"_reports.npy")
             y = np.load("model_"+model_num+"_outcomes.npy")
 
-            predictions = autoencoder.predict(X)
+            predictions = model.predict(X)
 
-            np.save("scores_dnn_"+model_num+"_"+str(runTimes)+".npy",predictions[:,1])
+            np.save("scores_tflr_"+model_num+"_"+str(runTimes)+".npy",predictions[:,1])
+
+            print("  INFO: Evaluating accuracy on test set")
+            print ("\n")
+            auc = metrics.roc_auc_score(y, predictions[:,1])
+            print("  INFO: AUC = {0}".format(auc))
+            log['tf_lr_cpu'] = {'auc': auc}
+
 
             del predictions
             del X
             del y
 else:
     for i in range(0,20):
-        encoding_dim = 2
-        n_hidden_1 = 200
-        n_hidden_2 = 50
-
-        input_data = Input(shape=(pos_reports.shape[1],))
-        #encoded_1 = Dense(n_hidden_1, activation='relu', activity_regularizer=regularizers.l1(1e-4), use_bias=False)(input_data)
-        encoded_1 = Dense(n_hidden_1, activation='relu', use_bias=False)(input_data)
-        #encoded_DO = Dropout(0.5)(encoded_1)
-        encoded_2 = Dense(n_hidden_2, activation='relu', use_bias=False)(encoded_1)
-        #encoded_DO_2 = Dropout(0.5)(encoded_2)
-        encoded_3 = Dense(encoding_dim, activation='relu', use_bias=False)(encoded_2)
-        encoded_out = Dense(2, activation='softmax', use_bias=False)(encoded_3)
-
-        autoencoder = Model(input=input_data, output=encoded_out)
-        encoder = Model(input=input_data, output=encoded_3)
-
-        autoencoder.compile(optimizer='adam', loss=comb_loss, metrics=[metrics.categorical_crossentropy,
-                                                                       metrics.mean_squared_error,
-                                                                       'accuracy'])
+        
+        
+        print("  INFO: RUNNING TENSORFLOW WITHOUT GPU")
+        print("  INFO: Constructing logistic regression model")
+        model = Sequential()
+        # Dense(64) is a fully-connected layer with 64 hidden units.
+        # in the first layer, you must specify the expected input data shape (k)
+        model.add(Dense(output_dim=2, input_dim=pos_reports.shape[1], activation='softmax'))
+        model.compile(loss='categorical_crossentropy',
+                      optimizer='adam',
+                      metrics=['accuracy','categorical_crossentropy'])
 
         multFac = float(neg_reports.shape[0])/float(pos_reports.shape[0])
         if runTimes > multFac:
@@ -186,16 +182,15 @@ else:
 
         print "Neg reports:", len(np.where(outcomes == 0)[0])
         print "Pos reports:", len(np.where(outcomes == 1)[0])
-
-        #early_stopping = EarlyStopping(monitor='val_loss', patience=2000, verbose=1)
-
-        #autoencoder.fit(all_reports, outcomes_cat, epochs=5000, batch_size=100000, shuffle=True, callbacks=[TensorBoard(log_dir='/tmp/autoencoder')], validation_split=0.2)
-        autoencoder.fit(all_reports,
-                        outcomes_cat,
-                        epochs=5000,
-                        batch_size=100000,
-                        shuffle=True,
-                        validation_split=0.2)
+        early_stopping = EarlyStopping(monitor='val_loss', patience=500)
+        print("  INFO: Fitting MLP model to training data")
+        model.fit(all_reports,
+                  outcomes_cat, 
+                  epochs=5000,
+                  batch_size=100000,
+                  shuffle=True,
+                  callbacks=[early_stopping],
+                  validation_split=0.2)
 
         del neg_reports_subset
         del outcomes
@@ -204,9 +199,16 @@ else:
         X = np.load("model_"+model_num+"_reports.npy")
         y = np.load("model_"+model_num+"_outcomes.npy")
 
-        predictions = autoencoder.predict(X)
+        predictions = model.predict(X)
 
-        np.save("scores_dnn_"+model_num+"_"+str(runTimes)+".npy",predictions[:,1])
+        np.save("scores_tflr_"+model_num+"_"+str(runTimes)+".npy",predictions[:,1])
+
+        print("  INFO: Evaluating accuracy on test set")
+        print ("\n")
+        auc = metrics.roc_auc_score(y, predictions[:,1])
+        print("  INFO: AUC = {0}".format(auc))
+        log['tf_lr_cpu'] = {'auc': auc}
+
 
         del predictions
         del X

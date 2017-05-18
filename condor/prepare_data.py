@@ -1,5 +1,5 @@
 import numpy as np
-from scipy import stats, sparse
+from scipy import stats, sparse, io
 
 
 import argparse
@@ -26,11 +26,13 @@ for reportblock in range(0,50):
         allReports = thisReportBlock
     else:
         allReports = sparse.vstack((allReports,thisReportBlock))
+    print "Processed ",reportblock
 
 allReportsCSR = allReports.tocsr()
 del (allReports)
 allReportsCSR = allReportsCSR[0:4855498]  # discard empty rows at end of dataset
-thisReportBlock_array = allReportsCSR.toarray()
+#thisReportBlock_array = allReportsCSR.toarray()
+thisReportBlock_array = allReportsCSR
 del(allReportsCSR)
 maxidx = runIndices[args.model_num]
 colmax = thisReportBlock_array[:,maxidx]
@@ -39,6 +41,7 @@ to_keep_col = list(set(range(thisReportBlock_array.shape[1])))
 to_keep_col.remove(maxidx)
 colmax = thisReportBlock_array[:,maxidx]
 colmax = colmax.astype(bool)
+colmax = colmax.toarray()
 posReports = thisReportBlock_array[np.where(colmax == True)[0]]
 fractions = np.divide(np.sum(posReports.astype(float),axis=0),np.sum(colmax))
 to_keep_col = np.where(fractions > 0.00)[0]
@@ -47,7 +50,9 @@ thisReportBlock_array = thisReportBlock_array[:,to_keep_col]
 colmax = colmax.astype(int)
 
 
-np.save("model_"+str(runIndices[args.model_num])+"_reports.npy",thisReportBlock_array)
+#np.save("model_"+str(runIndices[args.model_num])+"_reports.npy",thisReportBlock_array)
+io.mmwrite("model_"+str(runIndices[args.model_num])+"_reports.mtx",thisReportBlock_array,field='integer')
+np.save("model_"+str(runIndices[args.model_num])+"_reports.npy",thisReportBlock_array.toarray())
 np.save("model_"+str(runIndices[args.model_num])+"_outcomes.npy",colmax)
 
 del colmax

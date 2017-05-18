@@ -15,6 +15,12 @@ parser.add_argument('--score-file',
                     dest='scores_filename',
                     default='score.npy')
 
+parser.add_argument('--dnn',
+                    help='Evaluate DNN model',
+                    action='store_true',
+                    default=False,
+                    dest='dnn')
+
 args = parser.parse_args()
 
 runIndices = [
@@ -35,4 +41,9 @@ model_num = str(runIndices[int(args.model_num)])
 
 scores_filename = str(args.scores_filename)
 
-scores = np.load(scores_filename)
+if args.dnn==False:
+    scores = np.load(scores_filename)
+
+else:
+    
+

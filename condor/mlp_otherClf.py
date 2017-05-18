@@ -8,7 +8,7 @@ import time
 import json
 
 import numpy as np
-from scipy import stats, sparse
+from scipy import stats, sparse, io
 
 from keras.models import Sequential 
 from keras.layers import Dense, Activation,Dropout
@@ -19,6 +19,7 @@ import tensorflow as tf  # for specifying device context
 
 from sklearn import metrics, svm
 from sklearn.ensemble import AdaBoostClassifier, RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from sklearn.externals import joblib
 
@@ -93,15 +94,19 @@ runIndices = [
 model_num = str(runIndices[int(args.model_num)])
 
 info("  INFO: Loading dataset")
-X = np.load("model_{0}_reports.npy".format(model_num))
+#X = np.load("model_{0}_reports.npy".format(model_num))
+X = io.mmread('model_{0}_reports.mtx'.format(model_num))
 y = np.load("model_{0}_outcomes.npy".format(model_num))
+X = X.tocsr()
+y = np_utils.to_categorical(y, 2)
 k = X.shape[1]
 
 
 info("  INFO: Splitting data")
 test_size = int(y.shape[0] * 0.002)
-test_neg_ind = np.random.choice(np.where(y[:,0] == 1)[0], size=(int(test_size * 0.5)))
-test_pos_ind = np.random.choice(np.where(y[:,0] == 0)[0], size=(int(test_size * 0.5)))
+print ("test_size:",test_size)
+test_neg_ind = np.random.choice(np.where(y[:,1] == 0)[0], size=(int(test_size * 0.5)))
+test_pos_ind = np.random.choice(np.where(y[:,1] == 1)[0], size=(int(test_size * 0.5)))
 all_test_inds = np.concatenate((test_neg_ind, test_pos_ind))
 np.random.shuffle(all_test_inds)
 mask = np.ones(X.shape[0], np.bool)
@@ -117,9 +122,16 @@ del(test_pos_ind)
 del(all_test_inds)
 log = dict()
 
+print ("X_train:",X_train.shape)
+print ("X_test:",X_test.shape)
+print ("y_train:",y_train.shape)
+print ("y_test:",y_test.shape)
+
 
 #LOGISTIC REGRESSION IN KERAS
 def run_lr(gpu=True):
+
+    
     start = time.time()
     if (gpu==False):
         with tf.device("/cpu:0"):
@@ -138,8 +150,8 @@ def run_lr(gpu=True):
                       y_train, 
                       epochs=args.nb_epochs,
                       batch_size=args.batch_size, 
-                      validation_split=0.5, 
-                      callbacks=[early_stopping])
+                      validation_data=(X_test, y_test), 
+                      callbacks=[early_stopping], shuffle=True)
             info("  INFO: Evaluating accuracy on test set")
             predict_mlp_keras = model.predict_proba(X_test)
             np.save("scores_tflr_"+model_num+".npy",model.predict_proba(X))
@@ -164,9 +176,9 @@ def run_lr(gpu=True):
         model.fit(X_train, 
                   y_train, 
                   epochs=args.nb_epochs,
-                  batch_size=args.batch_size, 
-                  validation_split=0.5, 
-                  callbacks=[early_stopping])
+                  batch_size=args.batch_size,
+                  validation_data=(X_test, y_test), 
+                  callbacks=[early_stopping], shuffle=True)
         info("  INFO: Evaluating accuracy on test set")
         predict_mlp_keras = model.predict_proba(X_test)
         np.save("scores_tflr_"+model_num+".npy",model.predict_proba(X))
@@ -179,10 +191,12 @@ def run_lr(gpu=True):
     end = time.time()
     print("  INFO: TIME TO TRAIN RNN: {0}s".format(end - start))
 
-if run_on_cpu:
-    run_lr(gpu=False)
-else:
-    run_lr(gpu=True)
+#if args.run_on_cpu:
+#    print ("Running on CPU")
+#    run_lr(gpu=False)
+#else:
+#    print ("Running on GPU")
+#    run_lr(gpu=True)
 
 if args.compare:
     y_train_sklearn = np.argmax(y_train, axis=1)
