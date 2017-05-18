@@ -38,14 +38,17 @@ maxidx = runIndices[args.model_num]
 colmax = thisReportBlock_array[:,maxidx]
 colmax = colmax.astype(bool)
 to_keep_col = list(set(range(thisReportBlock_array.shape[1])))
-to_keep_col.remove(maxidx)
+#to_keep_col.remove(maxidx)
 colmax = thisReportBlock_array[:,maxidx]
 colmax = colmax.astype(bool)
 colmax = colmax.toarray()
-posReports = thisReportBlock_array[np.where(colmax == True)[0]]
+posReports = thisReportBlock_array[np.where(colmax == True)[0]].toarray()
 fractions = np.divide(np.sum(posReports.astype(float),axis=0),np.sum(colmax))
+print len(to_keep_col), "columns."
 to_keep_col = np.where(fractions > 0.00)[0]
+print len(to_keep_col), "columns."
 to_keep_col = np.delete(to_keep_col,np.where(to_keep_col==maxidx))
+print len(to_keep_col), "columns."
 thisReportBlock_array = thisReportBlock_array[:,to_keep_col]
 colmax = colmax.astype(int)
 

@@ -36,13 +36,15 @@ colmax = allReportsCSR[:,maxidx]
 colmax = colmax[0:4855498]
 #colmax = colmax.astype(bool)
 to_keep_col = list(set(range(allReportsCSR.shape[1])))
-to_keep_col.remove(maxidx)
+#to_keep_col.remove(maxidx)
 #allReportsArray = allReportsCSR.toarray()
 #colmax = colmax[to_keep_rows]
 colmaxArray = colmax.toarray()
 posReports = allReportsCSR[np.where(colmaxArray == True)[0]].toarray()
 fractions = np.divide(np.sum(posReports.astype(float),axis=0),np.sum(colmaxArray))
+print len(to_keep_col), "columns."
 to_keep_col = np.where(fractions > 0.00)[0]
+print len(to_keep_col), "columns."
 to_keep_col = np.delete(to_keep_col,np.where(to_keep_col==maxidx))
 print len(to_keep_col), "columns."
 allReportsCSR = allReportsCSR[:,to_keep_col]

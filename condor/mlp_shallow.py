@@ -1,3 +1,5 @@
+import time
+
 from keras.layers import Input, Dense, Dropout
 from keras.models import Model, Sequential
 from keras import metrics
@@ -9,7 +11,11 @@ import tensorflow as tf
 
 from scipy import io
 from scipy.sparse import vstack
+from sklearn import metrics as metrics_skl
 import numpy as np
+
+from sklearn.ensemble import AdaBoostClassifier, RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
 
 import argparse
 parser = argparse.ArgumentParser(description='Keras MLP model for DDI PSM.')
@@ -61,8 +67,9 @@ neg_ind = np.arange(neg_reports.shape[0])
 
 log = dict()
 
+runTimes = 0
 
-if args.run_on_cpu:
+if args.run_on_cpu==True:
     with tf.device("/cpu:0"):
         for i in range(0,20):
             
@@ -111,7 +118,7 @@ if args.run_on_cpu:
             print("  INFO: Fitting MLP model to training data")
             model.fit(all_reports,
                       outcomes_cat, 
-                      epochs=5000,
+                      epochs=100,
                       batch_size=100000,
                       shuffle=True,
                       callbacks=[early_stopping],
@@ -130,7 +137,7 @@ if args.run_on_cpu:
 
             print("  INFO: Evaluating accuracy on test set")
             print ("\n")
-            auc = metrics.roc_auc_score(y, predictions[:,1])
+            auc = metrics_skl.roc_auc_score(y, predictions[:,1])
             print("  INFO: AUC = {0}".format(auc))
             log['tf_lr_cpu'] = {'auc': auc}
 
@@ -142,7 +149,7 @@ else:
     for i in range(0,20):
         
         
-        print("  INFO: RUNNING TENSORFLOW WITHOUT GPU")
+        print("  INFO: RUNNING TENSORFLOW WITH GPU")
         print("  INFO: Constructing logistic regression model")
         model = Sequential()
         # Dense(64) is a fully-connected layer with 64 hidden units.
@@ -186,7 +193,7 @@ else:
         print("  INFO: Fitting MLP model to training data")
         model.fit(all_reports,
                   outcomes_cat, 
-                  epochs=5000,
+                  epochs=100,
                   batch_size=100000,
                   shuffle=True,
                   callbacks=[early_stopping],
@@ -205,7 +212,7 @@ else:
 
         print("  INFO: Evaluating accuracy on test set")
         print ("\n")
-        auc = metrics.roc_auc_score(y, predictions[:,1])
+        auc = metrics_skl.roc_auc_score(y, predictions[:,1])
         print("  INFO: AUC = {0}".format(auc))
         log['tf_lr_cpu'] = {'auc': auc}
 
@@ -213,3 +220,77 @@ else:
         del predictions
         del X
         del y
+
+
+neg_ind = np.arange(neg_reports.shape[0])
+
+bdt = AdaBoostClassifier()
+rfc = RandomForestClassifier()
+lrc = LogisticRegression(penalty='l1')
+
+subset_neg_ind = np.random.choice(neg_ind, 10*pos_reports.shape[0], replace=False)
+neg_reports_subset = neg_reports[subset_neg_ind,:]
+
+all_reports = vstack([pos_reports,neg_reports_subset]).toarray()
+outcomes = np.concatenate((np.ones(pos_reports.shape[0], np.bool),
+                           np.zeros(neg_reports_subset.shape[0], np.bool)))
+
+new_ind = np.random.permutation(all_reports.shape[0])
+all_reports = all_reports[new_ind,]
+outcomes = outcomes[new_ind]
+
+print "Neg reports:", len(np.where(outcomes == 0)[0])
+print "Pos reports:", len(np.where(outcomes == 1)[0])
+
+print ("Fitting Adaboost")
+start = time.time()
+bdt.fit(all_reports, outcomes)
+end = time.time()
+print("TIME TO TRAIN ADABOOST CLASSIFIER: {0}s".format(end - start))
+
+print ("Fitting Random Forest")
+start = time.time()
+rfc.fit(all_reports, outcomes)
+end = time.time()
+print("TIME TO TRAIN RANDOM FOREST CLASSIFIER: {0}s".format(end - start))
+
+print ("Fitting Logistic Regression")
+start = time.time()
+lrc.fit(all_reports, outcomes)
+end = time.time()
+print("TIME TO TRAIN LOGISTIC REGRESSION CLASSIFIER: {0}s".format(end - start))
+
+del all_reports
+del neg_reports_subset
+del outcomes
+
+#X = np.load("model_"+model_num+"_reports.npy")
+X = io.mmread("model_"+model_num+"_reports.mtx")
+X = X.tocsr()
+y = np.load("model_"+model_num+"_outcomes.npy")
+
+predictions = bdt.predict_proba(X)
+np.save("scores_adaboost_"+model_num+".npy",predictions)
+auc = metrics_skl.roc_auc_score(y, predictions[:,1])
+print("  INFO: AUC = {0}".format(auc))
+log['tf_adaboost_cpu'] = {'auc': auc}
+
+predictions = rfc.predict_proba(X)
+np.save("scores_adaboost_"+model_num+".npy",predictions)
+auc = metrics_skl.roc_auc_score(y, predictions[:,1])
+print("  INFO: AUC = {0}".format(auc))
+log['tf_rf_cpu'] = {'auc': auc}
+
+predictions = lrc.predict_proba(X)
+np.save("scores_adaboost_"+model_num+".npy",predictions)
+auc = metrics_skl.roc_auc_score(y, predictions[:,1])
+print("  INFO: AUC = {0}".format(auc))
+log['tf_lr_cpu'] = {'auc': auc}
+
+del predictions
+del X
+del y
+
+logfname = "results_{0}_{1}.json".format(model_num, int(time.time()))
+with open(logfname, 'w') as f:
+    f.write(json.dumps(log))
