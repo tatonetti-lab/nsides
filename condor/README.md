@@ -26,4 +26,4 @@ An example local workflow on OSG follows:
 5. `python prepare_data_separate_reports.py --model-num 0`
 6. `python mlp_dnn.py --run-on-cpu --model-number 0 > mlp_dnn.out`
 7. `source find_good_models.sh`
-8. `python mlp_otherClf.py -v --run-comparisons --run-on-cpu --model-number 0`
+8. `python mlp_shallow.py --run-comparisons --run-on-cpu --model-number 0`
