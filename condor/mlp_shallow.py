@@ -1,4 +1,5 @@
 import time
+import json
 
 from keras.layers import Input, Dense, Dropout
 from keras.models import Model, Sequential
@@ -69,141 +70,94 @@ log = dict()
 
 runTimes = 0
 
-if args.run_on_cpu==True:
-    with tf.device("/cpu:0"):
-        for i in range(0,20):
-            
-            
+for i in range(0,20):
+    
+    
+    print("  INFO: RUNNING TENSORFLOW WITH GPU")
+    print("  INFO: Constructing logistic regression model")
+    # Dense(64) is a fully-connected layer with 64 hidden units.
+    # in the first layer, you must specify the expected input data shape (k)
+
+    multFac = float(neg_reports.shape[0])/float(pos_reports.shape[0])
+    if runTimes > multFac:
+        continue
+    else:
+        runTimes = runTimes + 1
+
+    print "multFac:",multFac
+
+    #neg_reports_subset = neg_reports[((runTimes - 1)*pos_reports.shape[0]):(runTimes*pos_reports.shape[0]),:]
+
+    subset_neg_ind = np.random.choice(neg_ind, pos_reports.shape[0], replace=False)
+    neg_reports_subset = neg_reports[subset_neg_ind,:]
+
+    #print "Picking from ",len(neg_ind)
+
+    #neg_ind = [x for x in neg_ind if x not in subset_neg_ind]
+
+    #print "Now there are ",len(neg_ind)
+
+    all_reports = vstack([pos_reports,neg_reports_subset]).toarray()
+    outcomes = np.concatenate((np.ones(pos_reports.shape[0], np.bool),
+                               np.zeros(neg_reports_subset.shape[0], np.bool)))
+
+    new_ind = np.random.permutation(all_reports.shape[0])
+    all_reports = all_reports[new_ind,]
+    outcomes = outcomes[new_ind]
+    outcomes_cat = np_utils.to_categorical(outcomes, 2)
+
+    print "Neg reports:", len(np.where(outcomes == 0)[0])
+    print "Pos reports:", len(np.where(outcomes == 1)[0])
+    early_stopping = EarlyStopping(monitor='val_loss', patience=10)
+    if args.run_on_cpu==True:
+        with tf.device("/cpu:0"):
             print("  INFO: RUNNING TENSORFLOW WITHOUT GPU")
-            print("  INFO: Constructing logistic regression model")
-            model = Sequential()
-            # Dense(64) is a fully-connected layer with 64 hidden units.
-            # in the first layer, you must specify the expected input data shape (k)
-            model.add(Dense(output_dim=2, input_dim=pos_reports.shape[1], activation='softmax'))
-            model.compile(loss='categorical_crossentropy',
-                          optimizer='adam',
-                          metrics=['accuracy','categorical_crossentropy'])
-
-            multFac = float(neg_reports.shape[0])/float(pos_reports.shape[0])
-            if runTimes > multFac:
-                continue
-            else:
-                runTimes = runTimes + 1
-
-            print "multFac:",multFac
-
-            #neg_reports_subset = neg_reports[((runTimes - 1)*pos_reports.shape[0]):(runTimes*pos_reports.shape[0]),:]
-
-            subset_neg_ind = np.random.choice(neg_ind, pos_reports.shape[0], replace=False)
-            neg_reports_subset = neg_reports[subset_neg_ind,:]
-
-            print "Picking from ",len(neg_ind)
-
-            neg_ind = [x for x in neg_ind if x not in subset_neg_ind]
-
-            print "Now there are ",len(neg_ind)
-
-            all_reports = vstack([pos_reports,neg_reports_subset]).toarray()
-            outcomes = np.concatenate((np.ones(pos_reports.shape[0], np.bool),
-                                       np.zeros(neg_reports_subset.shape[0], np.bool)))
-
-            new_ind = np.random.permutation(all_reports.shape[0])
-            all_reports = all_reports[new_ind,]
-            outcomes = outcomes[new_ind]
-            outcomes_cat = np_utils.to_categorical(outcomes, 2)
-
-            print "Neg reports:", len(np.where(outcomes == 0)[0])
-            print "Pos reports:", len(np.where(outcomes == 1)[0])
-            early_stopping = EarlyStopping(monitor='val_loss', patience=500)
             print("  INFO: Fitting MLP model to training data")
+            model = Sequential()
+            model.add(Dense(output_dim=2,
+                            input_dim=pos_reports.shape[1],
+                            activation='softmax',
+                            kernel_regularizer=regularizers.l1(0.1)))
+            model.compile(loss='categorical_crossentropy',
+                  optimizer='adam',
+                  metrics=['accuracy','categorical_crossentropy'])
             model.fit(all_reports,
-                      outcomes_cat, 
-                      epochs=100,
-                      batch_size=100000,
-                      shuffle=True,
-                      callbacks=[early_stopping],
-                      validation_split=0.2)
+              outcomes_cat, 
+              epochs=500,
+              batch_size=100000,
+              shuffle=True,
+              callbacks=[early_stopping],
+              validation_split=0.2)
 
-            del neg_reports_subset
-            del outcomes
-            del outcomes_cat
-
-            X = np.load("model_"+model_num+"_reports.npy")
-            y = np.load("model_"+model_num+"_outcomes.npy")
-
-            predictions = model.predict(X)
-
-            np.save("scores_tflr_"+model_num+"_"+str(runTimes)+".npy",predictions[:,1])
-
-            print("  INFO: Evaluating accuracy on test set")
-            print ("\n")
-            auc = metrics_skl.roc_auc_score(y, predictions[:,1])
-            print("  INFO: AUC = {0}".format(auc))
-            log['tf_lr_cpu'] = {'auc': auc}
-
-
-            del predictions
-            del X
-            del y
-else:
-    for i in range(0,20):
-        
-        
+            model_metrics = model.evaluate(all_reports,outcomes_cat)
+            print ("\n model metrics:",model_metrics)
+    else:
         print("  INFO: RUNNING TENSORFLOW WITH GPU")
-        print("  INFO: Constructing logistic regression model")
-        model = Sequential()
-        # Dense(64) is a fully-connected layer with 64 hidden units.
-        # in the first layer, you must specify the expected input data shape (k)
-        model.add(Dense(output_dim=2, input_dim=pos_reports.shape[1], activation='softmax'))
-        model.compile(loss='categorical_crossentropy',
-                      optimizer='adam',
-                      metrics=['accuracy','categorical_crossentropy'])
-
-        multFac = float(neg_reports.shape[0])/float(pos_reports.shape[0])
-        if runTimes > multFac:
-            continue
-        else:
-            runTimes = runTimes + 1
-
-        print "multFac:",multFac
-
-        #neg_reports_subset = neg_reports[((runTimes - 1)*pos_reports.shape[0]):(runTimes*pos_reports.shape[0]),:]
-
-        subset_neg_ind = np.random.choice(neg_ind, pos_reports.shape[0], replace=False)
-        neg_reports_subset = neg_reports[subset_neg_ind,:]
-
-        print "Picking from ",len(neg_ind)
-
-        neg_ind = [x for x in neg_ind if x not in subset_neg_ind]
-
-        print "Now there are ",len(neg_ind)
-
-        all_reports = vstack([pos_reports,neg_reports_subset]).toarray()
-        outcomes = np.concatenate((np.ones(pos_reports.shape[0], np.bool),
-                                   np.zeros(neg_reports_subset.shape[0], np.bool)))
-
-        new_ind = np.random.permutation(all_reports.shape[0])
-        all_reports = all_reports[new_ind,]
-        outcomes = outcomes[new_ind]
-        outcomes_cat = np_utils.to_categorical(outcomes, 2)
-
-        print "Neg reports:", len(np.where(outcomes == 0)[0])
-        print "Pos reports:", len(np.where(outcomes == 1)[0])
-        early_stopping = EarlyStopping(monitor='val_loss', patience=500)
         print("  INFO: Fitting MLP model to training data")
+        model = Sequential()
+        model.add(Dense(output_dim=2,
+                        input_dim=pos_reports.shape[1],
+                        activation='softmax',
+                        kernel_regularizer=regularizers.l1(0.1)))
+        model.compile(loss='categorical_crossentropy',
+              optimizer='adam',
+              metrics=['accuracy','categorical_crossentropy'])
         model.fit(all_reports,
-                  outcomes_cat, 
-                  epochs=100,
-                  batch_size=100000,
-                  shuffle=True,
-                  callbacks=[early_stopping],
-                  validation_split=0.2)
+          outcomes_cat, 
+          epochs=500,
+          batch_size=100000,
+          shuffle=True,
+          callbacks=[early_stopping],
+          validation_split=0.2)
 
-        del neg_reports_subset
-        del outcomes
-        del outcomes_cat
+        model_metrics = model.evaluate(all_reports,outcomes_cat)
+        print ("\n model metrics:",model_metrics)
+
+    if model_metrics[1] > 0.80:
 
         X = np.load("model_"+model_num+"_reports.npy")
+        #X = io.mmread("model_"+model_num+"_reports.mtx")
+        #X = X.tocsr()
         y = np.load("model_"+model_num+"_outcomes.npy")
 
         predictions = model.predict(X)
@@ -220,77 +174,77 @@ else:
         del predictions
         del X
         del y
+        del neg_reports_subset
+
+    bdt = AdaBoostClassifier()
+    rfc = RandomForestClassifier()
+    lrc = LogisticRegression(penalty='l1')
+    
+    print ("Fitting Adaboost")
+    start = time.time()
+    bdt.fit(all_reports, outcomes)
+    end = time.time()
+    print("TIME TO TRAIN ADABOOST CLASSIFIER: {0}s".format(end - start))
+    
+    print ("Fitting Random Forest")
+    start = time.time()
+    rfc.fit(all_reports, outcomes)
+    end = time.time()
+    print("TIME TO TRAIN RANDOM FOREST CLASSIFIER: {0}s".format(end - start))
+    
+    print ("Fitting Logistic Regression")
+    start = time.time()
+    lrc.fit(all_reports, outcomes)
+    end = time.time()
+    print("TIME TO TRAIN LOGISTIC REGRESSION CLASSIFIER: {0}s".format(end - start))
+    
+
+    
+    #X = np.load("model_"+model_num+"_reports.npy")
+    X = io.mmread("model_"+model_num+"_reports.mtx")
+    X = X.tocsr()
+    y = np.load("model_"+model_num+"_outcomes.npy")
+ 
+    predictions = bdt.predict(all_reports)
+    skl_acc = metrics_skl.accuracy_score(outcomes,predictions)
+    print("ADABOOST  INFO: ACC = {0}".format(skl_acc))
+    if (skl_acc > 0.80):
+        predictions = bdt.predict_proba(X)
+        np.save("scores_bdt_"+model_num+"_"+str(runTimes)+".npy",predictions[:,1])
+    auc = metrics_skl.roc_auc_score(y, predictions[:,1])
+    print("ADABOOST  INFO: AUC = {0}".format(auc))
+    log['tf_adaboost_cpu'] = {'auc': auc}
+
+    predictions = rfc.predict(all_reports)
+    skl_acc = metrics_skl.accuracy_score(outcomes,predictions)
+    print("RANDOM FOREST  INFO: ACC = {0}".format(skl_acc))
+    if (skl_acc > 0.80):
+        predictions = rfc.predict_proba(X)
+        np.save("scores_rfc_"+model_num+"_"+str(runTimes)+".npy",predictions[:,1])
+    auc = metrics_skl.roc_auc_score(y, predictions[:,1])
+    print("RANDOM FOREST  INFO: AUC = {0}".format(auc))
+    log['tf_rfc_cpu'] = {'auc': auc}
+
+    predictions = lrc.predict(all_reports)
+    skl_acc = metrics_skl.accuracy_score(outcomes,predictions)
+    print("LOGISTIC REGRESSION  INFO: ACC = {0}".format(skl_acc))
+    if (skl_acc > 0.80):
+        predictions = lrc.predict_proba(X)
+        np.save("scores_lrc_"+model_num+"_"+str(runTimes)+".npy",predictions[:,1])
+    auc = metrics_skl.roc_auc_score(y, predictions[:,1])
+    print("LOGISTIC REGRESSION  INFO: AUC = {0}".format(auc))
+    log['tf_lrc_cpu'] = {'auc': auc}
 
 
-neg_ind = np.arange(neg_reports.shape[0])
-
-bdt = AdaBoostClassifier()
-rfc = RandomForestClassifier()
-lrc = LogisticRegression(penalty='l1')
-
-subset_neg_ind = np.random.choice(neg_ind, 10*pos_reports.shape[0], replace=False)
-neg_reports_subset = neg_reports[subset_neg_ind,:]
-
-all_reports = vstack([pos_reports,neg_reports_subset]).toarray()
-outcomes = np.concatenate((np.ones(pos_reports.shape[0], np.bool),
-                           np.zeros(neg_reports_subset.shape[0], np.bool)))
-
-new_ind = np.random.permutation(all_reports.shape[0])
-all_reports = all_reports[new_ind,]
-outcomes = outcomes[new_ind]
-
-print "Neg reports:", len(np.where(outcomes == 0)[0])
-print "Pos reports:", len(np.where(outcomes == 1)[0])
-
-print ("Fitting Adaboost")
-start = time.time()
-bdt.fit(all_reports, outcomes)
-end = time.time()
-print("TIME TO TRAIN ADABOOST CLASSIFIER: {0}s".format(end - start))
-
-print ("Fitting Random Forest")
-start = time.time()
-rfc.fit(all_reports, outcomes)
-end = time.time()
-print("TIME TO TRAIN RANDOM FOREST CLASSIFIER: {0}s".format(end - start))
-
-print ("Fitting Logistic Regression")
-start = time.time()
-lrc.fit(all_reports, outcomes)
-end = time.time()
-print("TIME TO TRAIN LOGISTIC REGRESSION CLASSIFIER: {0}s".format(end - start))
-
-del all_reports
-del neg_reports_subset
-del outcomes
-
-#X = np.load("model_"+model_num+"_reports.npy")
-X = io.mmread("model_"+model_num+"_reports.mtx")
-X = X.tocsr()
-y = np.load("model_"+model_num+"_outcomes.npy")
-
-predictions = bdt.predict_proba(X)
-np.save("scores_adaboost_"+model_num+".npy",predictions)
-auc = metrics_skl.roc_auc_score(y, predictions[:,1])
-print("  INFO: AUC = {0}".format(auc))
-log['tf_adaboost_cpu'] = {'auc': auc}
-
-predictions = rfc.predict_proba(X)
-np.save("scores_adaboost_"+model_num+".npy",predictions)
-auc = metrics_skl.roc_auc_score(y, predictions[:,1])
-print("  INFO: AUC = {0}".format(auc))
-log['tf_rf_cpu'] = {'auc': auc}
-
-predictions = lrc.predict_proba(X)
-np.save("scores_adaboost_"+model_num+".npy",predictions)
-auc = metrics_skl.roc_auc_score(y, predictions[:,1])
-print("  INFO: AUC = {0}".format(auc))
-log['tf_lr_cpu'] = {'auc': auc}
-
-del predictions
-del X
-del y
-
-logfname = "results_{0}_{1}.json".format(model_num, int(time.time()))
-with open(logfname, 'w') as f:
-    f.write(json.dumps(log))
+    del all_reports
+    del neg_reports_subset
+    del outcomes
+    del outcomes_cat
+    del predictions
+    del X
+    del y
+    
+    logfname = "results_{0}_{1}.json".format(model_num, int(time.time()))
+    with open(logfname, 'w') as f:
+        f.write(json.dumps(log))
+        
