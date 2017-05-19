@@ -178,8 +178,7 @@ def query_db(service, method, query=False, cache=False):
 
 			# 'nrows'
 			SQL = '''select count(*) as count
-				from standard_drugpair_outcome_count
-				where count_a > 10;'''
+				from standard_drugpair_outcome_count'''
 
 			print SQL
 			    
