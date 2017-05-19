@@ -16,7 +16,7 @@ from sklearn import metrics as metrics_skl
 import numpy as np
 
 from sklearn.ensemble import AdaBoostClassifier, RandomForestClassifier
-from sklearn.linear_model import LogisticRegression
+from sklearn.linear_model import LogisticRegressionCV
 
 import argparse
 parser = argparse.ArgumentParser(description='Keras MLP model for DDI PSM.')
@@ -117,14 +117,14 @@ for i in range(0,20):
             model.add(Dense(output_dim=2,
                             input_dim=pos_reports.shape[1],
                             activation='softmax',
-                            kernel_regularizer=regularizers.l1(0.1)))
+                            kernel_regularizer=regularizers.l1(1.0)))
             model.compile(loss='categorical_crossentropy',
                   optimizer='adam',
                   metrics=['accuracy','categorical_crossentropy'])
             model.fit(all_reports,
               outcomes_cat, 
               epochs=500,
-              batch_size=100000,
+              batch_size=1000,
               shuffle=True,
               callbacks=[early_stopping],
               validation_split=0.2)
@@ -178,7 +178,7 @@ for i in range(0,20):
 
     bdt = AdaBoostClassifier()
     rfc = RandomForestClassifier()
-    lrc = LogisticRegression(penalty='l1')
+    lrc = LogisticRegressionCV(penalty='l1',solver='liblinear')
     
     print ("Fitting Adaboost")
     start = time.time()
