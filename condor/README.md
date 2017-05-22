@@ -1,5 +1,15 @@
 # Submission of condor jobs to Open Science Grid
 
+## How to submit jobs
+To submit a batch of jobs to **CPU** nodes:
+1. `source make_nsides_tarball.sh`
+2. `condor_submit nsides_cpu_run1.submit`
+
+To submit a batch of jobs to **GPU** nodes:
+1. `source make_nsides_tarball.sh`
+2. `condor_submit nsides_gpu_run1.submit`
+
+## Script Summary
 The scripts in this folder accomplish the following workflow:
 
 1. Obtains the data from the OSG Stash using HTTP. `get_data.py`
@@ -12,6 +22,8 @@ The scripts in this folder accomplish the following workflow:
 4. Evaluate a given model model by calculating propensity score adjusted proportional reporting ratios (PRRs) for each reaction. `eval_model.py`
 
 The script to run the job is `nsides_cpu_run1.sh` which contains the workflow described above.  The script also installs the following python packages: `h5py5`, `keras`. The job is submitted to condor via `nsides_cpu_run1.submit` or `nsides_gpu_run1.submit` depending if GPU resources are intended to be used.
+
+## Example Local Workflow
 
 An example local workflow on OSG follows:
 1. `git clone http://github.com/tatonett-lab/nsides nsides`
