@@ -1,1 +1,1 @@
-tar cvfz nsides_test.tgz keras_models
+tar cvfz nsides_scripts.tgz *.py
