@@ -4,6 +4,7 @@
 To submit a batch of jobs to *CPU* nodes:
 1. `source make_nsides_tarball.sh`
 2. `condor_submit nsides_cpu_run1.submit`
+
 To submit a batch of jobs to *GPU* nodes:
 1. `source make_nsides_tarball.sh`
 2. `condor_submit nsides_gpu_run1.submit`
