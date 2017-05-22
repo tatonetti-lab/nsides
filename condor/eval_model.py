@@ -3,6 +3,7 @@ from scipy import io
 from scipy import sparse
 import glob
 import pickle
+import sys
 
 import argparse
 
@@ -15,7 +16,7 @@ parser.add_argument('--model-number',
 
 parser.add_argument('--model-type',
                     help='Model type to evaluate',
-                    action='store_true',
+                    action='store',
                     default='bdt',
                     dest='model_type')
 
@@ -36,6 +37,52 @@ runIndices = [
 ]
 
 model_num = str(runIndices[int(args.model_num)])
+
+if args.model_type == 'nopsm':
+    print "Evaluating without propensity score matching..."
+    reactions = io.mmread("AEOLUS_all_reports_alloutcomes.mtx")
+    reactions = reactions.tocsc()
+    y = np.load("model_"+str(model_num)+"_outcomes.npy")
+    invy = np.ones((y.shape[0],y.shape[1]))
+    invy[np.where(y==1)[0]] = 0
+    y = sparse.csc_matrix(y)
+    invy = sparse.csc_matrix(invy)
+
+    reactionPRRs = list()
+
+    for reactionIdx in range(0,reactions.shape[1]):
+        if reactionIdx % 200 == 0:
+            print "Processed",reactionIdx,"reactions."
+        reactionVector = reactions[:,reactionIdx]
+        exposedVector = sparse.csc_matrix.multiply(y,reactionVector)
+        nonexposedVector = sparse.csc_matrix.multiply(invy,reactionVector)
+        
+        A = sparse.csc_matrix.sum(exposedVector)
+        AplusB = sparse.csc_matrix.sum(y)
+        C = sparse.csc_matrix.sum(nonexposedVector)
+        CplusD = sparse.csc_matrix.sum(invy)
+        if AplusB > 0 and CplusD > 0:
+            A = float(A)
+            AplusB = float(AplusB)
+            C = float(C)
+            CplusD = float(CplusD)
+
+            num = A/AplusB
+            den = C/CplusD
+            if den > 0:
+                reactionPRRs.append(num/den)
+            else:
+                reactionPRRs.append(-1)
+        else:
+            reactionPRRs.append(-1)
+
+    output = open('results_'+str(model_num)+'_'+str(args.model_type)+'.pkl','wb')
+    pickle.dump(reactionPRRs,output)
+    output.close()
+
+    sys.exit(0)
+
+    
 
 scores_files = glob.glob("scores_"+args.model_type+"_"+model_num+"*.npy")
 
@@ -186,8 +233,10 @@ for reactionIdx in range(0,reactions.shape[1]):
         nonexposedVector = negreports[:,reactionIdx]
         thisC = sparse.csc_matrix.sum(nonexposedVector)
         thisD = nonexposedVector.shape[0] - sparse.csc_matrix.sum(nonexposedVector)
-        
-        thisWeight = thisC/(thisC+thisD)
+
+        thisWeight = 0
+        if (thisC+thisD) > 0:
+            thisWeight = thisC/(thisC+thisD)
 
         num = num + thisA
         den = den + (thisA + thisB)*thisWeight
@@ -198,7 +247,8 @@ for reactionIdx in range(0,reactions.shape[1]):
         reactionPRRs.append(-1)
 
 
-output = open('results_'+str(model_num)+'.pkl','wb')
+
+output = open('results_'+str(model_num)+'_'+str(args.model_type)+'.pkl','wb')
 pickle.dump(reactionPRRs,output)
 output.close()
 
