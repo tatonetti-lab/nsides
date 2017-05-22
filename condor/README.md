@@ -8,8 +8,8 @@ The scripts in this folder accomplish the following workflow:
   * `prepare_data_separate_reports.py` separates reports into positive and negative outcomes, used for training model
 3. Run the models.  The output should be each report and the model score.
   * `mlp_dnn.py` runs the deep neural network multilayer perceptron
-  * `mlp_otherClf.py` uses TensorFlow to run Logistic Regression and scikit-learn to run AdaBoost, RandomForest and Logistic Regression
-4. Evaluate the model by calculating propensity score adjusted proportional reporting ratios (PRRs) for each reaction. Output matrix should have dimensions (reactions x  number of models+non-adjusted PRR). `eval_model.py`
+  * `mlp_shallow.py` runs shallow classifiers including using TensorFlow to run Logistic Regression and scikit-learn to run AdaBoost, RandomForest and Logistic Regression
+4. Evaluate a given model model by calculating propensity score adjusted proportional reporting ratios (PRRs) for each reaction. `eval_model.py`
 
 The script to run the job is `nsides_cpu_run1.sh` which contains the workflow described above.  The script also installs the following python packages: `h5py5`, `keras`. The job is submitted to condor via `nsides_cpu_run1.submit` or `nsides_gpu_run1.submit` depending if GPU resources are intended to be used.
 
@@ -25,5 +25,9 @@ An example local workflow on OSG follows:
 4. `python prepare_data.py --model-num 0`
 5. `python prepare_data_separate_reports.py --model-num 0`
 6. `python mlp_dnn.py --run-on-cpu --model-number 0 > mlp_dnn.out`
-7. `source find_good_models.sh`
-8. `python mlp_shallow.py --run-comparisons --run-on-cpu --model-number 0`
+7. `python mlp_shallow.py --run-comparisons --run-on-cpu --model-number 0`
+8. `python eval_model.py --model-type tflr --model-number 0`
+9. `python eval_model.py --model-type bdt --model-number 0`
+10. `python eval_model.py --model-type rfc --model-number 0`
+11. `python eval_model.py --model-type lrc --model-number 0`
+12. `python eval_model.py --model-type dnn --model-number 0`
