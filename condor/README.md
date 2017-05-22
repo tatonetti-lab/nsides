@@ -31,3 +31,4 @@ An example local workflow on OSG follows:
 10. `python eval_model.py --model-type rfc --model-number 0`
 11. `python eval_model.py --model-type lrc --model-number 0`
 12. `python eval_model.py --model-type dnn --model-number 0`
+13. `python eval_model.py --model-type nopsm --model-number 0`
