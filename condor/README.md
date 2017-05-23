@@ -2,9 +2,11 @@
 
 ## How to submit jobs
 
+Make the submission tarball:
 1. `mkdir data; cd data`
-1. `python get_data.py`
-2. `source make_nsides_tarball.sh`
+2. `python ../get_data.py`
+3. `cd ..`
+4. `source make_nsides_tarball.sh`
 
 To submit a batch of jobs to **CPU** nodes:
 `condor_submit nsides_cpu_run1.submit`
@@ -36,7 +38,7 @@ An example local workflow on OSG follows:
  * `/usr/local/bin/pip install --user h5py`
  * `/usr/local/bin/pip install --user keras`
  * `/usr/local/bin/pip install --user wget`
-3. `python get_data.py`
+3. `mkdir data; cd data; python ../get_data.py; cd ..`
 4. `python prepare_data.py --model-number 0`
 5. `python prepare_data_separate_reports.py --model-number 0`
 6. `python mlp_dnn.py --run-on-cpu --model-number 0 > mlp_dnn.out`
