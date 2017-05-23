@@ -5,8 +5,6 @@ import glob
 import pickle
 import sys
 
-from tqdm import tqdm
-
 import argparse
 
 parser = argparse.ArgumentParser(description='Evaluate models for DDI PSM.')
@@ -224,7 +222,7 @@ numvec = sparse.csr_matrix((1,reactions.shape[1]))
 denvec = sparse.csr_matrix((1,reactions.shape[1]))
 
 
-for bin in tqdm(range(0,len(binList)-1)):
+for bin in range(0,len(binList)-1):
     lobin = binList[bin]
     hibin = binList[bin+1]
 
@@ -239,7 +237,7 @@ for bin in tqdm(range(0,len(binList)-1)):
     numvec = numvec + Avec
     denvec = denvec + Cvec * (AplusB/CplusD)
 
-for reactionIdx in tqdm(range(0,reactions.shape[1])):
+for reactionIdx in range(0,reactions.shape[1]):
     num = numvec[0,reactionIdx]
     den = denvec[0,reactionIdx]
 
