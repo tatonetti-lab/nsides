@@ -21,7 +21,7 @@ runIndices = [2451,2465,2571,2512,2200,2431,2596,2875,2889,2912,2882,1931,2973,2
 for reportblock in range(0,50):
     #if args.verbose:
         #print("Report Block: {0} out of 49.".format(reportblock))
-    thisReportBlock = np.load("AEOLUS_all_reports_"+str(reportblock)+".npy").item()
+    thisReportBlock = np.load("data/AEOLUS_all_reports_"+str(reportblock)+".npy").item()
     if reportblock == 0:
         allReports = thisReportBlock
     else:

@@ -11,6 +11,8 @@ print wget.download(url)
 
 print "Downloading report ids..."
 url = 'http://stash.osgconnect.net/+rvanguri/all_reportids.npy'
+print wget.download(url)
 
 print "Downloading age vector..."
 url = 'http://stash.osgconnect.net/+rvanguri/all_ages.npy'
+print wget.download(url)

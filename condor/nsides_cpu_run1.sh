@@ -2,9 +2,6 @@
 
 tar xvfz nsides_scripts.tgz
 
-python get_data.py
-
-/usr/local/bin/pip install --user wget
 /usr/local/bin/pip install --user h5py
 /usr/local/bin/pip install --user keras
 

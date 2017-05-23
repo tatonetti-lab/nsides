@@ -40,7 +40,7 @@ model_num = str(runIndices[int(args.model_num)])
 
 if args.model_type == 'nopsm':
     print "Evaluating without propensity score matching..."
-    reactions = io.mmread("AEOLUS_all_reports_alloutcomes.mtx")
+    reactions = io.mmread("data/AEOLUS_all_reports_alloutcomes.mtx")
     reactions = reactions.tocsc()
     y = np.load("model_"+str(model_num)+"_outcomes.npy")
     invy = np.ones((y.shape[0],y.shape[1]))
@@ -120,8 +120,8 @@ y = np.load("model_"+str(model_num)+"_outcomes.npy")
 
 print np.sum(y), "number of cases."
 
-all_reportids = np.array(np.load("all_reportids.npy"))
-all_ages = np.load("all_ages.npy").item()
+all_reportids = np.array(np.load("data/all_reportids.npy"))
+all_ages = np.load("data/all_ages.npy").item()
 
 ord_ages = list()
 for mrn in all_reportids:
@@ -204,7 +204,7 @@ posAvg = posAvg/totPosReports
 print "Weighted average of controls:",negAvg
 print "Weighted average of cases:",posAvg
 
-reactions = io.mmread("AEOLUS_all_reports_alloutcomes.mtx")
+reactions = io.mmread("data/AEOLUS_all_reports_alloutcomes.mtx")
 reactions = reactions.tocsc()
 
 binList.append(1.0)

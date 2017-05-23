@@ -1,1 +1,1 @@
-tar cvfz nsides_scripts.tgz *.py
+tar cvfz nsides_scripts.tgz *.py data
