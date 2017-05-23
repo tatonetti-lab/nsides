@@ -49,6 +49,7 @@ if args.model_type == 'nopsm':
     invy = sparse.csc_matrix(invy)
 
     reactionPRRs = list()
+    reactionPRRs_err = list()
 
     for reactionIdx in range(0,reactions.shape[1]):
         if reactionIdx % 200 == 0:
@@ -73,11 +74,20 @@ if args.model_type == 'nopsm':
                 reactionPRRs.append(num/den)
             else:
                 reactionPRRs.append(-1)
+
+            if A > 0 and C > 0:
+                reactionPRRs_err.append( ((1/A) - (1/AplusB) + (1/C) - (1/CplusD))**0.5 )
+            else:
+                reactionPRRs_err.append( -1 )
         else:
             reactionPRRs.append(-1)
+            reactionPRRs_err.append(-1)
+
+
+    reactionPRRs_out = np.hstack(( np.asarray(reactionPRRs), np.asarray(reactionPRRs_err) ))
 
     output = open('results_'+str(model_num)+'_'+str(args.model_type)+'.pkl','wb')
-    pickle.dump(reactionPRRs,output)
+    pickle.dump(reactionPRRs_out,output)
     output.close()
 
     sys.exit(0)
