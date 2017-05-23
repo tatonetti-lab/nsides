@@ -34,8 +34,8 @@ An example local workflow on OSG follows:
  * `/usr/local/bin/pip install --user keras`
  * `/usr/local/bin/pip install --user wget`
 3. `python get_data.py`
-4. `python prepare_data.py --model-num 0`
-5. `python prepare_data_separate_reports.py --model-num 0`
+4. `python prepare_data.py --model-number 0`
+5. `python prepare_data_separate_reports.py --model-number 0`
 6. `python mlp_dnn.py --run-on-cpu --model-number 0 > mlp_dnn.out`
 7. `python mlp_shallow.py --run-comparisons --run-on-cpu --model-number 0`
 8. `python eval_model.py --model-type tflr --model-number 0`
