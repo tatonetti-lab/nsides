@@ -246,45 +246,6 @@ for reactionIdx in tqdm(range(0,reactions.shape[1])):
     reactionPRRs.append(num/den)
 
 
-#
-#
-#
-#for reactionIdx in tqdm(range(0,reactions.shape[1])):
-#
-#    num = 0
-#    den = 0
-#
-#    for bin in range(0,len(binList)-1):
-#        lobin = binList[bin]
-#        hibin = binList[bin+1]
-#        
-#        posbins = calcbin(1,lobin,hibin)
-#        negbins = calcbin(0,lobin,hibin)
-#        
-#        #posreports = reactions[posbins,:]
-#        #negreports = reactions[negbins,:]
-#
-#
-#    
-#        thisA = sparse.csc_matrix.sum(reactions[posbins,reactionIdx])
-#        thisB = len(posbins) - thisA
-#        thisC = sparse.csc_matrix.sum(reactions[negbins,reactionIdx])
-#        thisD = len(negbins) - thisC
-#
-#        thisWeight = 0
-#        if (thisC+thisD) > 0:
-#            thisWeight = thisC/(thisC+thisD)
-#
-#        num = num + thisA
-#        den = den + (thisA + thisB)*thisWeight
-#
-#    if (den != 0):
-#        reactionPRRs.append(num/den)
-#    else:
-#        reactionPRRs.append(-1)
-
-
-
 output = open('results_'+str(model_num)+'_'+str(args.model_type)+'.pkl','wb')
 pickle.dump(reactionPRRs,output)
 output.close()
