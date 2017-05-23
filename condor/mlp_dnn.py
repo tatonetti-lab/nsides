@@ -115,7 +115,7 @@ if args.run_on_cpu:
             #autoencoder.fit(all_reports, outcomes_cat, epochs=5000, batch_size=100000, shuffle=True, callbacks=[TensorBoard(log_dir='/tmp/autoencoder')], validation_split=0.2)
             autoencoder.fit(all_reports,
                             outcomes_cat,
-                            epochs=5000,
+                            epochs=500,
                             batch_size=100000,
                             shuffle=True,
                             validation_split=0.2)
