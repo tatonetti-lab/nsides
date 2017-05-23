@@ -11,7 +11,7 @@ Requirements = HAS_SINGULARITY == TRUE
 should_transfer_files = IF_NEEDED
 when_to_transfer_output = ON_EXIT
 transfer_input_files = nsides_scripts.tgz
-transfer_output_files = nsides_results_$(Process).tgz
+transfer_output_files = nsides_gpu_results_$(Process).tgz
 
 # The LOG file is where HTCondor places information about your 
 # job's status, success, and resource consumption. 
