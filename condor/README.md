@@ -1,13 +1,16 @@
 # Submission of condor jobs to Open Science Grid
 
 ## How to submit jobs
+
+1. `mkdir data; cd data`
+1. `python get_data.py`
+2. `source make_nsides_tarball.sh`
+
 To submit a batch of jobs to **CPU** nodes:
-1. `source make_nsides_tarball.sh`
-2. `condor_submit nsides_cpu_run1.submit`
+`condor_submit nsides_cpu_run1.submit`
 
 To submit a batch of jobs to **GPU** nodes:
-1. `source make_nsides_tarball.sh`
-2. `condor_submit nsides_gpu_run1.submit`
+`condor_submit nsides_gpu_run1.submit`
 
 ## Script Summary
 The scripts in this folder accomplish the following workflow:
