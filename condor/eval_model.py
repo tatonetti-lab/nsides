@@ -84,7 +84,7 @@ if args.model_type == 'nopsm':
             reactionPRRs_err.append(-1)
 
 
-    reactionPRRs_out = np.hstack(( np.asarray(reactionPRRs), np.asarray(reactionPRRs_err) ))
+    reactionPRRs_out = np.vstack(( np.asarray(reactionPRRs), np.asarray(reactionPRRs_err) ))
 
     output = open('results_'+str(model_num)+'_'+str(args.model_type)+'.pkl','wb')
     pickle.dump(reactionPRRs_out,output)
