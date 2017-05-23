@@ -15,11 +15,11 @@ transfer_output_files = nsides_gpu_results_$(Process).tgz
 
 # The LOG file is where HTCondor places information about your 
 # job's status, success, and resource consumption. 
-log           = job_$(Process).log
+log           = job_gpu_$(Process).log
 
 # The standard output and error messages
-output        = job_$(Process).out
-error         = job_$(Process).error
+output        = job_gpu_$(Process).out
+error         = job_gpu_$(Process).error
 
 # Set the requirement that the OASIS modules are available on the remote worker machine
 
