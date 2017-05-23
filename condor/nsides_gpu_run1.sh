@@ -16,14 +16,10 @@ nvcc --version
 echo
 
 
-python get_data.py
-
-/usr/local/bin/pip install --user wget
 /usr/local/bin/pip install --user h5py
 /usr/local/bin/pip install --user keras
 
 # Run the scripts
-python get_data.py > get_data.log
 python prepare_data.py --model-num $1 > prepare_data.log
 python prepare_data_separate_reports.py --model-num $1 > prepare_data_separate_reports.log
 python mlp_dnn.py --model-number $1 > mlp_dnn.log
