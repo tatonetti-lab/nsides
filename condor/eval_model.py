@@ -43,46 +43,39 @@ model_num = str(runIndices[int(args.model_num)])
 if args.model_type == 'nopsm':
     print "Evaluating without propensity score matching..."
     reactions = io.mmread("data/AEOLUS_all_reports_alloutcomes.mtx")
-    reactions = reactions.tocsc()
+    reactions = reactions.tocsr()
     y = np.load("model_"+str(model_num)+"_outcomes.npy")
     invy = np.ones((y.shape[0],y.shape[1]))
     invy[np.where(y==1)[0]] = 0
-    y = sparse.csc_matrix(y)
-    invy = sparse.csc_matrix(invy)
+    #y = sparse.csc_matrix(y)
+    #invy = sparse.csc_matrix(invy)
 
     reactionPRRs = list()
     reactionPRRs_err = list()
 
+    posbins = np.where(y==1)[0]
+    negbins = np.where(y==0)[0]
+
+    Avec = sparse.csr_matrix.sum(reactions[posbins,:],axis=0)
+    AplusB = float(len(posbins))
+    Cvec = sparse.csr_matrix.sum(reactions[negbins,:],axis=0)
+    CplusD = float(len(negbins))
+
+    num = Avec * (1/AplusB)
+    den = Cvec * (1/CplusD)
+
     for reactionIdx in range(0,reactions.shape[1]):
-        if reactionIdx % 200 == 0:
-            print "Processed",reactionIdx,"reactions."
-        reactionVector = reactions[:,reactionIdx]
-        exposedVector = sparse.csc_matrix.multiply(y,reactionVector)
-        nonexposedVector = sparse.csc_matrix.multiply(invy,reactionVector)
-        
-        A = sparse.csc_matrix.sum(exposedVector)
-        AplusB = sparse.csc_matrix.sum(y)
-        C = sparse.csc_matrix.sum(nonexposedVector)
-        CplusD = sparse.csc_matrix.sum(invy)
-        if AplusB > 0 and CplusD > 0:
-            A = float(A)
-            AplusB = float(AplusB)
-            C = float(C)
-            CplusD = float(CplusD)
+        thisnum = num[0,reactionIdx]
+        thisden = den[0,reactionIdx]
+        reactionPRRs.append(thisnum/thisden)
 
-            num = A/AplusB
-            den = C/CplusD
-            if den > 0:
-                reactionPRRs.append(num/den)
-            else:
-                reactionPRRs.append(-1)
+        if Avec[0,reactionIdx] !=0 and Cvec[0,reactionIdx] !=0:
+            invA = 1/float(Avec[0,reactionIdx])
+            invC = 1/float(Cvec[0,reactionIdx])
 
-            if A > 0 and C > 0:
-                reactionPRRs_err.append( ((1/A) - (1/AplusB) + (1/C) - (1/CplusD))**0.5 )
-            else:
-                reactionPRRs_err.append( -1 )
+            reactionPRRs_err.append( (invA - (1/AplusB) + invC - (1/CplusD))**0.5 )
+
         else:
-            reactionPRRs.append(-1)
             reactionPRRs_err.append(-1)
 
 
