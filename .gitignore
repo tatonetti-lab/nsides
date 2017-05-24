@@ -1,1 +1,6 @@
 nsides.cnf
+
+# no .npy files indexed
+*.npy
+
+condor/AEOLUS_all_reports_alloutcomes.mtx
