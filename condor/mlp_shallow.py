@@ -153,28 +153,27 @@ for i in range(0,20):
         model_metrics = model.evaluate(all_reports,outcomes_cat)
         print ("\n model metrics:",model_metrics)
 
-    if model_metrics[1] > 0.80:
 
-        X = np.load("model_"+model_num+"_reports.npy")
-        #X = io.mmread("model_"+model_num+"_reports.mtx")
-        #X = X.tocsr()
-        y = np.load("model_"+model_num+"_outcomes.npy")
+    X = np.load("model_"+model_num+"_reports.npy")
+    #X = io.mmread("model_"+model_num+"_reports.mtx")
+    #X = X.tocsr()
+    y = np.load("model_"+model_num+"_outcomes.npy")
 
-        predictions = model.predict(X)
+    predictions = model.predict(X)
 
-        np.save("scores_tflr_"+model_num+"_"+str(runTimes)+".npy",predictions[:,1])
+    np.save("scores_tflr_"+model_num+"_"+str(runTimes)+".npy",predictions[:,1])
 
-        print("  INFO: Evaluating accuracy on test set")
-        print ("\n")
-        auc = metrics_skl.roc_auc_score(y, predictions[:,1])
-        print("  INFO: AUC = {0}".format(auc))
-        log['tf_lr_cpu'] = {'auc': auc}
+    print("  INFO: Evaluating accuracy on test set")
+    print ("\n")
+    auc = metrics_skl.roc_auc_score(y, predictions[:,1])
+    print("  INFO: AUC = {0}".format(auc))
+    log['tf_lr_cpu'] = {'auc': auc}
 
 
-        del predictions
-        del X
-        del y
-        del neg_reports_subset
+    del predictions
+    del X
+    del y
+    del neg_reports_subset
 
     bdt = AdaBoostClassifier()
     rfc = RandomForestClassifier()

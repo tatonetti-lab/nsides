@@ -86,7 +86,8 @@ if args.model_type == 'nopsm':
     sys.exit(0)
 
     
-
+print("Trying to load file:")
+print("scores_"+args.model_type+"_"+model_num+"*.npy")
 scores_files = glob.glob("scores_"+args.model_type+"_"+model_num+"*.npy")
 
 print "Processing model,",model_num
