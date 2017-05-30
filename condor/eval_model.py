@@ -218,6 +218,7 @@ reactionPRRs_err = list()
 allposbins = calcbin(1,binList[0],1.0)
 
 totA = sparse.csr_matrix.sum(reactions[allposbins,:],axis=0)
+totPRR = sparse.csr_matrix((1,reactions.shape[1]))
 
 numvec = sparse.csr_matrix((1,reactions.shape[1]))
 denvec = sparse.csr_matrix((1,reactions.shape[1]))
@@ -238,11 +239,39 @@ for bin in range(0,len(binList)-1):
     numvec = numvec + Avec
     denvec = denvec + Cvec * (AplusB/CplusD)
 
+    totPRR = totPRR + (Avec/((AplusB))*Cvec*(1/CplusD))
+
 for reactionIdx in range(0,reactions.shape[1]):
     num = numvec[0,reactionIdx]
     den = denvec[0,reactionIdx]
 
     reactionPRRs.append(num/den)
+
+errvec = sparse.csr_matrix((1,reactions.shape[1]))
+
+for bin in range(0,len(binList)-1):
+    lobin = binList[bin]
+    hibin = binList[bin+1]
+
+    posbins = calcbin(1,lobin,hibin)
+    negbins = calcbin(0,lobin,hibin)
+
+    Cvec = sparse.csr_matrix.sum(reactions[negbins,:],axis=0)
+    CplusD = float(len(negbins))
+    Dvec = float(len(negbins)) - Cvec
+
+    weightvec = Cvec * (1/CplusD)
+
+    Avec = sparse.csr_matrix.sum(reactions[posbins,:],axis=0)
+    AplusB = float(len(posbins))
+    Bvec = float(len(posbins)) - Avec
+
+    errvec = errvec + (1-totPRR*weightvec)*(1-totPRR*weightvec)*Avec + (totPRR*weightvec)*(totPRR*weightvec)*Bvec + (totPRR*(Avec+Bvec))*(totPRR*(Avec+Bvec))*Cvec*Dvec/((Cvec+Dvec)*(Cvec+Dvec)*(Cvec+Dvec))
+
+errvec = errvec/(totA*totA)
+
+for reactionIdx in range(0,reactions.shape[1]):
+    reactionPRRs_err.append(errvec[0,reactionIdx]**0.5)
 
 
 output = open('results_'+str(model_num)+'_'+str(args.model_type)+'.pkl','wb')

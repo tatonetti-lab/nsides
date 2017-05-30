@@ -101,6 +101,8 @@ for i in range(0,20):
     outcomes = np.concatenate((np.ones(pos_reports.shape[0], np.bool),
                                np.zeros(neg_reports_subset.shape[0], np.bool)))
 
+    del neg_reports_subset
+
     new_ind = np.random.permutation(all_reports.shape[0])
     all_reports = all_reports[new_ind,]
     outcomes = outcomes[new_ind]
@@ -173,7 +175,6 @@ for i in range(0,20):
     del predictions
     del X
     del y
-    del neg_reports_subset
 
     bdt = AdaBoostClassifier()
     rfc = RandomForestClassifier()
@@ -236,7 +237,6 @@ for i in range(0,20):
 
 
     del all_reports
-    del neg_reports_subset
     del outcomes
     del outcomes_cat
     del predictions
