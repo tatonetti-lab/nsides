@@ -40,17 +40,18 @@ to_keep_col = list(set(range(allReportsCSR.shape[1])))
 #allReportsArray = allReportsCSR.toarray()
 #colmax = colmax[to_keep_rows]
 colmaxArray = colmax.toarray()
-posReports = allReportsCSR[np.where(colmaxArray == True)[0]].toarray()
-fractions = np.divide(np.sum(posReports.astype(float),axis=0),np.sum(colmaxArray))
+posReports = allReportsCSR[np.where(colmaxArray == True)[0]]
+#fractions = np.divide(sparse.csr_matrix.sum(posReports,axis=0),np.sum(colmaxArray))
+fractions = sparse.csr_matrix.sum(posReports.astype(float),axis=0) / sparse.csr_matrix.sum(colmax)
 print len(to_keep_col), "columns."
-to_keep_col = np.where(fractions > 0.00)[0]
+to_keep_col = np.where(fractions > 0.00)[1]
 print len(to_keep_col), "columns."
 to_keep_col = np.delete(to_keep_col,np.where(to_keep_col==maxidx))
 print len(to_keep_col), "columns."
 allReportsCSR = allReportsCSR[:,to_keep_col]
 
 #allReportsArraytmp = allReportsCSR.toarray()
-rowSums = np.sum(allReportsCSR,axis=1)
+rowSums = sparse.csr_matrix.sum(allReportsCSR,axis=1)
 print "rowSums.shape:",rowSums.shape
 to_keep_rows = np.where(rowSums != 0)[0]
 
