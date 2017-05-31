@@ -23,6 +23,7 @@ The scripts in this folder accomplish the following workflow:
   * `prepare_data_separate_reports.py` separates reports into positive and negative outcomes, used for training model
 3. Run the models.  The output should be each report and the model score.
   * `mlp_dnn.py` runs the deep neural network multilayer perceptron
+  * `mlp_dnn_streaming.py` runs the deep neural network multilayer perceptron with file streaming to reduce memory usage on OSG worker nodes
   * `mlp_shallow.py` runs shallow classifiers including using TensorFlow to run Logistic Regression and scikit-learn to run AdaBoost, RandomForest and Logistic Regression
 4. Evaluate a given model model by calculating propensity score adjusted proportional reporting ratios (PRRs) for each reaction. `eval_model.py`
 
