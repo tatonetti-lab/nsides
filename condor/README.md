@@ -49,3 +49,19 @@ An example local workflow on OSG follows:
 11. `python eval_model.py --model-type lrc --model-number 0`
 12. `python eval_model.py --model-type dnn --model-number 0`
 13. `python eval_model.py --model-type nopsm --model-number 0`
+
+- - -
+
+# Submission of jobs to the Habanero supercomputing cluster
+
+There are two major differences between OSG and Habanero:
+
+1. Habanero uses the SLURM job runner instead of Condor. SLURM has a more self-contained documentation style, and all necessary options for running a batch of jobs can be packaged into a single shell script.
+
+2. SLURM modifies files entirely within the current working directory (instead of in a separate VM). This means you don't have to worry about sending data to or retrieving data from individual VMs, but you have the extra headache of making sure the intermediate and output files of each job are isolated in ways that don't cause issues down the line (e.g., so that when one job finishes you don't accidentally modify or trash files in use by another job).
+
+The implications of these two facts are accounted for in the job runner script. Use it as follows:
+
+`$ sbatch --array=0-150 nsides_habanero_slurm.sh`
+
+This will queue 150 jobs, one corresponding to each of `--model-number` 1 through 150 (as used in the python scripts in this folder). At the end of each batch, the bash script will package the results and send them to `/rigel/fcs/projects/nsides_results/results_N_gpu.tar.gz`, where `N` is the number of the corresponding job.
