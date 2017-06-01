@@ -40,7 +40,7 @@ model_num = str(runIndices[int(args.model_num)])
 
 if args.model_type == 'nopsm':
     print "Evaluating without propensity score matching..."
-    reactions = io.mmread("data/AEOLUS_all_reports_alloutcomes.mtx")
+    reactions = io.mmread("../data/AEOLUS_all_reports_alloutcomes.mtx")
     reactions = reactions.tocsr()
     y = np.load("model_"+str(model_num)+"_outcomes.npy")
     invy = np.ones((y.shape[0],y.shape[1]))

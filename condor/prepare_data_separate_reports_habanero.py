@@ -21,7 +21,7 @@ runIndices = [2451,2465,2571,2512,2200,2431,2596,2875,2889,2912,2882,1931,2973,2
 for reportblock in range(0,50):
     #if args.verbose:
         #print("Report Block: {0} out of 49.".format(reportblock))
-    thisReportBlock = np.load("data/AEOLUS_all_reports_"+str(reportblock)+".npy").item()
+    thisReportBlock = np.load("../data/AEOLUS_all_reports_"+str(reportblock)+".npy").item()
     if reportblock == 0:
         allReports = thisReportBlock
     else:
@@ -31,36 +31,65 @@ for reportblock in range(0,50):
 allReportsCSR = allReports.tocsr()
 del (allReports)
 allReportsCSR = allReportsCSR[0:4855498]  # discard empty rows at end of dataset
-#thisReportBlock_array = allReportsCSR.toarray()
-thisReportBlock_array = allReportsCSR
-del(allReportsCSR)
 maxidx = runIndices[args.model_num]
-colmax = thisReportBlock_array[:,maxidx]
-colmax = colmax.astype(bool)
-to_keep_col = list(set(range(thisReportBlock_array.shape[1])))
+colmax = allReportsCSR[:,maxidx]
+colmax = colmax[0:4855498]
+#colmax = colmax.astype(bool)
+to_keep_col = list(set(range(allReportsCSR.shape[1])))
 #to_keep_col.remove(maxidx)
-colmax = thisReportBlock_array[:,maxidx]
-colmax = colmax.astype(bool)
-colmax = colmax.toarray()
-posReports = thisReportBlock_array[np.where(colmax == True)[0]].toarray()
-fractions = np.divide(np.sum(posReports.astype(float),axis=0),np.sum(colmax))
+#allReportsArray = allReportsCSR.toarray()
+#colmax = colmax[to_keep_rows]
+colmaxArray = colmax.toarray()
+posReports = allReportsCSR[np.where(colmaxArray == True)[0]]
+#fractions = np.divide(sparse.csr_matrix.sum(posReports,axis=0),np.sum(colmaxArray))
+fractions = sparse.csr_matrix.sum(posReports.astype(float),axis=0) / sparse.csr_matrix.sum(colmax)
 print len(to_keep_col), "columns."
-to_keep_col = np.where(fractions > 0.00)[0]
+to_keep_col = np.where(fractions > 0.00)[1]
 print len(to_keep_col), "columns."
 to_keep_col = np.delete(to_keep_col,np.where(to_keep_col==maxidx))
 print len(to_keep_col), "columns."
-thisReportBlock_array = thisReportBlock_array[:,to_keep_col]
-colmax = colmax.astype(int)
+allReportsCSR = allReportsCSR[:,to_keep_col]
+
+#allReportsArraytmp = allReportsCSR.toarray()
+rowSums = sparse.csr_matrix.sum(allReportsCSR,axis=1)
+print "rowSums.shape:",rowSums.shape
+to_keep_rows = np.where(rowSums != 0)[0]
+
+print "Keeping ",len(to_keep_rows), " rows."
 
 
-#np.save("model_"+str(runIndices[args.model_num])+"_reports.npy",thisReportBlock_array)
-io.mmwrite("model_"+str(runIndices[args.model_num])+"_reports.mtx",thisReportBlock_array,field='integer')
-np.save("model_"+str(runIndices[args.model_num])+"_reports.npy",thisReportBlock_array.toarray())
-np.save("model_"+str(runIndices[args.model_num])+"_outcomes.npy",colmax)
+allReportsCSR = allReportsCSR[to_keep_rows,:]
+colmax = colmax[to_keep_rows]
+colmaxArray = colmaxArray[to_keep_rows]
 
-del colmax
-del thisReportBlock_array
+#colmax_cat = np_utils.to_categorical(colmaxArray, 2)
+#colmax = colmax.astype(int)
+#
+#
+#def save_sparse_csr(filename,array):
+#    np.savez(filename,data = array.data ,indices=array.indices,
+#             indptr =array.indptr, shape=array.shape )
+#save_sparse_csr("modelCSR_"+str(runIndices[args.model_num])+"_reports.npy",allReportsCSR)
+#io.mmwrite("modelCSR_"+str(runIndices[args.model_num])+"_reports.mtx",allReportsCSR,field='integer')
+#save_sparse_csr("modelCSR_"+str(runIndices[args.model_num])+"_outcomes.npy",colmax)
+#io.mmwrite("modelCSR_"+str(runIndices[args.model_num])+"_outcomes.mtx",colmax,field='integer')
+
+posReportsCSR = allReportsCSR[np.where(colmaxArray == True)[0]]
+io.mmwrite("modelCSR_"+str(runIndices[args.model_num])+"_posreports.mtx",posReportsCSR,field='integer')
+
+negReportsCSR = allReportsCSR[np.where(colmaxArray == False)[0]]
+io.mmwrite("modelCSR_"+str(runIndices[args.model_num])+"_negreports.mtx",negReportsCSR,field='integer')
+
+del posReportsCSR
+del negReportsCSR
+del allReportsCSR
+
+#def load_sparse_csr(filename):
+#    loader = np.load(filename)
+#    return sparse.csr_matrix((  loader['data'], loader['indices'], loader['indptr']),
+#                         shape = loader['shape'])
 
 
-
-
+#np.save("model_"+str(runIndices[args.model_num])+"_outcomes.npy",colmaxArray)
+#ind = np.expand_dims(np.array(np.arange(1,len(to_keep_rows)+1)),1)
+#np.savetxt("modelCSR_"+str(runIndices[args.model_num])+"_outcomes.out",np.dstack((ind,colmaxArray))[:,0,:],fmt='%d\t%d')
