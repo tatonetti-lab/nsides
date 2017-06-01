@@ -8,9 +8,8 @@ tar xvfz nsides_scripts.tgz
 # Run the scripts
 python prepare_data.py --model-number $1 | tee prepare_data.log
 python prepare_data_separate_reports.py --model-number $1 | tee prepare_data_separate_reports.log
-python mlp_dnn.py --run-on-cpu --model-number $1 | tee mlp_dnn.log
-python mlp_shallow.py --run-comparisons --run-on-cpu --model-number $1 | tee mlp_shallow.log
-python eval_model.py --model-type tflr --model-number $1 | tee eval_model_tflr.log
+python mlp_dnn_streaming.py --run-on-cpu --model-number $1 | tee mlp_dnn.log
+python mlp_shallow_osg.py --model-number $1 | tee mlp_shallow_osg.log
 python eval_model.py --model-type bdt --model-number $1 | tee eval_model_bdt.log
 python eval_model.py --model-type rfc --model-number $1 | tee eval_model_rfc.log
 python eval_model.py --model-type lrc --model-number $1 | tee eval_model_lrc.log
