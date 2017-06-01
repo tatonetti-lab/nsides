@@ -25,7 +25,7 @@ The scripts in this folder accomplish the following workflow:
   * `mlp_dnn.py` runs the deep neural network multilayer perceptron
   * `mlp_dnn_streaming.py` runs the deep neural network multilayer perceptron with file streaming to reduce memory usage on OSG worker nodes
   * `mlp_shallow.py` runs shallow classifiers including using TensorFlow to run Logistic Regression and scikit-learn to run AdaBoost, RandomForest and Logistic Regression
-  * `mlp_shallow_osg.py` runs shallow classifiers including scikit-learn to run AdaBoost, RandomForest and Logistic Regression
+  * `mlp_shallow_osg.py` runs shallow classifiers including scikit-learn to run AdaBoost, RandomForest and Logistic Regression. TensorFlow based Logistic Regression is avoided to reduce memory usage on OSG worker nodes
 4. Evaluate a given model model by calculating propensity score adjusted proportional reporting ratios (PRRs) for each reaction. `eval_model.py`
 
 The script to run the job is `nsides_cpu_run1.sh` which contains the workflow described above.  The script also installs the following python packages: `h5py5`, `keras`. To conserve memory on worker nodes, the script runs `mlp_dnn_streaming.py` and `mlp_shallow_osg.py`. The job is submitted to condor via `nsides_cpu_run1.submit` or `nsides_gpu_run1.submit` depending if GPU resources are intended to be used.
