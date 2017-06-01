@@ -55,7 +55,7 @@ colmax = colmax.astype(int)
 
 #np.save("model_"+str(runIndices[args.model_num])+"_reports.npy",thisReportBlock_array)
 io.mmwrite("model_"+str(runIndices[args.model_num])+"_reports.mtx",thisReportBlock_array,field='integer')
-np.save("model_"+str(runIndices[args.model_num])+"_reports.npy",thisReportBlock_array.toarray())
+#np.save("model_"+str(runIndices[args.model_num])+"_reports.npy",thisReportBlock_array.toarray())
 np.save("model_"+str(runIndices[args.model_num])+"_outcomes.npy",colmax)
 
 del colmax
