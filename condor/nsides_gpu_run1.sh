@@ -11,7 +11,7 @@ tar xvfz nsides_scripts.tgz
 /usr/local/bin/pip install --user keras
 
 # Run the scripts
-python prepare_data.py --model-number $1 | tee prepare_data.log
+python prepare_data_osg.py --model-number $1 | tee prepare_data.log
 python prepare_data_separate_reports.py --model-number $1 | tee prepare_data_separate_reports.log
 python mlp_dnn_streaming.py --model-number $1 | tee mlp_dnn.log
 python mlp_shallow_osg.py --model-number $1 | tee mlp_shallow_osg.log

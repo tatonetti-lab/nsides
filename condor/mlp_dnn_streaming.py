@@ -122,8 +122,14 @@ if args.run_on_cpu:
 
 
             #X = np.load("model_"+model_num+"_reports.npy")
-            X = io.mmread("model_"+model_num+"_reports.mtx")
+
+            X = io.mmread("model_"+model_num+"_0_reports.mtx")
             X = X.tocsr()
+            for reportblock in range(1,49):
+                thisreport = io.mmread("model_"+model_num+"_"+str(reportblock)+"_reports.mtx")
+                thisreport = thisreport.tocsr()
+                X = vstack([X,thisreport])
+            
             numsteps = X.shape[0]
 
             batchsize=50000
@@ -182,8 +188,14 @@ else:
 
 
         #X = np.load("model_"+model_num+"_reports.npy")
-        X = io.mmread("model_"+model_num+"_reports.mtx")
+
+        X = io.mmread("model_"+model_num+"_0_reports.mtx")
         X = X.tocsr()
+        for reportblock in range(1,49):
+            thisreport = io.mmread("model_"+model_num+"_"+str(reportblock)+"_reports.mtx")
+            thisreport = thisreport.tocsr()
+            X = vstack([X,thisreport])
+        
         numsteps = X.shape[0]
 
         batchsize=50000
