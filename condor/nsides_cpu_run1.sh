@@ -17,4 +17,4 @@ python eval_model.py --model-type nopsm --model-number $1 | tee eval_model_nopsm
 
 # Clean up the data on the remote machine 
 rm -rf *.npy
-tar cvfz nsides_results_$1.tgz results*.pkl *.log
+tar cvfz nsides_cpu_results_$1.tgz results*.pkl *.log
