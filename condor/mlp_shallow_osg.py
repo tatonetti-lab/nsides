@@ -17,6 +17,8 @@ import numpy as np
 from sklearn.ensemble import AdaBoostClassifier, RandomForestClassifier
 from sklearn.linear_model import LogisticRegressionCV
 
+from operator import itemgetter
+
 import argparse
 parser = argparse.ArgumentParser(description='Keras MLP model for DDI PSM.')
 parser.add_argument('--model-number',
@@ -40,16 +42,42 @@ runIndices = [
     2803,2811,2788,2835,2717,2238,2236,3180,3669,4215
 ]
 
-model_num = str(runIndices[int(args.model_num)])
+args.model_num = (args.model_num).split(",")
+args.model_num = map(int,args.model_num)
+
+if len(args.model_num) > 1:
+    modelIdx = list(itemgetter(*args.model_num)(runIndices))
+else:
+    modelIdx = [itemgetter(*args.model_num)(runIndices)]
+
+save_string = ''
+for model in modelIdx:
+    save_string = save_string + '_' + str(model)
 
 def comb_loss(y_true, y_pred):
     return losses.mean_squared_error(y_true, y_pred) + losses.categorical_crossentropy(y_true, y_pred)
 #2764 -> 2863
-pos_reports = io.mmread('modelCSR_'+model_num+'_posreports.mtx')
-neg_reports = io.mmread('modelCSR_'+model_num+'_negreports.mtx')
+#pos_reports = io.mmread('modelCSR_'+model_num+'_posreports.mtx')
+#neg_reports = io.mmread('modelCSR_'+model_num+'_negreports.mtx')
+#
+#pos_reports = pos_reports.tocsr()
+#neg_reports = neg_reports.tocsr()
 
+pos_reports = io.mmread('model'+save_string+'_0_posreports.mtx')
 pos_reports = pos_reports.tocsr()
+
+neg_reports = io.mmread('model'+save_string+'_0_negreports.mtx')
 neg_reports = neg_reports.tocsr()
+
+for reportblock in range(1,50):
+    print "Procesing",reportblock
+    thispos = io.mmread('model'+save_string+'_'+str(reportblock)+'_posreports.mtx')
+    thispos = thispos.tocsr()
+    pos_reports = vstack((pos_reports,thispos))
+
+    thisneg = io.mmread('model'+save_string+'_'+str(reportblock)+'_negreports.mtx')
+    thisneg = thisneg.tocsr()
+    neg_reports = vstack((neg_reports,thisneg))
 
 neg_ind = np.arange(neg_reports.shape[0])
 
@@ -100,46 +128,52 @@ for i in range(0,20):
     
     #X = np.load("model_"+model_num+"_reports.npy")
     #X = io.mmread("model_"+model_num+"_reports.mtx")
-    X = io.mmread("model_"+model_num+"_0_reports.mtx")
+    X = io.mmread("model"+save_string+"_0_reports.mtx")
     X = X.tocsr()
-    for reportblock in range(1,49):
-        thisreport = io.mmread("model_"+model_num+"_"+str(reportblock)+"_reports.mtx")
+    for reportblock in range(1,50):
+        thisreport = io.mmread("model"+save_string+"_"+str(reportblock)+"_reports.mtx")
         thisreport = thisreport.tocsr()
         X = vstack([X,thisreport])
 
     
     X = X.tocsr()
-    y = np.load("model_"+model_num+"_outcomes.npy")
- 
+    y = np.load("model"+save_string+"_outcomes.npy")
+
     predictions = bdt.predict(all_reports)
     skl_acc = metrics_skl.accuracy_score(outcomes,predictions)
     print("ADABOOST  INFO: ACC = {0}".format(skl_acc))
     if (skl_acc > 0.80):
         predictions = bdt.predict_proba(X)
-        np.save("scores_bdt_"+model_num+"_"+str(i+1)+".npy",predictions[:,1])
-    auc = metrics_skl.roc_auc_score(y, predictions[:,1])
-    print("ADABOOST  INFO: AUC = {0}".format(auc))
-    log['tf_adaboost_cpu'] = {'auc': auc}
+        np.save("scores_bdt"+save_string+"_"+str(i+1)+".npy",predictions[:,1])
+        auc = metrics_skl.roc_auc_score(y, predictions[:,1])
+        print("ADABOOST  INFO: AUC = {0}".format(auc))
+        log['tf_adaboost_cpu'] = {'auc': auc}
+    else:
+        print ("ACCURACY BELOW 80%, NOT SAVING SCORES")
 
     predictions = rfc.predict(all_reports)
     skl_acc = metrics_skl.accuracy_score(outcomes,predictions)
     print("RANDOM FOREST  INFO: ACC = {0}".format(skl_acc))
     if (skl_acc > 0.80):
         predictions = rfc.predict_proba(X)
-        np.save("scores_rfc_"+model_num+"_"+str(i+1)+".npy",predictions[:,1])
-    auc = metrics_skl.roc_auc_score(y, predictions[:,1])
-    print("RANDOM FOREST  INFO: AUC = {0}".format(auc))
-    log['tf_rfc_cpu'] = {'auc': auc}
+        np.save("scores_rfc"+save_string+"_"+str(i+1)+".npy",predictions[:,1])
+        auc = metrics_skl.roc_auc_score(y, predictions[:,1])
+        print("RANDOM FOREST  INFO: AUC = {0}".format(auc))
+        log['tf_rfc_cpu'] = {'auc': auc}
+    else:
+        print ("ACCURACY BELOW 80%, NOT SAVING SCORES")
 
     predictions = lrc.predict(all_reports)
     skl_acc = metrics_skl.accuracy_score(outcomes,predictions)
     print("LOGISTIC REGRESSION  INFO: ACC = {0}".format(skl_acc))
     if (skl_acc > 0.80):
         predictions = lrc.predict_proba(X)
-        np.save("scores_lrc_"+model_num+"_"+str(i+1)+".npy",predictions[:,1])
-    auc = metrics_skl.roc_auc_score(y, predictions[:,1])
-    print("LOGISTIC REGRESSION  INFO: AUC = {0}".format(auc))
-    log['tf_lrc_cpu'] = {'auc': auc}
+        np.save("scores_lrc"+save_string+"_"+str(i+1)+".npy",predictions[:,1])
+        auc = metrics_skl.roc_auc_score(y, predictions[:,1])
+        print("LOGISTIC REGRESSION  INFO: AUC = {0}".format(auc))
+        log['tf_lrc_cpu'] = {'auc': auc}
+    else:
+        print ("ACCURACY BELOW 80%, NOT SAVING SCORES")
 
 
     del all_reports
@@ -149,7 +183,7 @@ for i in range(0,20):
     del X
     del y
     
-    logfname = "results_{0}_{1}.json".format(model_num, int(time.time()))
+    logfname = "results{0}_{1}.json".format(save_string, int(time.time()))
     with open(logfname, 'w') as f:
         f.write(json.dumps(log))
         

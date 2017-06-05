@@ -5,6 +5,8 @@ import glob
 import pickle
 import sys
 
+from operator import itemgetter
+
 import argparse
 
 parser = argparse.ArgumentParser(description='Evaluate models for DDI PSM.')
@@ -35,14 +37,24 @@ runIndices = [
     2548,2552,2437,2527,1962,2031,2753,2342,2157,2723,2789,2790,1871,2804,
     2803,2811,2788,2835,2717,2238,2236,3180,3669,4215
 ]
+args.model_num = (args.model_num).split(",")
+args.model_num = map(int,args.model_num)
 
-model_num = str(runIndices[int(args.model_num)])
+if len(args.model_num) > 1:
+    modelIdx = list(itemgetter(*args.model_num)(runIndices))
+else:
+    modelIdx = [itemgetter(*args.model_num)(runIndices)]
+
+save_string = ''
+for model in modelIdx:
+    save_string = save_string + '_' + str(model)
 
 if args.model_type == 'nopsm':
     print "Evaluating without propensity score matching..."
     reactions = io.mmread("data/AEOLUS_all_reports_alloutcomes.mtx")
     reactions = reactions.tocsr()
-    y = np.load("model_"+str(model_num)+"_outcomes.npy")
+    y = np.load("model"+save_string+"_outcomes.npy")
+    y = y[0:4855498]
     invy = np.ones((y.shape[0],y.shape[1]))
     invy[np.where(y==1)[0]] = 0
     #y = sparse.csc_matrix(y)
@@ -79,7 +91,7 @@ if args.model_type == 'nopsm':
 
     reactionPRRs_out = np.vstack(( np.asarray(reactionPRRs), np.asarray(reactionPRRs_err) ))
 
-    output = open('results_'+str(model_num)+'_'+str(args.model_type)+'.pkl','wb')
+    output = open('results'+save_string+'_'+str(args.model_type)+'.pkl','wb')
     pickle.dump(reactionPRRs_out,output)
     output.close()
 
@@ -87,15 +99,19 @@ if args.model_type == 'nopsm':
 
     
 print("Trying to load file:")
-print("scores_"+args.model_type+"_"+model_num+"*.npy")
-scores_files = glob.glob("scores_"+args.model_type+"_"+model_num+"*.npy")
+print("scores_"+args.model_type+save_string+"*.npy")
+scores_files = glob.glob("scores_"+args.model_type+save_string+"*.npy")
 
-print "Processing model,",model_num
+print "Processing model,",save_string
 print "Model type:",args.model_type
 
 print "Processing ",len(scores_files)," score files."
 
+if len(scores_files) == 0:
+    sys.exit(0)
+
 comb_scores = np.load(scores_files[0])
+comb_scores = comb_scores[0:4855498]
 sum_tracker = np.ones(comb_scores.shape[0], np.int)
 sum_tracker[np.where(comb_scores == 0.5)[0]] = 0
 comb_scores[np.where(comb_scores == 0.5)[0]] = 0
@@ -105,6 +121,7 @@ for score_file in scores_files:
         continue
     
     thisScore = np.load(score_file)
+    thisScore = thisScore[0:4855498]
     thisTracker = np.ones(thisScore.shape[0], np.int)
     thisTracker[np.where(thisScore == 0.5)[0]] = 0
     thisScore[np.where(thisScore == 0.5)[0]] = 0
@@ -120,12 +137,13 @@ comb_scores[ zerbins ] = 10
 
 norm_comb_scores = np.divide(comb_scores, sum_tracker)
 
-y = np.load("model_"+str(model_num)+"_outcomes.npy")
+y = np.load("model"+save_string+"_outcomes.npy")
+y = y[0:4855498]
 
 print np.sum(y), "number of cases."
 
-all_reportids = np.array(np.load("../data/all_reportids.npy"))
-all_ages = np.load("../data/all_ages.npy").item()
+all_reportids = np.array(np.load("data/all_reportids.npy"))
+all_ages = np.load("data/all_ages.npy").item()
 
 ord_ages = list()
 for mrn in all_reportids:
@@ -208,7 +226,7 @@ posAvg = posAvg/totPosReports
 print "Weighted average of controls:",negAvg
 print "Weighted average of cases:",posAvg
 
-reactions = io.mmread("../data/AEOLUS_all_reports_alloutcomes.mtx")
+reactions = io.mmread("data/AEOLUS_all_reports_alloutcomes.mtx")
 reactions = reactions.tocsr()
 
 binList.append(1.0)
@@ -311,7 +329,7 @@ errvec = sparse.csr_matrix(errvec/errvecden)
 for reactionIdx in range(0,reactions.shape[1]):
     reactionPRRs_err.append(errvec[0,reactionIdx]**0.5)
 
-output = open('results_'+str(model_num)+'_'+str(args.model_type)+'.pkl','wb')
+output = open('results'+save_string+'_'+str(args.model_type)+'.pkl','wb')
 pickle.dump(reactionPRRs,output)
 output.close()
 

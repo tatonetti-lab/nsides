@@ -28,7 +28,7 @@ error         = job_cpu_$(Process).error
 
 #request_memory = 50000
 
-#request_memory = 24000
+request_memory = 4000
 
 #request_gpus = 1
 

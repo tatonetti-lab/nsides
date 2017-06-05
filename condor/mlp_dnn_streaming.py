@@ -10,6 +10,8 @@ from scipy import io
 from scipy.sparse import vstack
 import numpy as np
 
+from operator import itemgetter
+
 import argparse
 parser = argparse.ArgumentParser(description='Keras MLP model for DDI PSM.')
 parser.add_argument('--model-number',
@@ -39,19 +41,42 @@ runIndices = [
     2803,2811,2788,2835,2717,2238,2236,3180,3669,4215
 ]
 
-model_num = str(runIndices[int(args.model_num)])
+args.model_num = (args.model_num).split(",")
+args.model_num = map(int,args.model_num)
+
+if len(args.model_num) > 1:
+    modelIdx = list(itemgetter(*args.model_num)(runIndices))
+else:
+    modelIdx = [itemgetter(*args.model_num)(runIndices)]
+
+save_string = ''
+for model in modelIdx:
+    save_string = save_string + '_' + str(model)
+
 
 def comb_loss(y_true, y_pred):
     return losses.mean_squared_error(y_true, y_pred) + losses.categorical_crossentropy(y_true, y_pred)
 #2764 -> 2863
 
-def generate_arrays(model_num, batchsize):
-    pos_reports = io.mmread('modelCSR_'+model_num+'_posreports.mtx')
-    neg_reports = io.mmread('modelCSR_'+model_num+'_negreports.mtx')
-
+def generate_arrays(batchsize):
+    pos_reports = io.mmread('model'+save_string+'_0_posreports.mtx')
     pos_reports = pos_reports.tocsr()
+    
+    neg_reports = io.mmread('model'+save_string+'_0_negreports.mtx')
     neg_reports = neg_reports.tocsr()
     
+    for reportblock in range(1,50):
+        print "Procesing",reportblock
+        thispos = io.mmread('model'+save_string+'_'+str(reportblock)+'_posreports.mtx')
+        thispos = thispos.tocsr()
+        pos_reports = vstack((pos_reports,thispos))
+    
+        thisneg = io.mmread('model'+save_string+'_'+str(reportblock)+'_negreports.mtx')
+        thisneg = thisneg.tocsr()
+        neg_reports = vstack((neg_reports,thisneg))
+
+
+
     neg_ind = np.arange(neg_reports.shape[0])
 
     subset_neg_ind = np.random.choice(neg_ind, pos_reports.shape[0], replace=False)
@@ -94,9 +119,7 @@ if args.run_on_cpu:
             n_hidden_1 = 200
             n_hidden_2 = 50
 
-            pos_reports = io.mmread('modelCSR_'+model_num+'_posreports.mtx')
-
-            print "Number of pos reports:",pos_reports.shape[0]
+            pos_reports = io.mmread('model'+save_string+'_0_posreports.mtx')
 
             input_data = Input(shape=(pos_reports.shape[1],))
             #encoded_1 = Dense(n_hidden_1, activation='relu', activity_regularizer=regularizers.l1(1e-4), use_bias=False)(input_data)
@@ -115,18 +138,14 @@ if args.run_on_cpu:
                                                                            'accuracy'])
             batchsize = 1
             
-            autoencoder.fit_generator(generate_arrays(model_num, batchsize), steps_per_epoch=int(pos_reports.shape[0]*2/batchsize))
-
-            del pos_reports
-
-
+            autoencoder.fit_generator(generate_arrays(batchsize), steps_per_epoch=int(pos_reports.shape[0]*2/batchsize))
 
             #X = np.load("model_"+model_num+"_reports.npy")
 
-            X = io.mmread("model_"+model_num+"_0_reports.mtx")
+            X = io.mmread("model"+save_string+"_0_reports.mtx")
             X = X.tocsr()
-            for reportblock in range(1,49):
-                thisreport = io.mmread("model_"+model_num+"_"+str(reportblock)+"_reports.mtx")
+            for reportblock in range(1,50):
+                thisreport = io.mmread("model"+save_string+"_"+str(reportblock)+"_reports.mtx")
                 thisreport = thisreport.tocsr()
                 X = vstack([X,thisreport])
             
@@ -149,7 +168,7 @@ if args.run_on_cpu:
                 #print "pred shape:",predictions.shape
                 del thesepredictions
 
-            np.save("scores_dnn_"+model_num+"_"+str(i+1)+".npy",predictions[:,1])
+            np.save("scores_dnn"+save_string+"_"+str(i+1)+".npy",predictions[:,1])
 
             del predictions
 
@@ -160,9 +179,7 @@ else:
         n_hidden_1 = 200
         n_hidden_2 = 50
 
-        pos_reports = io.mmread('modelCSR_'+model_num+'_posreports.mtx')
-
-        print "Number of pos reports:",pos_reports.shape[0]
+        pos_reports = io.mmread('model'+save_string+'_0_posreports.mtx')
 
         input_data = Input(shape=(pos_reports.shape[1],))
         #encoded_1 = Dense(n_hidden_1, activation='relu', activity_regularizer=regularizers.l1(1e-4), use_bias=False)(input_data)
@@ -181,18 +198,14 @@ else:
                                                                        'accuracy'])
         batchsize = 1
         
-        autoencoder.fit_generator(generate_arrays(model_num, batchsize), steps_per_epoch=int(pos_reports.shape[0]*2/batchsize))
-
-        del pos_reports
-
-
+        autoencoder.fit_generator(generate_arrays(batchsize), steps_per_epoch=int(pos_reports.shape[0]*2/batchsize))
 
         #X = np.load("model_"+model_num+"_reports.npy")
 
-        X = io.mmread("model_"+model_num+"_0_reports.mtx")
+        X = io.mmread("model"+save_string+"_0_reports.mtx")
         X = X.tocsr()
-        for reportblock in range(1,49):
-            thisreport = io.mmread("model_"+model_num+"_"+str(reportblock)+"_reports.mtx")
+        for reportblock in range(1,50):
+            thisreport = io.mmread("model"+save_string+"_"+str(reportblock)+"_reports.mtx")
             thisreport = thisreport.tocsr()
             X = vstack([X,thisreport])
         
@@ -215,6 +228,6 @@ else:
             #print "pred shape:",predictions.shape
             del thesepredictions
 
-        np.save("scores_dnn_"+model_num+"_"+str(i+1)+".npy",predictions[:,1])
+        np.save("scores_dnn"+save_string+"_"+str(i+1)+".npy",predictions[:,1])
 
         del predictions
