@@ -1,0 +1,26 @@
+JOB A jobA.submit
+JOB B0 jobB0.submit
+JOB B1 jobB1.submit
+JOB B2 jobB2.submit
+JOB B3 jobB3.submit
+JOB C0 jobC0.submit
+JOB C1 jobC1.submit
+
+PARENT A CHILD B0 B1 B2 B3
+PARENT B0 B1 CHILD C0
+PARENT B2 B3 CHILD C1
+
+RETRY B0 5
+RETRY B1 5
+RETRY B2 5
+RETRY B3 5
+RETRY C0 5
+RETRY C1 5
+
+VARS A modelidx="143"
+VARS B0 modelidx="143"
+VARS B1 modelidx="143"
+VARS B2 modelidx="143"
+VARS B3 modelidx="143"
+VARS C0 modelidx="143"
+VARS C1 modelidx="143"
