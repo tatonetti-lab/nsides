@@ -4,6 +4,9 @@ Universe = vanilla
 # to create a shell script to "wrap" your actual work. 
 Executable = jobA.sh
 Arguments = $(modelidx)
+Requirements = HAS_SINGULARITY == TRUE
++SingularityImage = "/cvmfs/singularity.opensciencegrid.org/tensorflow/tensorflow:latest/"
++SingularityBindCVMFS = True
 
 should_transfer_files = IF_NEEDED
 when_to_transfer_output = ON_EXIT
