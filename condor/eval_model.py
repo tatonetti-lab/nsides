@@ -144,36 +144,47 @@ print np.sum(y), "number of cases."
 
 all_reportids = np.array(np.load("data/all_reportids.npy"))
 all_ages = np.load("data/all_ages.npy").item()
+all_years = np.load("data/all_years.npy").item()
 
 ord_ages = list()
+ord_years = list()
 for mrn in all_reportids:
     if all_ages[mrn] != []:
         ord_ages.append((all_ages[mrn])[0])
     else:
         ord_ages.append(-1)
+
+    ord_years.append(int(all_years[mrn]))
     
 ord_ages = np.array(ord_ages)
+ord_years = np.array(ord_years)
 
 mrns_exp = np.expand_dims(all_reportids,axis=1)
 ages_exp = np.expand_dims(ord_ages,axis=1)
+years_exp = np.expand_dims(ord_years,axis=1)
 resu_exp = y
 outc_exp = np.expand_dims(norm_comb_scores, axis=1)
 
 print (mrns_exp.shape)
 print (ages_exp.shape)
+print (years_exp.shape)
 print (resu_exp.shape)
 print (outc_exp.shape)
 
-mrns_ages_outcome_outc = np.hstack((mrns_exp, ages_exp, resu_exp, outc_exp))
+#mrns_ages_years_outcome_outc = np.hstack((mrns_exp, ages_exp, years_exp, resu_exp, outc_exp))
 
-def calcbin(outcome=1, binLo=0.0, binHi=0.10):
-    x_indices_posoutcome_outcbin = np.where(
-    np.logical_and(
-    np.logical_and(
-    np.logical_and(mrns_ages_outcome_outc[:,2] == outcome, mrns_ages_outcome_outc[:,3] <= binHi),
-        mrns_ages_outcome_outc[:,3] > binLo),
-        mrns_ages_outcome_outc[:,1] != -1)
-    )[0]
+def calcbin(outcome=1, binLo=0.0, binHi=0.10, year=2016):
+#    x_indices_posoutcome_outcbin = np.where(
+#    np.logical_and(
+#    np.logical_and(
+#    np.logical_and(
+#    np.logical_and(mrns_ages_years_outcome_outc[:,3] == outcome, mrns_ages_years_outcome_outc[:,4] <= binHi),
+#        mrns_ages_years_outcome_outc[:,4] > binLo),
+#        mrns_ages_years_outcome_outc[:,1] != -1),
+#        mrns_ages_years_outcome_outc[:,2] == year)
+#    )[0]
+
+    x_indices_posoutcome_outcbin = np.where( (resu_exp == outcome) & (outc_exp <= binHi) & (outc_exp > binLo) & (ages_exp != -1) & (years_exp <= year))[0]
 
     #x_indices_posoutcome_outcbin = np.where( (mrns_ages_outcome_outc[:,2] == outcome) & (mrns_ages_outcome_outc[:,3] <= binHi) & (mrns_ages_outcome_outc[:,3] > binLo) & (mrns_ages_outcome_outc[:,1] != -1) )
    
@@ -181,157 +192,158 @@ def calcbin(outcome=1, binLo=0.0, binHi=0.10):
     
     return x_indices_posoutcome_outcbin
 
+for year in range(2004,2017):
 
-granularity = 0.0005
-
-lobin = 0.0
-hibin = granularity
-
-totPosReports = 0
-totNegReports = 0
-negAvg = 0
-posAvg = 0
-
-binList = list()
-
-while 1:
-    thisBinPos = len(calcbin(1,lobin,hibin))
-    thisBinNeg = len(calcbin(0,lobin,hibin))
-    ratio = 0
-    if thisBinPos > 0:
-        ratio = float(thisBinNeg)/float(thisBinPos)
-    if thisBinPos < 10 or ratio < 10.0:
-        hibin = hibin+granularity
-    else:
-        posbins = calcbin(1,lobin,hibin)
-        negbins = calcbin(0,lobin,hibin)
-
-        binList.append(lobin)
-        print lobin, hibin, len(posbins), len(negbins), np.mean(mrns_ages_outcome_outc[posbins,1]), np.mean(mrns_ages_outcome_outc[negbins,1])
+    granularity = 0.0005
+    
+    lobin = 0.0
+    hibin = granularity
+    
+    totPosReports = 0
+    totNegReports = 0
+    negAvg = 0
+    posAvg = 0
+    
+    binList = list()
+    
+    while 1:
+        thisBinPos = len(calcbin(1,lobin,hibin,year))
+        thisBinNeg = len(calcbin(0,lobin,hibin,year))
+        ratio = 0
+        if thisBinPos > 0:
+            ratio = float(thisBinNeg)/float(thisBinPos)
+        if thisBinPos < 10 or ratio < 10.0:
+            hibin = hibin+granularity
+        else:
+            posbins = calcbin(1,lobin,hibin,year)
+            negbins = calcbin(0,lobin,hibin,year)
+    
+            binList.append(lobin)
+            print lobin, hibin, len(posbins), len(negbins), np.mean(ages_exp[posbins]), np.mean(ages_exp[negbins])
+            
+            lobin=hibin
+            hibin=lobin+granularity
+            totPosReports = totPosReports + len(posbins)
+            totNegReports = totNegReports + len(negbins)
+            
+            negAvg = negAvg + len(posbins)*np.mean(ages_exp[negbins])
+            posAvg = posAvg + len(posbins)*np.mean(ages_exp[posbins])
+        if hibin > 1.0:
+            break
+            
+    print "Number of case reports used:",totPosReports
+    print "Number of control reports used:",totNegReports
+    negAvg = negAvg/totPosReports
+    posAvg = posAvg/totPosReports
+    print "Weighted average of controls:",negAvg
+    print "Weighted average of cases:",posAvg
+    
+    reactions = io.mmread("data/AEOLUS_all_reports_alloutcomes.mtx")
+    reactions = reactions.tocsr()
+    
+    binList.append(1.0)
+    reactionPRRs = list()
+    reactionPRRs_err = list()
+    
+    allposbins = calcbin(1,binList[0],1.0,year)
+    
+    totA = sparse.csr_matrix.sum(reactions[allposbins,:],axis=0)
+    totA = sparse.csr_matrix(totA)
+    totPRRden = sparse.csr_matrix((1,reactions.shape[1]))
+    
+    numvec = sparse.csr_matrix((1,reactions.shape[1]))
+    denvec = sparse.csr_matrix((1,reactions.shape[1]))
+    
+    
+    for bin in range(0,len(binList)-1):
+        lobin = binList[bin]
+        hibin = binList[bin+1]
+    
+        posbins = calcbin(1,lobin,hibin,year)
+        negbins = calcbin(0,lobin,hibin,year)
+    
+        Avec = sparse.csr_matrix.sum(reactions[posbins,:],axis=0)
+        Avec = sparse.csr_matrix(Avec)
+        AplusB = float(len(posbins))
+        Cvec = sparse.csr_matrix.sum(reactions[negbins,:],axis=0)
+        Cvec = sparse.csr_matrix(Cvec)
+        CplusD = float(len(negbins))
+    
+        numvec = numvec + Avec
+        denvec = denvec + Cvec * (AplusB/CplusD)
         
-        lobin=hibin
-        hibin=lobin+granularity
-        totPosReports = totPosReports + len(posbins)
-        totNegReports = totNegReports + len(negbins)
+        #thisTerm = (Avec/AplusB)
+        #thisTerm = thisTerm*Cvec
+        #print (thisTerm.shape)
         
-        negAvg = negAvg + len(posbins)*np.mean(mrns_ages_outcome_outc[negbins,1])
-        posAvg = posAvg + len(posbins)*np.mean(mrns_ages_outcome_outc[posbins,1])
-    if hibin > 1.0:
-        break
+        weightFac = sparse.csr_matrix(np.repeat(AplusB/CplusD,reactions.shape[1]))
+    
+        totPRRden = totPRRden + sparse.csr_matrix.multiply(weightFac,Cvec)
+    
+    totPRR = sparse.csr_matrix(totA/totPRRden)
+    
+    for reactionIdx in range(0,reactions.shape[1]):
+        num = numvec[0,reactionIdx]
+        den = denvec[0,reactionIdx]
+    
+        reactionPRRs.append(num/den)
+    
+    errvec = sparse.csr_matrix((1,reactions.shape[1]))
+    
+    for bin in range(0,len(binList)-1):
+        lobin = binList[bin]
+        hibin = binList[bin+1]
+    
+        posbins = calcbin(1,lobin,hibin,year)
+        negbins = calcbin(0,lobin,hibin,year)
+    
+        Cvec = sparse.csr_matrix.sum(reactions[negbins,:],axis=0)
+        Cvec = sparse.csr_matrix(Cvec)
+        CplusD = sparse.csr_matrix(np.repeat(float(len(negbins)),reactions.shape[1]))
+        Dvec = CplusD - Cvec
+    
+        weightvec = Cvec/CplusD
+    
+        Avec = sparse.csr_matrix.sum(reactions[posbins,:],axis=0)
+        AplusB = float(len(posbins))
+        Bvec = float(len(posbins)) - Avec
         
-print "Number of case reports used:",totPosReports
-print "Number of control reports used:",totNegReports
-negAvg = negAvg/totPosReports
-posAvg = posAvg/totPosReports
-print "Weighted average of controls:",negAvg
-print "Weighted average of cases:",posAvg
-
-reactions = io.mmread("data/AEOLUS_all_reports_alloutcomes.mtx")
-reactions = reactions.tocsr()
-
-binList.append(1.0)
-reactionPRRs = list()
-reactionPRRs_err = list()
-
-allposbins = calcbin(1,binList[0],1.0)
-
-totA = sparse.csr_matrix.sum(reactions[allposbins,:],axis=0)
-totA = sparse.csr_matrix(totA)
-totPRRden = sparse.csr_matrix((1,reactions.shape[1]))
-
-numvec = sparse.csr_matrix((1,reactions.shape[1]))
-denvec = sparse.csr_matrix((1,reactions.shape[1]))
-
-
-for bin in range(0,len(binList)-1):
-    lobin = binList[bin]
-    hibin = binList[bin+1]
-
-    posbins = calcbin(1,lobin,hibin)
-    negbins = calcbin(0,lobin,hibin)
-
-    Avec = sparse.csr_matrix.sum(reactions[posbins,:],axis=0)
-    Avec = sparse.csr_matrix(Avec)
-    AplusB = float(len(posbins))
-    Cvec = sparse.csr_matrix.sum(reactions[negbins,:],axis=0)
-    Cvec = sparse.csr_matrix(Cvec)
-    CplusD = float(len(negbins))
-
-    numvec = numvec + Avec
-    denvec = denvec + Cvec * (AplusB/CplusD)
+        #(1-totPRR*weightvec)**2 * Avec
+        term1 = sparse.csr_matrix(np.repeat(1,reactions.shape[1])) - sparse.csr_matrix.multiply(totPRR,weightvec)
+        term1 = sparse.csr_matrix.multiply(term1,term1)
+        term1 = sparse.csr_matrix.multiply(term1,Avec)
+        
+        #(totPRR*weightvec)**2 * Bvec
+        term2 = sparse.csr_matrix.multiply(totPRR,weightvec)
+        term2 = sparse.csr_matrix(term2)
+        term2 = sparse.csr_matrix.multiply(term2,term2)
+        term2 = sparse.csr_matrix.multiply(term2,Bvec)
+        
+        # term3 = (totPRR*(Avec+Bvec))**2 * Cvec * Dvec
+        # termd3den = (Cvec+Dvec)**3
+        term3 = Avec+Bvec
+        term3 = sparse.csr_matrix.multiply(totPRR,term3)
+        term3 = sparse.csr_matrix(term3)
+        term3 = sparse.csr_matrix.multiply(term3,term3)
+        term3 = sparse.csr_matrix.multiply(term3,Cvec)
+        term3 = sparse.csr_matrix.multiply(term3,Dvec)
+        term3den = Cvec + Dvec
+        term3den = sparse.csr_matrix.multiply(term3den,term3den)
+        term3den = sparse.csr_matrix.multiply(term3den,term3den)
+        
+        term3 = sparse.csr_matrix(term3/term3den)
     
-    #thisTerm = (Avec/AplusB)
-    #thisTerm = thisTerm*Cvec
-    #print (thisTerm.shape)
+        errvec = errvec + term1 + term2 + term3
     
-    weightFac = sparse.csr_matrix(np.repeat(AplusB/CplusD,reactions.shape[1]))
-
-    totPRRden = totPRRden + sparse.csr_matrix.multiply(weightFac,Cvec)
-
-totPRR = sparse.csr_matrix(totA/totPRRden)
-
-for reactionIdx in range(0,reactions.shape[1]):
-    num = numvec[0,reactionIdx]
-    den = denvec[0,reactionIdx]
-
-    reactionPRRs.append(num/den)
-
-errvec = sparse.csr_matrix((1,reactions.shape[1]))
-
-for bin in range(0,len(binList)-1):
-    lobin = binList[bin]
-    hibin = binList[bin+1]
-
-    posbins = calcbin(1,lobin,hibin)
-    negbins = calcbin(0,lobin,hibin)
-
-    Cvec = sparse.csr_matrix.sum(reactions[negbins,:],axis=0)
-    Cvec = sparse.csr_matrix(Cvec)
-    CplusD = sparse.csr_matrix(np.repeat(float(len(negbins)),reactions.shape[1]))
-    Dvec = CplusD - Cvec
-
-    weightvec = Cvec/CplusD
-
-    Avec = sparse.csr_matrix.sum(reactions[posbins,:],axis=0)
-    AplusB = float(len(posbins))
-    Bvec = float(len(posbins)) - Avec
+    errvecden = sparse.csr_matrix.multiply(totA,totA)
+    errvec = sparse.csr_matrix(errvec/errvecden)
     
-    #(1-totPRR*weightvec)**2 * Avec
-    term1 = sparse.csr_matrix(np.repeat(1,reactions.shape[1])) - sparse.csr_matrix.multiply(totPRR,weightvec)
-    term1 = sparse.csr_matrix.multiply(term1,term1)
-    term1 = sparse.csr_matrix.multiply(term1,Avec)
+    for reactionIdx in range(0,reactions.shape[1]):
+        reactionPRRs_err.append(errvec[0,reactionIdx]**0.5)
     
-    #(totPRR*weightvec)**2 * Bvec
-    term2 = sparse.csr_matrix.multiply(totPRR,weightvec)
-    term2 = sparse.csr_matrix(term2)
-    term2 = sparse.csr_matrix.multiply(term2,term2)
-    term2 = sparse.csr_matrix.multiply(term2,Bvec)
-    
-    # term3 = (totPRR*(Avec+Bvec))**2 * Cvec * Dvec
-    # termd3den = (Cvec+Dvec)**3
-    term3 = Avec+Bvec
-    term3 = sparse.csr_matrix.multiply(totPRR,term3)
-    term3 = sparse.csr_matrix(term3)
-    term3 = sparse.csr_matrix.multiply(term3,term3)
-    term3 = sparse.csr_matrix.multiply(term3,Cvec)
-    term3 = sparse.csr_matrix.multiply(term3,Dvec)
-    term3den = Cvec + Dvec
-    term3den = sparse.csr_matrix.multiply(term3den,term3den)
-    term3den = sparse.csr_matrix.multiply(term3den,term3den)
-    
-    term3 = sparse.csr_matrix(term3/term3den)
-
-    errvec = errvec + term1 + term2 + term3
-
-errvecden = sparse.csr_matrix.multiply(totA,totA)
-errvec = sparse.csr_matrix(errvec/errvecden)
-
-for reactionIdx in range(0,reactions.shape[1]):
-    reactionPRRs_err.append(errvec[0,reactionIdx]**0.5)
-
-output = open('results'+save_string+'_'+str(args.model_type)+'.pkl','wb')
-pickle.dump(reactionPRRs,output)
-output.close()
+    output = open('results'+save_string+'_'+str(args.model_type)+'_'+str(year)+'.pkl','wb')
+    pickle.dump(reactionPRRs,output)
+    output.close()
 
 
     

@@ -16,3 +16,8 @@ print wget.download(url)
 print "Downloading age vector..."
 url = 'http://stash.osgconnect.net/+rvanguri/all_ages.npy'
 print wget.download(url)
+
+print "Downloading year vector..."
+url = 'http://stash.osgconnect.net/+rvanguri/all_years.npy'
+print wget.download(url)
+
