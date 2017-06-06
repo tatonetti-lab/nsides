@@ -9,10 +9,10 @@ Make the submission tarball:
 4. `source make_nsides_tarball.sh`
 
 To submit a batch of jobs to **CPU** nodes:
-`condor_submit nsides_cpu_run1.submit`
+`condor_submit_dag workflow_cpu.dag`
 
 To submit a batch of jobs to **GPU** nodes:
-`condor_submit nsides_gpu_run1.submit`
+`condor_submit_dag workflow_gpu.dag`
 
 ## DAG Workflow
 
