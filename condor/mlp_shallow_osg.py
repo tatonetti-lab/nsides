@@ -1,14 +1,6 @@
 import time
 import json
 
-from keras.layers import Input, Dense, Dropout
-from keras.models import Model, Sequential
-from keras import metrics
-from keras import losses
-from keras.utils import np_utils
-from keras import regularizers
-from keras.callbacks import EarlyStopping
-
 from scipy import io
 from scipy.sparse import vstack
 from sklearn import metrics as metrics_skl
@@ -87,7 +79,6 @@ for i in range(0,10):
     new_ind = np.random.permutation(all_reports.shape[0])
     all_reports = all_reports[new_ind,]
     outcomes = outcomes[new_ind]
-    outcomes_cat = np_utils.to_categorical(outcomes, 2)
 
     print "Neg reports:", len(np.where(outcomes == 0)[0])
     print "Pos reports:", len(np.where(outcomes == 1)[0])
@@ -168,7 +159,6 @@ for i in range(0,10):
 
     del all_reports
     del outcomes
-    del outcomes_cat
     del predictions
     del X
     del y
