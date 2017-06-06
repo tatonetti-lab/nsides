@@ -23,6 +23,10 @@ then
         echo RETRY B1 1 >> workflow_$i.dag
         echo  >> workflow_$i.dag
         echo VARS A modelidx=\"$i\" >> workflow_$i.dag
+        echo VARS B0 modelidx=\"$i\" >> workflow_$i.dag
+        echo VARS B1 modelidx=\"$i\" >> workflow_$i.dag
+        echo VARS B2 modelidx=\"$i\" >> workflow_$i.dag
+        echo VARS B3 modelidx=\"$i\" >> workflow_$i.dag
         echo VARS C0 modelidx=\"$i\" >> workflow_$i.dag
         echo VARS C1 modelidx=\"$i\" >> workflow_$i.dag
     done
@@ -49,6 +53,10 @@ then
         echo RETRY B1 1 >> workflow_$i.dag
         echo  >> workflow_$i.dag
         echo VARS A modelidx=\"$i\" >> workflow_$i.dag
+        echo VARS B0 modelidx=\"$i\" >> workflow_$i.dag
+        echo VARS B1 modelidx=\"$i\" >> workflow_$i.dag
+        echo VARS B2 modelidx=\"$i\" >> workflow_$i.dag
+        echo VARS B3 modelidx=\"$i\" >> workflow_$i.dag
         echo VARS C0 modelidx=\"$i\" >> workflow_$i.dag
         echo VARS C1 modelidx=\"$i\" >> workflow_$i.dag
     done

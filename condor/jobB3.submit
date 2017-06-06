@@ -14,11 +14,11 @@ transfer_output_files = shallow_out_2.tgz
 
 # The LOG file is where HTCondor places information about your 
 # job's status, success, and resource consumption. 
-log           = jobB3_$(Cluster)_$(Process).log
+log           = jobB3_$(modelidx).log
 
 # The standard output and error messages
-output        = jobB3_$(Cluster)_$(Process).out
-error         = jobB3_$(Cluster)_$(Process).error
+output        = jobB3_$(modelidx).out
+error         = jobB3_$(modelidx).error
 
 # Set the requirement that the OASIS modules are available on the remote worker machine
 
