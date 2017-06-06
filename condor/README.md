@@ -14,6 +14,10 @@ To submit a batch of jobs to **CPU** nodes:
 To submit a batch of jobs to **GPU** nodes:
 `condor_submit nsides_gpu_run1.submit`
 
+##DAG Workflow
+
+![alt text](https://github.com/tatonetti-lab/nsides/tree/master/condor/dag_workflow.svg.png "nSides DAG Workflow")
+
 ## Script Summary
 The scripts in this folder accomplish the following workflow:
 
