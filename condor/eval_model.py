@@ -33,55 +33,76 @@ runIndices = [
     2803,2811,2788,2835,2717,2238,2236,3180,3669,4215
 ]
 
+all_reportids = np.array(np.load("data/all_reportids.npy"))
+all_ages = np.load("data/all_ages.npy").item()
+all_years = np.load("data/all_years.npy").item()
+
+ord_ages = list()
+ord_years = list()
+for mrn in all_reportids:
+    if all_ages[mrn] != []:
+        ord_ages.append((all_ages[mrn])[0])
+    else:
+        ord_ages.append(-1)
+
+    ord_years.append(int(all_years[mrn]))
+    
+ord_ages = np.array(ord_ages)
+ord_years = np.array(ord_years)
+
+mrns_exp = np.expand_dims(all_reportids,axis=1)
+ages_exp = np.expand_dims(ord_ages,axis=1)
+years_exp = np.expand_dims(ord_years,axis=1)
+
 if args.model_type == 'nopsm':
-    print "Evaluating without propensity score matching..."
-    reactions = io.mmread("data/AEOLUS_all_reports_alloutcomes.mtx")
-    reactions = reactions.tocsr()
-    y = np.load("model_outcomes.npy")
-    y = y[0:4855498]
-    invy = np.ones((y.shape[0],y.shape[1]))
-    invy[np.where(y==1)[0]] = 0
-    #y = sparse.csc_matrix(y)
-    #invy = sparse.csc_matrix(invy)
-
-    reactionPRRs = list()
-    reactionPRRs_err = list()
-
-    posbins = np.where(y==1)[0]
-    negbins = np.where(y==0)[0]
-
-    Avec = sparse.csr_matrix.sum(reactions[posbins,:],axis=0)
-    AplusB = float(len(posbins))
-    Cvec = sparse.csr_matrix.sum(reactions[negbins,:],axis=0)
-    CplusD = float(len(negbins))
-
-    num = Avec * (1/AplusB)
-    den = Cvec * (1/CplusD)
-
-    for reactionIdx in range(0,reactions.shape[1]):
-        thisnum = num[0,reactionIdx]
-        thisden = den[0,reactionIdx]
-        reactionPRRs.append(thisnum/thisden)
-
-        if Avec[0,reactionIdx] !=0 and Cvec[0,reactionIdx] !=0:
-            invA = 1/float(Avec[0,reactionIdx])
-            invC = 1/float(Cvec[0,reactionIdx])
-
-            reactionPRRs_err.append( (invA - (1/AplusB) + invC - (1/CplusD))**0.5 )
-
-        else:
-            reactionPRRs_err.append(-1)
-
-
-    reactionPRRs_out = np.vstack(( np.asarray(reactionPRRs), np.asarray(reactionPRRs_err) ))
-
-    output = open('results_'+str(args.model_type)+'.pkl','wb')
-    pickle.dump(reactionPRRs_out,output)
-    output.close()
+    for year in range(2004,2017):
+        print "Evaluating without propensity score matching..."
+        reactions = io.mmread("data/AEOLUS_all_reports_alloutcomes.mtx")
+        reactions = reactions.tocsr()
+        y = np.load("model_outcomes.npy")
+        y = y[0:4855498]
+        invy = np.ones((y.shape[0],y.shape[1]))
+        invy[np.where(y==1)[0]] = 0
+        #y = sparse.csc_matrix(y)
+        #invy = sparse.csc_matrix(invy)
+    
+        reactionPRRs = list()
+        reactionPRRs_err = list()
+    
+        posbins = np.where((y==1) & (ages_exp != -1) & (years_exp <= year))[0]
+        negbins = np.where((y==0) & (ages_exp != -1) & (years_exp <= year))[0]
+    
+        Avec = sparse.csr_matrix.sum(reactions[posbins,:],axis=0)
+        AplusB = float(len(posbins))
+        Cvec = sparse.csr_matrix.sum(reactions[negbins,:],axis=0)
+        CplusD = float(len(negbins))
+    
+        num = Avec * (1/AplusB)
+        den = Cvec * (1/CplusD)
+    
+        for reactionIdx in range(0,reactions.shape[1]):
+            thisnum = num[0,reactionIdx]
+            thisden = den[0,reactionIdx]
+            reactionPRRs.append(thisnum/thisden)
+    
+            if Avec[0,reactionIdx] !=0 and Cvec[0,reactionIdx] !=0:
+                invA = 1/float(Avec[0,reactionIdx])
+                invC = 1/float(Cvec[0,reactionIdx])
+    
+                reactionPRRs_err.append( (invA - (1/AplusB) + invC - (1/CplusD))**0.5 )
+    
+            else:
+                reactionPRRs_err.append(-1)
+    
+    
+        reactionPRRs_out = np.vstack(( np.asarray(reactionPRRs), np.asarray(reactionPRRs_err) ))
+    
+        output = open('results_'+str(args.model_type)+'_'+str(year)+'.pkl','wb')
+        pickle.dump(reactionPRRs_out,output)
+        output.close()
 
     sys.exit(0)
 
-    
 print("Trying to load file:")
 print("scores_"+args.model_type+"*.npy")
 scores_files = glob.glob("scores_"+args.model_type+"*.npy")
@@ -125,26 +146,6 @@ y = y[0:4855498]
 
 print np.sum(y), "number of cases."
 
-all_reportids = np.array(np.load("data/all_reportids.npy"))
-all_ages = np.load("data/all_ages.npy").item()
-all_years = np.load("data/all_years.npy").item()
-
-ord_ages = list()
-ord_years = list()
-for mrn in all_reportids:
-    if all_ages[mrn] != []:
-        ord_ages.append((all_ages[mrn])[0])
-    else:
-        ord_ages.append(-1)
-
-    ord_years.append(int(all_years[mrn]))
-    
-ord_ages = np.array(ord_ages)
-ord_years = np.array(ord_years)
-
-mrns_exp = np.expand_dims(all_reportids,axis=1)
-ages_exp = np.expand_dims(ord_ages,axis=1)
-years_exp = np.expand_dims(ord_years,axis=1)
 resu_exp = y
 outc_exp = np.expand_dims(norm_comb_scores, axis=1)
 
