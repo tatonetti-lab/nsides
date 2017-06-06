@@ -17,6 +17,12 @@ parser.add_argument('--model-type',
                     default='bdt',
                     dest='model_type')
 
+parser.add_argument('--model-number',
+                    help='Model number',
+                    action='store',
+                    default='2451',
+                    dest='model_num')
+
 args = parser.parse_args()
 
 runIndices = [
@@ -32,6 +38,19 @@ runIndices = [
     2548,2552,2437,2527,1962,2031,2753,2342,2157,2723,2789,2790,1871,2804,
     2803,2811,2788,2835,2717,2238,2236,3180,3669,4215
 ]
+
+args.model_num = (args.model_num).split(",")
+args.model_num = map(int,args.model_num)
+
+if len(args.model_num) > 1:
+    modelIdx = list(itemgetter(*args.model_num)(runIndices))
+else:
+    modelIdx = [itemgetter(*args.model_num)(runIndices)]
+
+save_string = ''
+for model in modelIdx:
+    to_keep_col = np.delete(to_keep_col,np.where(to_keep_col==model))
+    save_string = save_string + '_' + str(model)
 
 all_reportids = np.array(np.load("data/all_reportids.npy"))
 all_ages = np.load("data/all_ages.npy").item()
@@ -97,7 +116,7 @@ if args.model_type == 'nopsm':
     
         reactionPRRs_out = np.vstack(( np.asarray(reactionPRRs), np.asarray(reactionPRRs_err) ))
     
-        output = open('results_'+str(args.model_type)+'_'+str(year)+'.pkl','wb')
+        output = open('results_'+str(args.model_type)+save_string+'_'+str(year)+'.pkl','wb')
         pickle.dump(reactionPRRs_out,output)
         output.close()
 
@@ -325,7 +344,7 @@ for year in range(2004,2017):
     for reactionIdx in range(0,reactions.shape[1]):
         reactionPRRs_err.append(errvec[0,reactionIdx]**0.5)
     
-    output = open('results_'+str(args.model_type)+'_'+str(year)+'.pkl','wb')
+    output = open('results_'+str(args.model_type)+save_string+'_'+str(year)+'.pkl','wb')
     pickle.dump(reactionPRRs,output)
     output.close()
 

@@ -3,7 +3,7 @@ Universe = vanilla
 # EXECUTABLE is the program your job will run It's often useful 
 # to create a shell script to "wrap" your actual work. 
 Executable = jobA.sh
-Arguments = $(Process)
+Arguments = $(modelidx)
 Requirements = HAS_SINGULARITY == TRUE
 +SingularityImage = "/cvmfs/singularity.opensciencegrid.org/tensorflow/tensorflow:latest/"
 +SingularityBindCVMFS = True
@@ -32,4 +32,4 @@ request_memory = 4000
 
 #request_gpus = 1
 
-Queue 5
+Queue 1
