@@ -1,0 +1,35 @@
+#The UNIVERSE defines an execution environment. You will almost always use VANILLA. 
+Universe = vanilla     
+# EXECUTABLE is the program your job will run It's often useful 
+# to create a shell script to "wrap" your actual work. 
+Executable = jobB1.sh
+Arguments = $(Process)
+Requirements = HAS_SINGULARITY == TRUE
++SingularityImage = "/cvmfs/singularity.opensciencegrid.org/tensorflow/tensorflow:latest/"
++SingularityBindCVMFS = True
+
+should_transfer_files = IF_NEEDED
+when_to_transfer_output = ON_EXIT
+transfer_input_files = data.tgz
+transfer_output_files = dnn_out_2.tgz
+
+# The LOG file is where HTCondor places information about your 
+# job's status, success, and resource consumption. 
+log           = jobB1_$(Process).log
+
+# The standard output and error messages
+output        = jobB1_$(Process).out
+error         = jobB1_$(Process).error
+
+# Set the requirement that the OASIS modules are available on the remote worker machine
+
+# QUEUE is the "start button" - it launches any jobs that have been 
+# specified thus far. 
+
+#request_memory = 50000
+
+request_memory = 4000
+
+#request_gpus = 1
+
+Queue 1

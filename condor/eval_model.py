@@ -10,11 +10,6 @@ from operator import itemgetter
 import argparse
 
 parser = argparse.ArgumentParser(description='Evaluate models for DDI PSM.')
-parser.add_argument('--model-number',
-                    help='Numerical ID of the drug against which to fit the model',
-                    action='store',
-                    dest='model_num',
-                    default=2451)
 
 parser.add_argument('--model-type',
                     help='Model type to evaluate',
@@ -37,23 +32,12 @@ runIndices = [
     2548,2552,2437,2527,1962,2031,2753,2342,2157,2723,2789,2790,1871,2804,
     2803,2811,2788,2835,2717,2238,2236,3180,3669,4215
 ]
-args.model_num = (args.model_num).split(",")
-args.model_num = map(int,args.model_num)
-
-if len(args.model_num) > 1:
-    modelIdx = list(itemgetter(*args.model_num)(runIndices))
-else:
-    modelIdx = [itemgetter(*args.model_num)(runIndices)]
-
-save_string = ''
-for model in modelIdx:
-    save_string = save_string + '_' + str(model)
 
 if args.model_type == 'nopsm':
     print "Evaluating without propensity score matching..."
     reactions = io.mmread("data/AEOLUS_all_reports_alloutcomes.mtx")
     reactions = reactions.tocsr()
-    y = np.load("model"+save_string+"_outcomes.npy")
+    y = np.load("model_outcomes.npy")
     y = y[0:4855498]
     invy = np.ones((y.shape[0],y.shape[1]))
     invy[np.where(y==1)[0]] = 0
@@ -91,7 +75,7 @@ if args.model_type == 'nopsm':
 
     reactionPRRs_out = np.vstack(( np.asarray(reactionPRRs), np.asarray(reactionPRRs_err) ))
 
-    output = open('results'+save_string+'_'+str(args.model_type)+'.pkl','wb')
+    output = open('results_'+str(args.model_type)+'.pkl','wb')
     pickle.dump(reactionPRRs_out,output)
     output.close()
 
@@ -99,10 +83,9 @@ if args.model_type == 'nopsm':
 
     
 print("Trying to load file:")
-print("scores_"+args.model_type+save_string+"*.npy")
-scores_files = glob.glob("scores_"+args.model_type+save_string+"*.npy")
+print("scores_"+args.model_type+"*.npy")
+scores_files = glob.glob("scores_"+args.model_type+"*.npy")
 
-print "Processing model,",save_string
 print "Model type:",args.model_type
 
 print "Processing ",len(scores_files)," score files."
@@ -137,7 +120,7 @@ comb_scores[ zerbins ] = 10
 
 norm_comb_scores = np.divide(comb_scores, sum_tracker)
 
-y = np.load("model"+save_string+"_outcomes.npy")
+y = np.load("model_outcomes.npy")
 y = y[0:4855498]
 
 print np.sum(y), "number of cases."
@@ -341,7 +324,7 @@ for year in range(2004,2017):
     for reactionIdx in range(0,reactions.shape[1]):
         reactionPRRs_err.append(errvec[0,reactionIdx]**0.5)
     
-    output = open('results'+save_string+'_'+str(args.model_type)+'_'+str(year)+'.pkl','wb')
+    output = open('results_'+str(args.model_type)+'_'+str(year)+'.pkl','wb')
     pickle.dump(reactionPRRs,output)
     output.close()
 

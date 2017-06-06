@@ -92,10 +92,12 @@ def main():
     modelOutcome = modelOutcome.astype(int)
 
     #del thisReportBlock_array
-    np.save("model"+save_string+"_outcomes.npy",modelOutcome)
+    np.save("model_outcomes.npy",modelOutcome)
     
     blockSize = 100000
     fileNum = 0
+
+    print "MODEL:",save_string
     
     for reportblock in range(0,50):
         thisReportBlock = np.load("data/AEOLUS_all_reports_"+str(reportblock)+".npy").item()
@@ -123,9 +125,9 @@ def main():
         thisposReports = thisReportBlock[np.where(thismodelOutcome == True)[0]]
         thisnegReports = thisReportBlock[np.where(thismodelOutcome == False)[0]]
         
-        io.mmwrite("model"+save_string+"_"+str(reportblock)+"_reports.mtx",thisReportBlock,field='integer')
-        io.mmwrite("model"+save_string+"_"+str(reportblock)+"_posreports.mtx",thisposReports,field='integer')
-        io.mmwrite("model"+save_string+"_"+str(reportblock)+"_negreports.mtx",thisnegReports,field='integer')
+        io.mmwrite("model_"+str(reportblock)+"_reports.mtx",thisReportBlock,field='integer')
+        io.mmwrite("model_"+str(reportblock)+"_posreports.mtx",thisposReports,field='integer')
+        io.mmwrite("model_"+str(reportblock)+"_negreports.mtx",thisnegReports,field='integer')
     
 
 if __name__ == '__main__':
