@@ -1,0 +1,11 @@
+JOB A jobA.submit
+JOB B0 jobB0_gpu.submit
+JOB B1 jobB1_gpu.submit
+JOB B2 jobB2.submit
+JOB B3 jobB3.submit
+JOB C0 jobC0.submit
+JOB C1 jobC1.submit
+
+PARENT A CHILD B0 B1 B2 B3
+PARENT B0 B1 CHILD C0
+PARENT B2 B3 CHILD C1
