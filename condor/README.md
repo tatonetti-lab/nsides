@@ -16,7 +16,7 @@ To submit a batch of jobs to **GPU** nodes:
 
 ## DAG Workflow
 
-![nSides DAG Workflow](https://github.com/tatonetti-lab/nsides/tree/master/condor/dag_workflow.svg.png)
+![nSides DAG Workflow](dag_workflow.svg.png)
 
 ## Script Summary
 The scripts in this folder accomplish the following workflow:
