@@ -49,7 +49,6 @@ else:
 
 save_string = ''
 for model in modelIdx:
-    to_keep_col = np.delete(to_keep_col,np.where(to_keep_col==model))
     save_string = save_string + '_' + str(model)
 
 all_reportids = np.array(np.load("data/all_reportids.npy"))

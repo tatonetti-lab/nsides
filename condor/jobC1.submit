@@ -11,7 +11,7 @@ Requirements = HAS_SINGULARITY == TRUE
 should_transfer_files = IF_NEEDED
 when_to_transfer_output = ON_EXIT
 transfer_input_files = shallow_out_1.tgz, shallow_out_2.tgz
-transfer_output_files = results_$(Process)_shallow.tgz
+transfer_output_files = results_$(modelidx)_shallow.tgz
 
 # The LOG file is where HTCondor places information about your 
 # job's status, success, and resource consumption. 

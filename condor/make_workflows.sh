@@ -19,12 +19,12 @@ then
         echo PARENT B0 B1 CHILD C0 >> workflow_$i.dag
         echo PARENT B2 B3 CHILD C1 >> workflow_$i.dag
         echo  >> workflow_$i.dag
-        echo RETRY B0 5 >> workflow_$i.dag
-        echo RETRY B1 5 >> workflow_$i.dag
-        echo RETRY B2 5 >> workflow_$i.dag
-        echo RETRY B3 5 >> workflow_$i.dag
-        echo RETRY C0 5 >> workflow_$i.dag
-        echo RETRY C1 5 >> workflow_$i.dag
+        echo RETRY B0 10 >> workflow_$i.dag
+        echo RETRY B1 10 >> workflow_$i.dag
+        echo RETRY B2 10 >> workflow_$i.dag
+        echo RETRY B3 10 >> workflow_$i.dag
+        echo RETRY C0 10 >> workflow_$i.dag
+        echo RETRY C1 10 >> workflow_$i.dag
         echo  >> workflow_$i.dag
         echo VARS A modelidx=\"$i\" >> workflow_$i.dag
         echo VARS B0 modelidx=\"$i\" >> workflow_$i.dag
@@ -53,12 +53,12 @@ then
         echo PARENT B0 B1 CHILD C0 >> workflow_$i.dag
         echo PARENT B2 B3 CHILD C1 >> workflow_$i.dag
         echo  >> workflow_$i.dag
-        echo RETRY B0 5 >> workflow_$i.dag
-        echo RETRY B1 5 >> workflow_$i.dag
-        echo RETRY B2 5 >> workflow_$i.dag
-        echo RETRY B3 5 >> workflow_$i.dag
-        echo RETRY C0 5 >> workflow_$i.dag
-        echo RETRY C1 5 >> workflow_$i.dag
+        echo RETRY B0 10 >> workflow_$i.dag
+        echo RETRY B1 10 >> workflow_$i.dag
+        echo RETRY B2 10 >> workflow_$i.dag
+        echo RETRY B3 10 >> workflow_$i.dag
+        echo RETRY C0 10 >> workflow_$i.dag
+        echo RETRY C1 10 >> workflow_$i.dag
         echo  >> workflow_$i.dag
         echo VARS A modelidx=\"$i\" >> workflow_$i.dag
         echo VARS B0 modelidx=\"$i\" >> workflow_$i.dag
