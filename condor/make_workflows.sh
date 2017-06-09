@@ -7,32 +7,35 @@ then
     for i in {0..149}
     do
 	touch workflow_$i.dag
-        echo JOB A jobA.submit >> workflow_$i.dag
-        echo JOB B0 jobB0.submit >> workflow_$i.dag
-        echo JOB B1 jobB1.submit >> workflow_$i.dag
-        echo JOB B2 jobB2.submit >> workflow_$i.dag
-        echo JOB B3 jobB3.submit >> workflow_$i.dag
-        echo JOB C0 jobC0.submit >> workflow_$i.dag
-        echo JOB C1 jobC1.submit >> workflow_$i.dag
+        echo JOB A prepare_data.submit >> workflow_$i.dag
+        echo JOB B0 dnn.submit >> workflow_$i.dag
+        echo JOB B1 shallow.submit >> workflow_$i.dag
+        echo JOB C0 eval_model_dnn.submit >> workflow_$i.dag
+	echo JOB C1 eval_model_bdt.submit >> workflow_$i.dag
+	echo JOB C2 eval_model_rfc.submit >> workflow_$i.dag
+	echo JOB C3 eval_model_lrc.submit >> workflow_$i.dag
+	echo JOB C4 eval_model_nopsm.submit >> workflow_$i.dag
         echo  >> workflow_$i.dag
-        echo PARENT A CHILD B0 B1 B2 B3 >> workflow_$i.dag
-        echo PARENT B0 B1 CHILD C0 >> workflow_$i.dag
-        echo PARENT B2 B3 CHILD C1 >> workflow_$i.dag
+        echo PARENT A CHILD B0 B1 >> workflow_$i.dag
+        echo PARENT B0 CHILD C0 >> workflow_$i.dag
+        echo PARENT B1 CHILD C1 C2 C3 C4 >> workflow_$i.dag
         echo  >> workflow_$i.dag
         echo RETRY B0 10 >> workflow_$i.dag
         echo RETRY B1 10 >> workflow_$i.dag
-        echo RETRY B2 10 >> workflow_$i.dag
-        echo RETRY B3 10 >> workflow_$i.dag
         echo RETRY C0 10 >> workflow_$i.dag
         echo RETRY C1 10 >> workflow_$i.dag
+	echo RETRY C2 10 >> workflow_$i.dag
+	echo RETRY C3 10 >> workflow_$i.dag
+   	echo RETRY C4 10 >> workflow_$i.dag
         echo  >> workflow_$i.dag
         echo VARS A modelidx=\"$i\" >> workflow_$i.dag
         echo VARS B0 modelidx=\"$i\" >> workflow_$i.dag
         echo VARS B1 modelidx=\"$i\" >> workflow_$i.dag
-        echo VARS B2 modelidx=\"$i\" >> workflow_$i.dag
-        echo VARS B3 modelidx=\"$i\" >> workflow_$i.dag
         echo VARS C0 modelidx=\"$i\" >> workflow_$i.dag
         echo VARS C1 modelidx=\"$i\" >> workflow_$i.dag
+        echo VARS C2 modelidx=\"$i\" >> workflow_$i.dag
+        echo VARS C3 modelidx=\"$i\" >> workflow_$i.dag
+	echo VARS C4 modelidx=\"$i\" >> workflow_$i.dag
     done
 fi
 
@@ -41,32 +44,35 @@ then
     for i in {0..149}
     do
 	touch workflow_$i.dag
-        echo JOB A jobA.submit >> workflow_$i.dag
-        echo JOB B0 jobB0_gpu.submit >> workflow_$i.dag
-        echo JOB B1 jobB1_gpu.submit >> workflow_$i.dag
-        echo JOB B2 jobB2.submit >> workflow_$i.dag
-        echo JOB B3 jobB3.submit >> workflow_$i.dag
-        echo JOB C0 jobC0.submit >> workflow_$i.dag
-        echo JOB C1 jobC1.submit >> workflow_$i.dag
+        echo JOB A prepare_data.submit >> workflow_$i.dag
+        echo JOB B0 dnn.submit >> workflow_$i.dag
+        echo JOB B1 shallow.submit >> workflow_$i.dag
+        echo JOB C0 eval_model_dnn.submit >> workflow_$i.dag
+	echo JOB C1 eval_model_bdt.submit >> workflow_$i.dag
+	echo JOB C2 eval_model_rfc.submit >> workflow_$i.dag
+	echo JOB C3 eval_model_lrc.submit >> workflow_$i.dag
+	echo JOB C4 eval_model_nopsm.submit >> workflow_$i.dag
         echo  >> workflow_$i.dag
-        echo PARENT A CHILD B0 B1 B2 B3 >> workflow_$i.dag
-        echo PARENT B0 B1 CHILD C0 >> workflow_$i.dag
-        echo PARENT B2 B3 CHILD C1 >> workflow_$i.dag
+        echo PARENT A CHILD B0 B1 >> workflow_$i.dag
+        echo PARENT B0 CHILD C0 >> workflow_$i.dag
+        echo PARENT B1 CHILD C1 C2 C3 C4 >> workflow_$i.dag
         echo  >> workflow_$i.dag
         echo RETRY B0 10 >> workflow_$i.dag
         echo RETRY B1 10 >> workflow_$i.dag
-        echo RETRY B2 10 >> workflow_$i.dag
-        echo RETRY B3 10 >> workflow_$i.dag
         echo RETRY C0 10 >> workflow_$i.dag
         echo RETRY C1 10 >> workflow_$i.dag
+	echo RETRY C2 10 >> workflow_$i.dag
+	echo RETRY C3 10 >> workflow_$i.dag
+   	echo RETRY C4 10 >> workflow_$i.dag
         echo  >> workflow_$i.dag
         echo VARS A modelidx=\"$i\" >> workflow_$i.dag
         echo VARS B0 modelidx=\"$i\" >> workflow_$i.dag
         echo VARS B1 modelidx=\"$i\" >> workflow_$i.dag
-        echo VARS B2 modelidx=\"$i\" >> workflow_$i.dag
-        echo VARS B3 modelidx=\"$i\" >> workflow_$i.dag
         echo VARS C0 modelidx=\"$i\" >> workflow_$i.dag
         echo VARS C1 modelidx=\"$i\" >> workflow_$i.dag
+        echo VARS C2 modelidx=\"$i\" >> workflow_$i.dag
+        echo VARS C3 modelidx=\"$i\" >> workflow_$i.dag
+	echo VARS C4 modelidx=\"$i\" >> workflow_$i.dag
     done
 fi
 

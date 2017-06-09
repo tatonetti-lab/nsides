@@ -39,7 +39,7 @@ runIndices = [
     2803,2811,2788,2835,2717,2238,2236,3180,3669,4215
 ]
 
-args.model_num = (args.model_num).split(",")
+args.model_num = (args.model_num).split("_")
 args.model_num = map(int,args.model_num)
 
 if len(args.model_num) > 1:
@@ -50,6 +50,8 @@ else:
 save_string = ''
 for model in modelIdx:
     save_string = save_string + '_' + str(model)
+
+print "MODEL",save_string
 
 all_reportids = np.array(np.load("data/all_reportids.npy"))
 all_ages = np.load("data/all_ages.npy").item()
@@ -73,16 +75,17 @@ ages_exp = np.expand_dims(ord_ages,axis=1)
 years_exp = np.expand_dims(ord_years,axis=1)
 
 if args.model_type == 'nopsm':
+    reactions = io.mmread("data/AEOLUS_all_reports_alloutcomes.mtx")
+    reactions = reactions.tocsr()
+    y = np.load("model_outcomes.npy")
+    print "NUMBER OF POSITIVE REPORTS:",np.sum(y)
+    y = y[0:4855498]
+    invy = np.ones((y.shape[0],y.shape[1]))
+    invy[np.where(y==1)[0]] = 0
+
     for year in range(2004,2017):
+        print "PROCESSING YEAR",year
         print "Evaluating without propensity score matching..."
-        reactions = io.mmread("data/AEOLUS_all_reports_alloutcomes.mtx")
-        reactions = reactions.tocsr()
-        y = np.load("model_outcomes.npy")
-        y = y[0:4855498]
-        invy = np.ones((y.shape[0],y.shape[1]))
-        invy[np.where(y==1)[0]] = 0
-        #y = sparse.csc_matrix(y)
-        #invy = sparse.csc_matrix(invy)
     
         reactionPRRs = list()
         reactionPRRs_err = list()
@@ -160,9 +163,8 @@ comb_scores[ zerbins ] = 10
 norm_comb_scores = np.divide(comb_scores, sum_tracker)
 
 y = np.load("model_outcomes.npy")
+print "NUMBER OF POSITIVE REPORTS:",np.sum(y)
 y = y[0:4855498]
-
-print np.sum(y), "number of cases."
 
 resu_exp = y
 outc_exp = np.expand_dims(norm_comb_scores, axis=1)
@@ -195,6 +197,7 @@ def calcbin(outcome=1, binLo=0.0, binHi=0.10, year=2016):
     return x_indices_posoutcome_outcbin
 
 for year in range(2004,2017):
+    print "PROCESSING YEAR",year
 
     granularity = 0.0005
     
@@ -342,9 +345,11 @@ for year in range(2004,2017):
     
     for reactionIdx in range(0,reactions.shape[1]):
         reactionPRRs_err.append(errvec[0,reactionIdx]**0.5)
+
+    reactionPRRs_out = np.vstack(( np.asarray(reactionPRRs), np.asarray(reactionPRRs_err) ))
     
     output = open('results_'+str(args.model_type)+save_string+'_'+str(year)+'.pkl','wb')
-    pickle.dump(reactionPRRs,output)
+    pickle.dump(reactionPRRs_out,output)
     output.close()
 
 

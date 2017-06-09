@@ -2,23 +2,24 @@
 Universe = vanilla     
 # EXECUTABLE is the program your job will run It's often useful 
 # to create a shell script to "wrap" your actual work. 
-Executable = jobB2.sh
+Executable = eval_model_dnn.sh
+Arguments = $(modelidx)
 Requirements = HAS_SINGULARITY == TRUE
 +SingularityImage = "/cvmfs/singularity.opensciencegrid.org/tensorflow/tensorflow:latest/"
 +SingularityBindCVMFS = True
 
 should_transfer_files = IF_NEEDED
 when_to_transfer_output = ON_EXIT
-transfer_input_files = data.tgz
-transfer_output_files = shallow_out_1.tgz
+transfer_input_files = dnn_out_$(modelidx)_0.tgz, dnn_out_$(modelidx)_1.tgz, dnn_out_$(modelidx)_2.tgz, dnn_out_$(modelidx)_3.tgz, dnn_out_$(modelidx)_4.tgz, dnn_out_$(modelidx)_5.tgz, dnn_out_$(modelidx)_6.tgz, dnn_out_$(modelidx)_7.tgz, dnn_out_$(modelidx)_8.tgz, dnn_out_$(modelidx)_9.tgz, dnn_out_$(modelidx)_10.tgz, dnn_out_$(modelidx)_11.tgz, dnn_out_$(modelidx)_12.tgz, dnn_out_$(modelidx)_13.tgz, dnn_out_$(modelidx)_14.tgz, dnn_out_$(modelidx)_15.tgz, dnn_out_$(modelidx)_16.tgz, dnn_out_$(modelidx)_17.tgz, dnn_out_$(modelidx)_18.tgz, dnn_out_$(modelidx)_19.tgz
+transfer_output_files = results_$(modelidx)_dnn.tgz
 
 # The LOG file is where HTCondor places information about your 
 # job's status, success, and resource consumption. 
-log           = jobB2_$(modelidx).log
+log           = eval_model_dnn_$(modelidx).log
 
 # The standard output and error messages
-output        = jobB2_$(modelidx).out
-error         = jobB2_$(modelidx).error
+output        = eval_model_dnn_$(modelidx).out
+error         = eval_model_dnn_$(modelidx).error
 
 # Set the requirement that the OASIS modules are available on the remote worker machine
 

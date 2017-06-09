@@ -1,26 +1,29 @@
-JOB A jobA.submit
-JOB B0 jobB0.submit
-JOB B1 jobB1.submit
-JOB B2 jobB2.submit
-JOB B3 jobB3.submit
-JOB C0 jobC0.submit
-JOB C1 jobC1.submit
+JOB A prepare_data.submit
+JOB B0 dnn.submit
+JOB B1 shallow.submit
+JOB C0 eval_model_dnn.submit
+JOB C1 eval_model_bdt.submit
+JOB C2 eval_model_rfc.submit
+JOB C3 eval_model_lrc.submit
+JOB C4 eval_model_nopsm.submit
 
-PARENT A CHILD B0 B1 B2 B3
-PARENT B0 B1 CHILD C0
-PARENT B2 B3 CHILD C1
+PARENT A CHILD B0 B1
+PARENT B0 CHILD C0
+PARENT B1 CHILD C1 C2 C3 C4
 
 RETRY B0 10
 RETRY B1 10
-RETRY B2 10
-RETRY B3 10
 RETRY C0 10
 RETRY C1 10
+RETRY C2 10
+RETRY C3 10
+RETRY C4 10
 
 VARS A modelidx="37"
 VARS B0 modelidx="37"
 VARS B1 modelidx="37"
-VARS B2 modelidx="37"
-VARS B3 modelidx="37"
 VARS C0 modelidx="37"
 VARS C1 modelidx="37"
+VARS C2 modelidx="37"
+VARS C3 modelidx="37"
+VARS C4 modelidx="37"

@@ -65,7 +65,7 @@ def generate_arrays(batchsize):
         thisneg = thisneg.tocsr()
         neg_reports = vstack((neg_reports,thisneg))
 
-
+    print "NUMBER OF POSITIVE REPORTS:",pos_reports.shape[0]
 
     neg_ind = np.arange(neg_reports.shape[0])
 
@@ -103,7 +103,7 @@ def generate_arrays(batchsize):
 
 if args.run_on_cpu:
     with tf.device("/cpu:0"):
-        for i in range(0,10):
+        for i in range(0,1):
 
             encoding_dim = 2
             n_hidden_1 = 200
@@ -128,7 +128,7 @@ if args.run_on_cpu:
                                                                            'accuracy'])
             batchsize = 1
             
-            autoencoder.fit_generator(generate_arrays(batchsize), steps_per_epoch=int(pos_reports.shape[0]*2/batchsize))
+            autoencoder.fit_generator(generate_arrays(batchsize), steps_per_epoch=int(pos_reports.shape[0]*2/batchsize), epochs=10)
 
             #X = np.load("model_"+model_num+"_reports.npy")
 
@@ -163,7 +163,7 @@ if args.run_on_cpu:
             del predictions
 
 else:
-    for i in range(0,10):
+    for i in range(0,1):
 
         encoding_dim = 2
         n_hidden_1 = 200
@@ -188,7 +188,7 @@ else:
                                                                        'accuracy'])
         batchsize = 1
         
-        autoencoder.fit_generator(generate_arrays(batchsize), steps_per_epoch=int(pos_reports.shape[0]*2/batchsize))
+        autoencoder.fit_generator(generate_arrays(batchsize), steps_per_epoch=int(pos_reports.shape[0]*2/batchsize), epochs=10)
 
         #X = np.load("model_"+model_num+"_reports.npy")
 

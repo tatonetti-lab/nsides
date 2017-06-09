@@ -2,23 +2,24 @@
 Universe = vanilla     
 # EXECUTABLE is the program your job will run It's often useful 
 # to create a shell script to "wrap" your actual work. 
-Executable = jobB1.sh
+Executable = prepare_data.sh
+Arguments = $(modelidx)
 Requirements = HAS_SINGULARITY == TRUE
 +SingularityImage = "/cvmfs/singularity.opensciencegrid.org/tensorflow/tensorflow:latest/"
 +SingularityBindCVMFS = True
 
 should_transfer_files = IF_NEEDED
 when_to_transfer_output = ON_EXIT
-transfer_input_files = data.tgz
-transfer_output_files = dnn_out_2.tgz
+transfer_input_files = nsides_scripts.tgz
+transfer_output_files = data_$(modelidx).tgz
 
 # The LOG file is where HTCondor places information about your 
 # job's status, success, and resource consumption. 
-log           = jobB1_$(modelidx).log
+log           = prepare_data_$(modelidx).log
 
 # The standard output and error messages
-output        = jobB1_$(modelidx).out
-error         = jobB1_$(modelidx).error
+output        = prepare_data_$(modelidx).out
+error         = prepare_data_$(modelidx).error
 
 # Set the requirement that the OASIS modules are available on the remote worker machine
 
