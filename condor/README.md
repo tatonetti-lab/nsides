@@ -18,7 +18,7 @@ To submit a batch of jobs to **GPU** nodes:
 
 ## DAG Workflow
 
-![nSides DAG Workflow](dag_workflow.svg.png)
+![nSides DAG Workflow](dag_workflow_v2.png)
 
 ## Script Summary
 The scripts in this folder accomplish the following workflow:
