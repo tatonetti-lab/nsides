@@ -1,4 +1,3 @@
-JOB A prepare_data.submit
 JOB B0 dnn_gpu.submit
 JOB B1 shallow.submit
 JOB C0 eval_model_dnn.submit
@@ -7,7 +6,6 @@ JOB C2 eval_model_rfc.submit
 JOB C3 eval_model_lrc.submit
 JOB C4 eval_model_nopsm.submit
 
-PARENT A CHILD B0 B1
 PARENT B0 CHILD C0
 PARENT B1 CHILD C1 C2 C3 C4
 
@@ -19,7 +17,6 @@ RETRY C2 10
 RETRY C3 10
 RETRY C4 10
 
-VARS A modelidx="53"
 VARS B0 modelidx="53"
 VARS B1 modelidx="53"
 VARS C0 modelidx="53"
