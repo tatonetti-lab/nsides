@@ -18,6 +18,8 @@ runIndices = [
     2803,2811,2788,2835,2717,2238,2236,3180,3669,4215
 ]
 
+model_type = "rfc"
+
 all_reportids = np.array(np.load("data/all_reportids.npy"))
 ord_years = list()
 all_years = np.load("data/all_years.npy").item()
@@ -33,22 +35,22 @@ reactions = reactions.tocsr()
 
 print "TdP"
 
-dirnames = ["local_80","local_104","local_80,104"]
+dirnames = ["results_15","results_48","results_15_48"]
 
 for dirname in dirnames:
 
     y = np.load(dirname+"/model_outcomes.npy")
     y = y[0:4855498]
 
-    if dirname == "local_80":
-        model_string = "1816_"
-        model = "quetiapine"
-    if dirname == "local_104":
-        model_string = "2270_"
-        model = "methadone"
-    if dirname == "local_80,104":
-        model_string = "1816_2270_"
-        model = "quetiapine, methadone"
+    if dirname == "results_15":
+        model_string = "2983_"
+        model = "ceftriaxone"
+    if dirname == "results_48":
+        model_string = "2001_"
+        model = "lansaprazole"
+    if dirname == "results_15_48":
+        model_string = "2983_2001_"
+        model = "ceftriaxone, lansaprazole"
 
     print model
     print "TdP"
@@ -56,7 +58,7 @@ for dirname in dirnames:
     for year in range(2004,2017):
         posbins = np.where ( (y==1) & (years_exp <= year) )[0]
         Avec = sparse.csr_matrix.sum(reactions[posbins,:],axis=0)
-        f = open(dirname+'/results_dnn_'+model_string+str(year)+'.pkl')
+        f = open(dirname+'/results_'+model_type+'_'+model_string+str(year)+'.pkl')
         result = pickle.load(f)
 
         print year, ":", result[0,138], "95% CL:", result[0,138]/math.exp(1.96*result[1,138]), ",", result[0,138]*math.exp(1.96*result[1,138]), "num:", Avec[0,138]
@@ -66,7 +68,7 @@ for dirname in dirnames:
     for year in range(2004,2017):
         posbins = np.where ( (y==1) & (years_exp <= year) )[0]
         Avec = sparse.csr_matrix.sum(reactions[posbins,:],axis=0)
-        f = open(dirname+'/results_dnn_'+model_string+str(year)+'.pkl')
+        f = open(dirname+'/results_'+model_type+'_'+model_string+str(year)+'.pkl')
         result = pickle.load(f)
 
         print year, ":", result[0,1650], "95% CL:", result[0,1650]/math.exp(1.96*result[1,1650]), ",", result[0,1650]*math.exp(1.96*result[1,1650]), "num:", Avec[0,1650]

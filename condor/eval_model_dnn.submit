@@ -10,7 +10,7 @@ Requirements = HAS_SINGULARITY == TRUE
 
 should_transfer_files = IF_NEEDED
 when_to_transfer_output = ON_EXIT
-transfer_input_files = dnn_out_$(modelidx)_0.tgz, dnn_out_$(modelidx)_1.tgz, dnn_out_$(modelidx)_2.tgz, dnn_out_$(modelidx)_3.tgz, dnn_out_$(modelidx)_4.tgz, dnn_out_$(modelidx)_5.tgz, dnn_out_$(modelidx)_6.tgz, dnn_out_$(modelidx)_7.tgz, dnn_out_$(modelidx)_8.tgz, dnn_out_$(modelidx)_9.tgz, dnn_out_$(modelidx)_10.tgz, dnn_out_$(modelidx)_11.tgz, dnn_out_$(modelidx)_12.tgz, dnn_out_$(modelidx)_13.tgz, dnn_out_$(modelidx)_14.tgz, dnn_out_$(modelidx)_15.tgz, dnn_out_$(modelidx)_16.tgz, dnn_out_$(modelidx)_17.tgz, dnn_out_$(modelidx)_18.tgz, dnn_out_$(modelidx)_19.tgz
+transfer_input_files = nsides_scripts.tgz, dnn_out_$(modelidx)_0.tgz, dnn_out_$(modelidx)_1.tgz, dnn_out_$(modelidx)_2.tgz, dnn_out_$(modelidx)_3.tgz, dnn_out_$(modelidx)_4.tgz, dnn_out_$(modelidx)_5.tgz, dnn_out_$(modelidx)_6.tgz, dnn_out_$(modelidx)_7.tgz, dnn_out_$(modelidx)_8.tgz, dnn_out_$(modelidx)_9.tgz, dnn_out_$(modelidx)_10.tgz, dnn_out_$(modelidx)_11.tgz, dnn_out_$(modelidx)_12.tgz, dnn_out_$(modelidx)_13.tgz, dnn_out_$(modelidx)_14.tgz, dnn_out_$(modelidx)_15.tgz, dnn_out_$(modelidx)_16.tgz, dnn_out_$(modelidx)_17.tgz, dnn_out_$(modelidx)_18.tgz, dnn_out_$(modelidx)_19.tgz
 transfer_output_files = results_$(modelidx)_dnn.tgz
 
 # The LOG file is where HTCondor places information about your 

@@ -10,7 +10,7 @@ Requirements = HAS_SINGULARITY == TRUE
 
 should_transfer_files = IF_NEEDED
 when_to_transfer_output = ON_EXIT
-transfer_input_files = shallow_out_$(modelidx)_0.tgz, shallow_out_$(modelidx)_1.tgz, shallow_out_$(modelidx)_2.tgz, shallow_out_$(modelidx)_3.tgz, shallow_out_$(modelidx)_4.tgz, shallow_out_$(modelidx)_5.tgz, shallow_out_$(modelidx)_6.tgz, shallow_out_$(modelidx)_7.tgz, shallow_out_$(modelidx)_8.tgz, shallow_out_$(modelidx)_9.tgz, shallow_out_$(modelidx)_10.tgz, shallow_out_$(modelidx)_11.tgz, shallow_out_$(modelidx)_12.tgz, shallow_out_$(modelidx)_13.tgz, shallow_out_$(modelidx)_14.tgz, shallow_out_$(modelidx)_15.tgz, shallow_out_$(modelidx)_16.tgz, shallow_out_$(modelidx)_17.tgz, shallow_out_$(modelidx)_18.tgz, shallow_out_$(modelidx)_19.tgz
+transfer_input_files = nsides_scripts.tgz, shallow_out_$(modelidx)_0.tgz, shallow_out_$(modelidx)_1.tgz, shallow_out_$(modelidx)_2.tgz, shallow_out_$(modelidx)_3.tgz, shallow_out_$(modelidx)_4.tgz, shallow_out_$(modelidx)_5.tgz, shallow_out_$(modelidx)_6.tgz, shallow_out_$(modelidx)_7.tgz, shallow_out_$(modelidx)_8.tgz, shallow_out_$(modelidx)_9.tgz, shallow_out_$(modelidx)_10.tgz, shallow_out_$(modelidx)_11.tgz, shallow_out_$(modelidx)_12.tgz, shallow_out_$(modelidx)_13.tgz, shallow_out_$(modelidx)_14.tgz, shallow_out_$(modelidx)_15.tgz, shallow_out_$(modelidx)_16.tgz, shallow_out_$(modelidx)_17.tgz, shallow_out_$(modelidx)_18.tgz, shallow_out_$(modelidx)_19.tgz
 transfer_output_files = results_$(modelidx)_rfc.tgz
 
 # The LOG file is where HTCondor places information about your 

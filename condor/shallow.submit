@@ -5,12 +5,13 @@ Universe = vanilla
 Executable = shallow.sh
 Arguments = $(modelidx) $(Process)
 Requirements = HAS_SINGULARITY == TRUE
-+SingularityImage = "/cvmfs/singularity.opensciencegrid.org/tensorflow/tensorflow:latest/"
+#+SingularityImage = "/cvmfs/singularity.opensciencegrid.org/tensorflow/tensorflow:latest/"
++SingularityImage = "/cvmfs/singularity.opensciencegrid.org/opensciencegrid/tensorflow:latest"
 +SingularityBindCVMFS = True
 
 should_transfer_files = IF_NEEDED
 when_to_transfer_output = ON_EXIT
-transfer_input_files = data_$(modelidx).tgz
+transfer_input_files = nsides_scripts.tgz
 transfer_output_files = shallow_out_$(modelidx)_$(Process).tgz
 
 # The LOG file is where HTCondor places information about your 

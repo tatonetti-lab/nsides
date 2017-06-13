@@ -1,13 +1,14 @@
 rm -rf workflowdir
 mkdir workflowdir
+
+rm -rf workflowdir_gpu
+mkdir workflowdir_gpu
+
 cd workflowdir
 
-if [[ "$1" == "cpu" ]]
-then
-    for i in {0..149}
+for i in {0..150}
     do
 	touch workflow_$i.dag
-        echo JOB A prepare_data.submit >> workflow_$i.dag
         echo JOB B0 dnn.submit >> workflow_$i.dag
         echo JOB B1 shallow.submit >> workflow_$i.dag
         echo JOB C0 eval_model_dnn.submit >> workflow_$i.dag
@@ -16,7 +17,6 @@ then
 	echo JOB C3 eval_model_lrc.submit >> workflow_$i.dag
 	echo JOB C4 eval_model_nopsm.submit >> workflow_$i.dag
         echo  >> workflow_$i.dag
-        echo PARENT A CHILD B0 B1 >> workflow_$i.dag
         echo PARENT B0 CHILD C0 >> workflow_$i.dag
         echo PARENT B1 CHILD C1 C2 C3 C4 >> workflow_$i.dag
         echo  >> workflow_$i.dag
@@ -28,7 +28,6 @@ then
 	echo RETRY C3 10 >> workflow_$i.dag
    	echo RETRY C4 10 >> workflow_$i.dag
         echo  >> workflow_$i.dag
-        echo VARS A modelidx=\"$i\" >> workflow_$i.dag
         echo VARS B0 modelidx=\"$i\" >> workflow_$i.dag
         echo VARS B1 modelidx=\"$i\" >> workflow_$i.dag
         echo VARS C0 modelidx=\"$i\" >> workflow_$i.dag
@@ -37,15 +36,14 @@ then
         echo VARS C3 modelidx=\"$i\" >> workflow_$i.dag
 	echo VARS C4 modelidx=\"$i\" >> workflow_$i.dag
     done
-fi
 
-if [[ "$1" == "gpu" ]]
-then
-    for i in {0..149}
+cd ..
+cd workflowdir_gpu
+
+for i in {0..150}
     do
 	touch workflow_$i.dag
-        echo JOB A prepare_data.submit >> workflow_$i.dag
-        echo JOB B0 dnn.submit >> workflow_$i.dag
+        echo JOB B0 dnn_gpu.submit >> workflow_$i.dag
         echo JOB B1 shallow.submit >> workflow_$i.dag
         echo JOB C0 eval_model_dnn.submit >> workflow_$i.dag
 	echo JOB C1 eval_model_bdt.submit >> workflow_$i.dag
@@ -53,7 +51,6 @@ then
 	echo JOB C3 eval_model_lrc.submit >> workflow_$i.dag
 	echo JOB C4 eval_model_nopsm.submit >> workflow_$i.dag
         echo  >> workflow_$i.dag
-        echo PARENT A CHILD B0 B1 >> workflow_$i.dag
         echo PARENT B0 CHILD C0 >> workflow_$i.dag
         echo PARENT B1 CHILD C1 C2 C3 C4 >> workflow_$i.dag
         echo  >> workflow_$i.dag
@@ -65,7 +62,6 @@ then
 	echo RETRY C3 10 >> workflow_$i.dag
    	echo RETRY C4 10 >> workflow_$i.dag
         echo  >> workflow_$i.dag
-        echo VARS A modelidx=\"$i\" >> workflow_$i.dag
         echo VARS B0 modelidx=\"$i\" >> workflow_$i.dag
         echo VARS B1 modelidx=\"$i\" >> workflow_$i.dag
         echo VARS C0 modelidx=\"$i\" >> workflow_$i.dag
@@ -74,6 +70,5 @@ then
         echo VARS C3 modelidx=\"$i\" >> workflow_$i.dag
 	echo VARS C4 modelidx=\"$i\" >> workflow_$i.dag
     done
-fi
 
 cd ..
