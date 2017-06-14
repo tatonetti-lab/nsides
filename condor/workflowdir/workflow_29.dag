@@ -1,26 +1,13 @@
 JOB B0 dnn.submit
-JOB B1 shallow.submit
 JOB C0 eval_model_dnn.submit
-JOB C1 eval_model_bdt.submit
-JOB C2 eval_model_rfc.submit
-JOB C3 eval_model_lrc.submit
 JOB C4 eval_model_nopsm.submit
 
-PARENT B0 CHILD C0
-PARENT B1 CHILD C1 C2 C3 C4
+PARENT B0 CHILD C0 C4
 
 RETRY B0 10
-RETRY B1 10
 RETRY C0 10
-RETRY C1 10
-RETRY C2 10
-RETRY C3 10
 RETRY C4 10
 
 VARS B0 modelidx="29"
-VARS B1 modelidx="29"
 VARS C0 modelidx="29"
-VARS C1 modelidx="29"
-VARS C2 modelidx="29"
-VARS C3 modelidx="29"
 VARS C4 modelidx="29"

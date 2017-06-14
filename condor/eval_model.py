@@ -94,6 +94,9 @@ if args.model_type == 'nopsm':
         negbins = np.where((y==0) & (ages_exp != -1) & (years_exp <= year))[0]
     
         Avec = sparse.csr_matrix.sum(reactions[posbins,:],axis=0)
+        output = open('results_nreports_'+str(args.model_type)+save_string+'_'+str(year)+'.pkl','wb')
+        pickle.dump(Avec,output)
+        output.close()
         AplusB = float(len(posbins))
         Cvec = sparse.csr_matrix.sum(reactions[negbins,:],axis=0)
         CplusD = float(len(negbins))
