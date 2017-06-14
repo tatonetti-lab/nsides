@@ -6,7 +6,7 @@ mkdir workflowdir_gpu
 
 cd workflowdir
 
-for i in {0..151}
+for i in {0..4500}
     do
 	touch workflow_$i.dag
         echo JOB B0 dnn.submit >> workflow_$i.dag
@@ -41,7 +41,7 @@ for i in {0..151}
 cd ..
 cd workflowdir_gpu
 
-for i in {0..151}
+for i in {0..4500}
     do
 	touch workflow_$i.dag
         echo JOB B0 dnn_gpu.submit >> workflow_$i.dag

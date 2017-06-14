@@ -114,8 +114,11 @@ if args.model_type == 'nopsm':
         AplusB = float(len(posbins))
         Cvec = sparse.csr_matrix.sum(reactions[negbins,:],axis=0)
         CplusD = float(len(negbins))
-    
-        num = Avec * (1/AplusB)
+
+        if (AplusB !=0):
+            num = Avec * (1/AplusB)
+        else:
+            num = Avec * -1
         den = Cvec * (1/CplusD)
     
         for reactionIdx in range(0,reactions.shape[1]):
@@ -126,8 +129,11 @@ if args.model_type == 'nopsm':
             if Avec[0,reactionIdx] !=0 and Cvec[0,reactionIdx] !=0:
                 invA = 1/float(Avec[0,reactionIdx])
                 invC = 1/float(Cvec[0,reactionIdx])
-    
-                reactionPRRs_err.append( (invA - (1/AplusB) + invC - (1/CplusD))**0.5 )
+
+                if (AplusB != 0):
+                    reactionPRRs_err.append( (invA - (1/AplusB) + invC - (1/CplusD))**0.5 )
+                else:
+                    reactionPRRs_err.append( -99 )
     
             else:
                 reactionPRRs_err.append(-1)
@@ -255,8 +261,12 @@ for year in range(2004,2017):
             
     print "Number of case reports used:",totPosReports
     print "Number of control reports used:",totNegReports
-    negAvg = negAvg/totPosReports
-    posAvg = posAvg/totPosReports
+    if (totPosReports == 0):
+        negAvg = 0
+        posAvg = 0
+    else:
+        negAvg = negAvg/totPosReports
+        posAvg = posAvg/totPosReports
     print "Weighted average of controls:",negAvg
     print "Weighted average of cases:",posAvg
     
