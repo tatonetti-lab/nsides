@@ -37,20 +37,21 @@ The scripts in this folder accomplish the following workflow:
 An example local workflow on OSG follows:
 1. `git clone http://github.com/tatonett-lab/nsides nsides`
 2. `cd nsides/condor`
-3. Start tensorflow singularity shell: `singularity shell docker://tensorflow/tensorflow:latest`
-4. Install dependencies:
+3. `mkdir data; cd data; python ../get_data.py; cd ..`
+4. Start tensorflow singularity shell: `singularity shell docker://tensorflow/tensorflow:latest`
+5. Install dependencies:
  * `/usr/local/bin/pip install --user h5py`
  * `/usr/local/bin/pip install --user keras`
  * `/usr/local/bin/pip install --user wget`
-5. `mkdir data; cd data; python ../get_data.py; cd ..`
-6. `python prepare_data_osg.py --model-number 0`
-7. `python mlp_dnn_streaming.py --run-on-cpu --suffix 0`
-8. `python mlp_shallow_osg.py --suffix 0`
-9. `python eval_model.py --model-type bdt --model-number 0`
-10. `python eval_model.py --model-type rfc --model-number 0`
-11. `python eval_model.py --model-type lrc --model-number 0`
-12. `python eval_model.py --model-type dnn --model-number 0`
-13. `python eval_model.py --model-type nopsm --model-number 0`
+6. `mkdir data; cd data; python ../get_data.py; cd ..`
+7. `python prepare_data_osg.py --model-number 0`
+8. `python mlp_dnn_streaming.py --run-on-cpu --suffix 0`
+9. `python mlp_shallow_osg.py --suffix 0`
+10. `python eval_model.py --model-type bdt --model-number 0`
+11. `python eval_model.py --model-type rfc --model-number 0`
+12. `python eval_model.py --model-type lrc --model-number 0`
+13. `python eval_model.py --model-type dnn --model-number 0`
+14. `python eval_model.py --model-type nopsm --model-number 0`
 
 - - -
 
