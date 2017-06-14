@@ -9,6 +9,10 @@ parser.add_argument('--model-number',
                     action='store',
                     dest='model_num',
                     default=2451)
+parser.add_argument('--use-run-indices',
+                    action='store_true',
+                    default=False,
+                    dest='use_run_indices')
 args = parser.parse_args()
 
 args.model_num = (args.model_num).split("_")
@@ -24,10 +28,19 @@ def main():
     reportBlock0 = reportBlock0.tocsr()
     posReports = sparse.csr_matrix((1,reportBlock0.shape[1]))
 
-    if len(args.model_num) > 1:
-        modelIdx = list(itemgetter(*args.model_num)(runIndices))
+    if args.use_run_indices == True:
+
+        if len(args.model_num) > 1:
+            modelIdx = list(itemgetter(*args.model_num)(runIndices))
+        else:
+            modelIdx = [itemgetter(*args.model_num)(runIndices)]
+
     else:
-        modelIdx = [itemgetter(*args.model_num)(runIndices)]
+        if len(args.model_num) > 1:
+            modelIdx = list(args.model_num)
+            
+        else:
+            modelIdx = [args.model_num[0]]
         
     modelOutcome = reportBlock0[:,modelIdx]
     modelOutcome = modelOutcome.astype(bool)

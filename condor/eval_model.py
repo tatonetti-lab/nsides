@@ -23,6 +23,11 @@ parser.add_argument('--model-number',
                     default='2451',
                     dest='model_num')
 
+parser.add_argument('--use-run-indices',
+                    action='store_true',
+                    default=False,
+                    dest='use_run_indices')
+
 args = parser.parse_args()
 
 runIndices = [
@@ -42,10 +47,19 @@ runIndices = [
 args.model_num = (args.model_num).split("_")
 args.model_num = map(int,args.model_num)
 
-if len(args.model_num) > 1:
-    modelIdx = list(itemgetter(*args.model_num)(runIndices))
+if args.use_run_indices == True:
+
+    if len(args.model_num) > 1:
+        modelIdx = list(itemgetter(*args.model_num)(runIndices))
+    else:
+        modelIdx = [itemgetter(*args.model_num)(runIndices)]
+
 else:
-    modelIdx = [itemgetter(*args.model_num)(runIndices)]
+    if len(args.model_num) > 1:
+        modelIdx = list(args.model_num)
+        
+    else:
+        modelIdx = [args.model_num[0]]
 
 save_string = ''
 for model in modelIdx:
