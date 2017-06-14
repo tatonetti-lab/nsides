@@ -8,6 +8,7 @@ import tensorflow as tf
 
 from scipy import io
 from scipy.sparse import vstack
+from scipy import sparse
 import numpy as np
 
 from operator import itemgetter
@@ -85,7 +86,53 @@ def generate_arrays(batchsize):
             #yield (all_reports[start_point:end_point,].todense(), np.reshape(outcomes_cat[start_point:end_point,],(end_point-start_point,2)))
             yield (all_reports[start_point:end_point,].todense(), np.reshape(outcomes_cat[start_point:end_point,],(batchsize,2)))
 
+def generate_arrays_smallbatch():
+    print "USING SMALL BATCH FUNCTION"
+    pos_reports = io.mmread('model_0_posreports.mtx')
+    pos_reports = pos_reports.tocsr()
+    
+    neg_reports = io.mmread('model_0_negreports.mtx')
+    neg_reports = neg_reports.tocsr()
+    
+    for reportblock in range(1,50):
+        print "Procesing",reportblock
+        thispos = io.mmread('model_'+str(reportblock)+'_posreports.mtx')
+        thispos = thispos.tocsr()
+        pos_reports = vstack((pos_reports,thispos))
+    
+        thisneg = io.mmread('model_'+str(reportblock)+'_negreports.mtx')
+        thisneg = thisneg.tocsr()
+        neg_reports = vstack((neg_reports,thisneg))
 
+    print "NUMBER OF POSITIVE REPORTS:",pos_reports.shape[0]
+
+    neg_ind = np.arange(neg_reports.shape[0])
+
+    subset_neg_ind = np.random.choice(neg_ind, pos_reports.shape[0], replace=False)
+    neg_reports_subset = neg_reports[subset_neg_ind,:]
+    
+    all_reports = vstack([pos_reports,neg_reports_subset])
+
+    outcomes = np.concatenate((np.ones(pos_reports.shape[0],np.bool),
+                               np.zeros(neg_reports_subset.shape[0],np.bool)))
+
+    del pos_reports
+    del neg_reports
+    del neg_reports_subset
+
+    new_ind = np.random.permutation(all_reports.shape[0])
+    all_reports = all_reports[new_ind,]
+    outcomes = outcomes[new_ind]
+
+    rowSums = sparse.csr_matrix.sum(all_reports,axis=1)
+    to_keep_rows = np.where(rowSums != 0)[0]
+
+    all_reports = all_reports[to_keep_rows,:]
+    outcomes = outcomes[to_keep_rows]
+    
+    outcomes_cat = np_utils.to_categorical(outcomes,2)
+
+    return all_reports, outcomes_cat
 
 if args.run_on_cpu:
     with tf.device("/cpu:0"):
@@ -96,6 +143,13 @@ if args.run_on_cpu:
             n_hidden_2 = 50
 
             pos_reports = io.mmread('model_0_posreports.mtx')
+            pos_reports = pos_reports.tocsr()
+
+            for reportblock in range(1,50):
+                print "Procesing",reportblock
+                thispos = io.mmread('model_'+str(reportblock)+'_posreports.mtx')
+                thispos = thispos.tocsr()
+                pos_reports = vstack((pos_reports,thispos))
 
             input_data = Input(shape=(pos_reports.shape[1],))
             #encoded_1 = Dense(n_hidden_1, activation='relu', activity_regularizer=regularizers.l1(1e-4), use_bias=False)(input_data)
@@ -113,8 +167,15 @@ if args.run_on_cpu:
                                                                            metrics.mean_squared_error,
                                                                            'accuracy'])
             batchsize = 1
+
             
-            autoencoder.fit_generator(generate_arrays(batchsize), steps_per_epoch=int(pos_reports.shape[0]*2/batchsize), epochs=10)
+
+            if pos_reports.shape[0] < 200:
+                all_reports, outcomes = generate_arrays_smallbatch()
+                autoencoder.fit(all_reports.todense(),outcomes,epochs=100)
+
+            else:
+                autoencoder.fit_generator(generate_arrays(batchsize), steps_per_epoch=int(pos_reports.shape[0]*2/batchsize), epochs=10)
 
             #X = np.load("model_"+model_num+"_reports.npy")
 
@@ -156,6 +217,13 @@ else:
         n_hidden_2 = 50
 
         pos_reports = io.mmread('model_0_posreports.mtx')
+        pos_reports = pos_reports.tocsr()
+
+        for reportblock in range(1,50):
+            print "Procesing",reportblock
+            thispos = io.mmread('model_'+str(reportblock)+'_posreports.mtx')
+            thispos = thispos.tocsr()
+            pos_reports = vstack((pos_reports,thispos))
 
         input_data = Input(shape=(pos_reports.shape[1],))
         #encoded_1 = Dense(n_hidden_1, activation='relu', activity_regularizer=regularizers.l1(1e-4), use_bias=False)(input_data)
@@ -173,8 +241,13 @@ else:
                                                                        metrics.mean_squared_error,
                                                                        'accuracy'])
         batchsize = 1
-        
-        autoencoder.fit_generator(generate_arrays(batchsize), steps_per_epoch=int(pos_reports.shape[0]*2/batchsize), epochs=10)
+
+        if pos_reports.shape[0] < 200:
+            all_reports, outcomes = generate_arrays_smallbatch()
+            autoencoder.fit(all_reports.todense(),outcomes,epochs=100)
+
+        else:
+            autoencoder.fit_generator(generate_arrays(batchsize), steps_per_epoch=int(pos_reports.shape[0]*2/batchsize), epochs=10)
 
         #X = np.load("model_"+model_num+"_reports.npy")
 
