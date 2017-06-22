@@ -5,6 +5,14 @@ Populates the nsides mongodb from the provided tar archived file.
 
 @author Nicholas Tatonetti, 2017
 
+USAGE:
+
+If you want to instantiate this on a remote server that doesn't allow connections over 27017 then you
+can open up an SSH tunnel, e.g.
+
+ssh -L 27017:localhost:27017 username@removeserver.org
+
+
 """
 
 import os
@@ -60,6 +68,10 @@ def main(archive_file):
     
     for rf in resultsfiles:
         
+        if rf.startswith('results_nreports'):
+            # we can't handle this right now
+            continue
+        
         f = open(os.path.join(EXTRACTED_DIR, rf))
         obj = pickle.load(f)
         
@@ -96,6 +108,10 @@ def main(archive_file):
     
     print >> sys.stderr, "Fishined processing, created %d documents." % len(documents)
     
+    if len(documents) == 0:
+        print >> sys.stderr, "No documents to save. Finished"
+        return False
+    
     print >> sys.stderr, "Loading data into the 'nsides' database in mongo at %s:%s" % (MONGODB_HOST, MONGODB_PORT)
     
     client = pymongo.MongoClient(MONGODB_HOST, MONGODB_PORT)
@@ -105,6 +121,8 @@ def main(archive_file):
     r = estimates.insert_many(documents.values())
     
     print >> sys.stderr, "Completed %d inserts." % len(r.inserted_ids)
+    
+    return True
 
 if __name__ == '__main__':
     main(sys.argv[1])
