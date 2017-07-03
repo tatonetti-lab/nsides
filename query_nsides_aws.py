@@ -47,6 +47,22 @@ def query_db(service, method, query=False, cache=False):
 		print "Service: ",service
 		print "Method: ",method
 		print "Query: ",query
+        if method == 'drugForEffectFreq':
+            SQL = """select stitch_id, drug_name, lower_bound, upper_bound
+                    from effect_freqs
+                    join mapped_adverse_effects using (stitch_id, umls_id)
+                    where umls_id = '{query}'""".format(query=query)
+            cur.execute(SQL)
+            results = cur.fetchall()
+            
+            for result in results:
+                json_return.append({
+                    "stitch_id": str(result['stitch_id']),
+                    "drug_name": str(result['drug_name']),
+                    "lower_bound": str(result['lower_bound']),
+                    "upper_bound": str(result['upper_bound'])
+                })
+        
 		if method == 'drugForEffect':
 			SQL = '''select stitch_id, drug_name
 				from mapped_adverse_effects
