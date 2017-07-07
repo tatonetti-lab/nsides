@@ -24,4 +24,5 @@ print >> sys.stderr, "Loading password from ../nsides-mongo-config.txt..."
 MONGODB_HOST, MONGODB_UN, MONGODB_PW = open('../nsides-mongo-config.txt').read().strip().split('\n')
 
 client = pymongo.MongoClient('mongodb://%s:%s@%s:%s/nsides' % (MONGODB_UN, MONGODB_PW, MONGODB_HOST, MONGODB_PORT))
-client.drop_database('nsides')
+db = client.nsides
+db.estimates.drop()
