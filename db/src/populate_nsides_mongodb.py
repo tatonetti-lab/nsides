@@ -47,7 +47,7 @@ MONGODB_PORT = 27017
 def main(archive_file):
     
     print >> sys.stderr, "Loading password from ../nsides-mongo-config.txt..."
-    MONGODB_HOST, MONGODB_UN, MONGODB_PW = [x.strip() for x in open('../nsides-mongo-config.txt').read().split('\n')]
+    MONGODB_HOST, MONGODB_UN, MONGODB_PW = open('../nsides-mongo-config.txt').read().strip().split('\n')
     
     print >> sys.stderr, "Loading the reference data for drugs and outcomes..."
     outcomes = numpy.load(os.path.join(REFERNCE_DIR, 'all_outcome_strings.npy')) # snomed ids
