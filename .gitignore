@@ -20,3 +20,5 @@ condor/AEOLUS_all_reports_alloutcomes.mtx
 nsides-mongo-config.txt
 
 packages/*
+
+*~
