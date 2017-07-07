@@ -1,7 +1,7 @@
 nsides.cnf
 
 # no .npy files indexed
-# *.npy
+*.npy
 
 *.log
 
