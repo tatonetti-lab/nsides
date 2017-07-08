@@ -328,11 +328,12 @@ def query_db(service, method, query=False, cache=False):
 			    	"definition": str(result['concept_name'])
 			    })
 		elif method == 'getConceptDetails':
-			if query[:4] == 'omop':
-				query = query[5:]
+			if query[:6] == 'aeolus':
+				query = query[7:]
 
 			print query
-			SQL = '''select * from concept WHERE concept_id = '{query}';'''.format(query=query)
+			#SQL = '''select * from concept WHERE concept_id = '{query}';'''.format(query=query)
+			SQL = '''select * from concept where concept_id = {query} and domain_id in ("Drug", "Condition", "Procedure", "Measurement");'''.format(query=query)
 			
 			print SQL
 			print service
@@ -351,16 +352,118 @@ def query_db(service, method, query=False, cache=False):
 			    elif result['domain_id'] == 'Meas Value':
 			    	semantic_group = 'PHEN'
 			    json_return.append({
-			    	"id": "omop:" + str(result['concept_id']),
+			    	"id": "aeolus:" + str(result['concept_id']),
 			    	"name": str(result['concept_name']),
-			    	"semanticGroup": str(semantic_group),
+			    	#"semanticGroup": str(semantic_group),
+			    	"semanticGroup": str(result['domain_id']),
 			    	"synonyms": [],
 			    	"definition": str(result['concept_name'])
 			    })
+		elif method == 'getExactMatchesToConceptList':
+			if query[:6] == 'aeolus':
+				query = query[7:]
+				SQL = '''select vocabulary_id, concept_code from concept where concept_id = {query} and domain_id in ("Drug", "Condition", "Procedure", "Measurement");'''.format(query=query)
+				cur.execute(SQL)
+				results = cur.fetchall()
+
+				for result in results:
+				    json_return.append(
+				    	str(result['vocabulary_id'])+':'+str(result['concept_code'])
+				    )
+				return json_return
+			elif query[:6] == 'rxnorm':
+				query = query[7:]
+				SQL = '''select * from concept where concept_code = {query} and domain_id in ("Drug", "Condition", "Procedure", "Measurement");'''.format(query=query)
+			elif query[:6] == 'snomed':
+				query = query[7:]
+				SQL = '''select * from concept where concept_code = {query} and domain_id in ("Drug", "Condition", "Procedure", "Measurement");'''.format(query=query)
+			
+			print SQL
+			print service
+			print method
+			print query
+
+			cur.execute(SQL)
+			results = cur.fetchall()
+
+			for result in results:
+			    json_return.append(
+			    	'aeolus:'+str(result['concept_id'])
+			    )			
+			return json_return
+		elif method == 'getExactMatchesToConcept':
+			if query[:6] == 'aeolus':
+				query = query[7:]
+				SQL = '''select vocabulary_id, concept_code from concept where concept_id = {query} and domain_id in ("Drug", "Condition", "Procedure", "Measurement");'''.format(query=query)
+				cur.execute(SQL)
+				results = cur.fetchall()
+
+				for result in results:
+				    json_return.append(
+				    	str(result['vocabulary_id'])+':'+str(result['concept_code'])
+				    )
+				return json_return
+			elif query[:6] == 'rxnorm':
+				query = query[7:]
+				SQL = '''select * from concept where concept_code = {query} and domain_id in ("Drug", "Condition", "Procedure", "Measurement");'''.format(query=query)
+			elif query[:6] == 'snomed':
+				query = query[7:]
+				SQL = '''select * from concept where concept_code = {query} and domain_id in ("Drug", "Condition", "Procedure", "Measurement");'''.format(query=query)
+			
+			print SQL
+			print service
+			print method
+			print query
+
+			cur.execute(SQL)
+			results = cur.fetchall()
+
+			for result in results:
+			    json_return.append(
+			    	'aeolus:'+str(result['concept_id'])
+			    )			
+			return json_return
 		elif method == 'getEvidence':
 			print query
-		elif method == 'getExactMatchesToConceptList':
+		elif method == 'getStatements':
+			if query[:6] == 'aeolus':
+				query = query[7:]
+				SQL = '''select * from concept where concept_id = {query} and domain_id in ("Drug", "Condition", "Procedure", "Measurement");'''.format(query=query)
+				cur.execute(SQL)
+				results = cur.fetchall()
+
+				for result in results:
+				    json_return.append(
+				    	str('predicate:{')+str('instance of')+str('},')+
+				    	str('object:{')+str(result['concept_class_id'])+str('},')+
+				    	str('subject:{')+str(result['concept_name'])+str('},')+
+				    	str('id:id')
+				    )	
+				return json_return
+			elif query[:6] == 'rxnorm':
+				query = query[7:]
+				SQL = '''select * from concept where concept_code = {query} and domain_id in ("Drug", "Condition", "Procedure", "Measurement");'''.format(query=query)
+			elif query[:6] == 'snomed':
+				query = query[7:]
+				SQL = '''select * from concept where concept_code = {query} and domain_id in ("Drug", "Condition", "Procedure", "Measurement");'''.format(query=query)
+			
+			print SQL
+			print service
+			print method
 			print query
+
+			cur.execute(SQL)
+			results = cur.fetchall()
+
+			for result in results:
+			    json_return.append({
+			    	'predicate:{'+'}',
+			    	'object:{'+'}',
+			    	'subject:{'+'}',
+			    	'id:id',
+			    }
+			    )			
+			return json_return
 
 
 	#print json_return

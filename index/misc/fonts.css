@@ -1,0 +1,13 @@
+@font-face {
+    font-family: myriad;
+    src: url('../fonts/MYRIADAT.eot');
+    src: url('../fonts/MYRIADAT.TTF');
+}
+@font-face {
+    font-family: myriad;
+    src: url('../fonts/MYRIADAS.eot');
+    src: url('../fonts/MYRIADAS.TTF');
+    font-weight: bold;
+}
+
+

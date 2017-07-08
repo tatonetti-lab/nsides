@@ -7,6 +7,26 @@ import query_nsides_aws
 def index():
     return static_file("nsides.html", root='')
 
+@route('/api')
+def faq():
+    return static_file("api.html", root='')
+
+@route('/index/css/<cssfile>')
+def static_css(cssfile):
+    return static_file(cssfile, root='index/css/')
+
+@route('/index/img/<imgfile>')
+def static_img(imgfile):
+    return static_file(imgfile, root='index/img/')
+
+@route('/index/fonts/<fontfile>')
+def static_font(fontfile):
+    return static_file(fontfile, root='index/fonts/')
+
+@route('/index/misc/<miscfile>')
+def static_font(miscfile):
+    return static_file(miscfile, root='index/misc/')
+
 @route('/beacon/<service>/concepts')
 def getConcepts(service):
     keywords = request.params.get('keywords')

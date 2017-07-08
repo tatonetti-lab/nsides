@@ -22,3 +22,6 @@ nsides-mongo-config.txt
 packages/*
 
 *~
+
+query_nsides_aws.pyc
+

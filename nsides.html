@@ -1,89 +1,107 @@
-<!-- nsides - Home Page, Updated May 17,2017 
-
-Copyright (C) 2017, Tatonetti Lab
-Victor Nwankwo <vtn2106@cumc.columbia.edu>
-Rami Vanguri <>
-Tal Lorberbaum <tal.lorberbaum@columbia.edu>
-Nicholas P. Tatonetti <nick.tatonetti@columbia.edu>
-All rights reserved.
-
-This site is released under a CC BY-NC-SA 4.0 license.
-For full license details see LICENSE.txt at 
-https://github.com/tal-baum/deltaQTDb or go to:
-http://creativecommons.org/licenses/by-nc-sa/4.0/
--->
-
-<!doctype html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <title>nsides</title>
-    <meta name="viewport" content="initial-scale=1.0,user-scalable=no,maximum-scale=1,width=device-width">
-    <meta name="keywords" content="API">
-    <meta name="description" content="">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <title>nSides - A comprehensive database of drug-drug(s)-effect relationships - Tatonetti Lab</title>
+  <link type="text/css" rel="stylesheet" media="all" href="./index/misc/fonts.css">
+  <link type="text/css" rel="stylesheet" media="all" href="./index/misc/main.css">
+  <link type="text/css" rel="stylesheet" media="print" href="./index/misc/print.css">
+  <script async="" src="./index/misc/analytics.js"></script><script src="./index/misc/jquery.min.js"></script>
+  <style>
+  .h2o-est {
+    white-space: nowrap;
+  }
+  html, body
+  {
+    width: 100%;
+    height: 100%;
     
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <!-- <link rel="apple-touch-icon" href="/index/img/apple-touch-icon.png">
-    <link rel="shortcut icon" href="/index/img/favicon.ico">
+    margin: 0;
+    padding: 0;
+
+  }
+
+
+  #page {
+    height:100%;
+
+  }
+
+  #root {
+    /*height:100%;*/
+    flex: 1;
+  }
+
+  #header {
+    flex: 0 1 auto;
+    /* The above is shorthand for:
+    flex-grow: 0,
+    flex-shrink: 1,
+    flex-basis: auto
+    */
+
+  }
+  #header-content {
+    position:relative;
+    padding-top:40px;
+    height:120px;
+    vertical-align: bottom;
+  }
+
+  #content {
+    height:100%;
+    width:100%;
+    display: flex;
+    flex-direction: column;
     
-    <link rel="stylesheet" href="/index/css/react-select.css">
-    <link rel="stylesheet" href="/index/css/style.css" media="screen">
-    <link rel="stylesheet" href="/index/css/print.css" media="print">
-    -->
+    justify-content: flex-start; /* align items in Main Axis */
+    align-items: stretch; /* align items in Cross Axis */
+    align-content: stretch; /* Extra space in Cross Axis */
+            
+    background: rgba(255, 255, 255, .1);
+    /*flex: 1;*/
+  }
+
+  header, section, footer {
+    max-width:850px;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  #bar {
+    width: 100vw;
+    margin-left: calc(-50vw + 50%);
+  }
+  </style>
 </head>
+<body>
+  <div id="content">
 
-<body class="nsides-web">
-<div>
-    API's available at /api/v1/query?service={service}<br>
-    Services include:<br>
-    <ul>
-        <li>aeolus
-            <ul>
-                <li>ingredientList</li>
-                <li>drugReactionCounts : int(start) [example: '2000']</li>
-                <li>drugpairReactionCounts : int(start) [example: '2000']</li>
-                <li>reactionListSNOMED</li>
-                <li>reactionListMedDRA</li>
-                <li>drugpairList</li>
-                <li>drugpairReactionListMedDRA</li>
-            </ul>
-            <ol>DB Tables
-                <li>concept</li>
-                <li>standard_case_drug</li>
-                <li>standard_case_indication</li>
-                <li>standard_case_outcome_category</li>
-                <li>standard_case_outcome</li>
-                <li>standard_case_outcome_contingency_table</li>
-                <li>standard_case_outcome_count</li>
-                <li>standard_case_outcome_drilldown</li>
-                <li>standard_case_outcome_statistics</li>
-                <li>standard_unique_all_case</li>
-                <li>vocabulary</li>
-            </ol>
-        </li>
-        <li>sider
-            <ul>
-                <li>drugForEffect</li>
-                <li>drugReactionCounts</li>
-                <li>drugpairReactionCounts</li>
-                <li>reactionListSNOMED</li>
-                <li>reactionListMedDRA</li>
-                <li>drugpairList</li>
-                <li>drugpairReactionListMedDRA</li>
-            </ul>
-        </li>
-        <li>omop
-            <ul>
-                <li>reference : string(adverse_event) [example: 'Myocardial_Infarction']</li>
-                <li>drugsForEffect : string(effect) [example: 'C0016382']</li>
-            </ul>
-        </li>
-    </ul>
+    <div id="header">
+      <div id="header-content">
+          <div>
+              <h1>nSides</h1>
+              <h3>A comprehensive database of drug-drug(s)-effect relationships</h3>
+          </div>
+      </div>
+    </div>
 
-    <h3>Documentation</h3>
-    <pre>http://datadryad.org/resource/doi:10.5061/dryad.8q0s4/1</pre>
-    <pre>http://datadryad.org/bitstream/handle/10255/dryad.105332/README.txt?sequence=2</pre>
-</div>
-</body>
+  <div id="bar"></div>
+    
+      <section>
+      <br>
+      <img src="./index/img/mockup-landing.png" style="max-width:900px;" />
+      <br><br><br><br><br><br>
+      </section>
+      
+      <section>
+      
+      </section>
+      
 
-</html>
+
+      <footer>
+    <div id="footer">
+      <img src="./index/misc/cumc.png" width="250px">
+    </div>
+    </footer>
+  </div></body></html>
