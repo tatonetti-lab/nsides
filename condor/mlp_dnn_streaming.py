@@ -9,7 +9,11 @@ import tensorflow as tf
 from scipy import io
 from scipy.sparse import vstack
 from scipy import sparse
+from sklearn import metrics as metrics_skl
+from sklearn.model_selection import StratifiedKFold
 import numpy as np
+
+import sys
 
 from operator import itemgetter
 
@@ -30,109 +34,33 @@ args = parser.parse_args()
 
 args.suffix = str(args.suffix)
 
+def batch(iterable, n=1):
+    l = len(iterable)
+    for ndx in range(0, l, n):
+        yield iterable[ndx:min(ndx + n, l)]
 
 def comb_loss(y_true, y_pred):
     return losses.mean_squared_error(y_true, y_pred) + losses.categorical_crossentropy(y_true, y_pred)
 #2764 -> 2863
 
-def generate_arrays(batchsize):
-    pos_reports = io.mmread('model_0_posreports.mtx')
-    pos_reports = pos_reports.tocsr()
-    
-    neg_reports = io.mmread('model_0_negreports.mtx')
-    neg_reports = neg_reports.tocsr()
-    
-    for reportblock in range(1,50):
-        print "Procesing",reportblock
-        thispos = io.mmread('model_'+str(reportblock)+'_posreports.mtx')
-        thispos = thispos.tocsr()
-        pos_reports = vstack((pos_reports,thispos))
-    
-        thisneg = io.mmread('model_'+str(reportblock)+'_negreports.mtx')
-        thisneg = thisneg.tocsr()
-        neg_reports = vstack((neg_reports,thisneg))
+def generate_arrays(indices, predict=False):
+    if predict == False:
+        while 1:
+            for row in batch(indices,100):
+                #yield (all_reports[row,].todense(), np.reshape(outcomes[row,],(1,2)))
+                yield (all_reports[row,].todense(), np.reshape(outcomes_cat[row,],(len(row),2)))
+    else:
+        while 1:
+            for row in batch(indices,100):
+                yield (all_reports[row,].todense())
+                
 
-    print "NUMBER OF POSITIVE REPORTS:",pos_reports.shape[0]
+def shuffle_weights(model, weights=None):
+    if weights is None:
+        weights = model.get_weights()
+    weights = [np.random.permutation(w.flat).reshape(w.shape) for w in weights]
+    model.set_weights(weights)
 
-    neg_ind = np.arange(neg_reports.shape[0])
-
-    subset_neg_ind = np.random.choice(neg_ind, pos_reports.shape[0], replace=False)
-    neg_reports_subset = neg_reports[subset_neg_ind,:]
-    
-    all_reports = vstack([pos_reports,neg_reports_subset])
-
-    outcomes = np.concatenate((np.ones(pos_reports.shape[0],np.bool),
-                               np.zeros(neg_reports_subset.shape[0],np.bool)))
-
-    del pos_reports
-    del neg_reports
-    del neg_reports_subset
-
-    new_ind = np.random.permutation(all_reports.shape[0])
-    all_reports = all_reports[new_ind,]
-    outcomes = outcomes[new_ind]
-    outcomes_cat = np_utils.to_categorical(outcomes,2)
-
-    numbatches = np.ceil(float(all_reports.shape[0])/float(batchsize))
-
-    while 1:
-        for rownum in np.arange(numbatches):
-        #for rownum in np.arange(all_reports.shape[0]):
-            start_point = int(rownum*batchsize)
-            end_point = int((rownum+1)*batchsize)
-            if (end_point > all_reports.shape[0]):
-                end_point = all_reports.shape[0]
-            #print np.reshape(outcomes_cat[start_point:end_point,],(end_point-start_point,2))
-            #yield (all_reports[start_point:end_point,].todense(), np.reshape(outcomes_cat[start_point:end_point,],(end_point-start_point,2)))
-            yield (all_reports[start_point:end_point,].todense(), np.reshape(outcomes_cat[start_point:end_point,],(batchsize,2)))
-
-def generate_arrays_smallbatch():
-    print "USING SMALL BATCH FUNCTION"
-    pos_reports = io.mmread('model_0_posreports.mtx')
-    pos_reports = pos_reports.tocsr()
-    
-    neg_reports = io.mmread('model_0_negreports.mtx')
-    neg_reports = neg_reports.tocsr()
-    
-    for reportblock in range(1,50):
-        print "Procesing",reportblock
-        thispos = io.mmread('model_'+str(reportblock)+'_posreports.mtx')
-        thispos = thispos.tocsr()
-        pos_reports = vstack((pos_reports,thispos))
-    
-        thisneg = io.mmread('model_'+str(reportblock)+'_negreports.mtx')
-        thisneg = thisneg.tocsr()
-        neg_reports = vstack((neg_reports,thisneg))
-
-    print "NUMBER OF POSITIVE REPORTS:",pos_reports.shape[0]
-
-    neg_ind = np.arange(neg_reports.shape[0])
-
-    subset_neg_ind = np.random.choice(neg_ind, pos_reports.shape[0], replace=False)
-    neg_reports_subset = neg_reports[subset_neg_ind,:]
-    
-    all_reports = vstack([pos_reports,neg_reports_subset])
-
-    outcomes = np.concatenate((np.ones(pos_reports.shape[0],np.bool),
-                               np.zeros(neg_reports_subset.shape[0],np.bool)))
-
-    del pos_reports
-    del neg_reports
-    del neg_reports_subset
-
-    new_ind = np.random.permutation(all_reports.shape[0])
-    all_reports = all_reports[new_ind,]
-    outcomes = outcomes[new_ind]
-
-    rowSums = sparse.csr_matrix.sum(all_reports,axis=1)
-    to_keep_rows = np.where(rowSums != 0)[0]
-
-    all_reports = all_reports[to_keep_rows,:]
-    outcomes = outcomes[to_keep_rows]
-    
-    outcomes_cat = np_utils.to_categorical(outcomes,2)
-
-    return all_reports, outcomes_cat
 
 if args.run_on_cpu:
     with tf.device("/cpu:0"):
@@ -142,14 +70,45 @@ if args.run_on_cpu:
             n_hidden_1 = 200
             n_hidden_2 = 50
 
+            print "Building positive and negative report matrices..."
+
             pos_reports = io.mmread('model_0_posreports.mtx')
             pos_reports = pos_reports.tocsr()
 
+            neg_reports = io.mmread('model_0_negreports.mtx')
+            neg_reports = neg_reports.tocsr()
+    
             for reportblock in range(1,50):
                 print "Procesing",reportblock
                 thispos = io.mmread('model_'+str(reportblock)+'_posreports.mtx')
                 thispos = thispos.tocsr()
                 pos_reports = vstack((pos_reports,thispos))
+    
+                thisneg = io.mmread('model_'+str(reportblock)+'_negreports.mtx')
+                thisneg = thisneg.tocsr()
+                neg_reports = vstack((neg_reports,thisneg))
+
+            print "Done."
+
+            neg_ind = np.arange(neg_reports.shape[0])
+            pos_ind = np.arange(pos_reports.shape[0])
+
+            subset_neg_ind = np.random.choice(neg_ind, pos_reports.shape[0], replace=False)
+            neg_reports_subset = neg_reports[subset_neg_ind,:]
+
+            all_reports = vstack([pos_reports,neg_reports_subset])
+
+            outcomes = np.concatenate((np.ones(pos_reports.shape[0],np.bool),
+                                       np.zeros(neg_reports_subset.shape[0],np.bool)))
+
+            rowSums = sparse.csr_matrix.sum(all_reports,axis=1)
+            to_keep_rows = np.where(rowSums != 0)[0]
+
+            all_reports = all_reports[to_keep_rows,:]
+            outcomes = outcomes[to_keep_rows]
+            #outcomes = np_utils.to_categorical(outcomes, 2)
+
+
 
             input_data = Input(shape=(pos_reports.shape[1],))
             #encoded_1 = Dense(n_hidden_1, activation='relu', activity_regularizer=regularizers.l1(1e-4), use_bias=False)(input_data)
@@ -166,29 +125,63 @@ if args.run_on_cpu:
             autoencoder.compile(optimizer='adam', loss=comb_loss, metrics=[metrics.categorical_crossentropy,
                                                                            metrics.mean_squared_error,
                                                                            'accuracy'])
-            batchsize = 1
 
+            initial_weights = autoencoder.get_weights()
             
-
-            if pos_reports.shape[0] < 200:
-                all_reports, outcomes = generate_arrays_smallbatch()
-                autoencoder.fit(all_reports.todense(),outcomes,epochs=100)
-
-            else:
-                autoencoder.fit_generator(generate_arrays(batchsize), steps_per_epoch=int(pos_reports.shape[0]*2/batchsize), epochs=10)
-
-            #X = np.load("model_"+model_num+"_reports.npy")
-
+            batchsize = 1
+            
             X = io.mmread("model_0_reports.mtx")
             X = X.tocsr()
             for reportblock in range(1,50):
                 thisreport = io.mmread("model_"+str(reportblock)+"_reports.mtx")
                 thisreport = thisreport.tocsr()
                 X = vstack([X,thisreport])
-            
-            numsteps = X.shape[0]
 
-            batchsize=50000
+            kfold = StratifiedKFold(n_splits=3,shuffle=True)
+
+            cvscores = []
+            calculated_weights = []
+
+            for train,test in kfold.split(all_reports, outcomes):
+
+                outcomes_cat = np_utils.to_categorical(outcomes, 2)
+
+                shuffle_weights(autoencoder, initial_weights)
+
+                batchsize=50000
+
+                if pos_reports.shape[0] < 200:
+                    autoencoder.fit(all_reports[train].todense(),outcomes_cat[train],validation_data=(all_reports[test].todense(),outcomes_cat[test]),epochs=100)
+                    scores = autoencoder.evaluate(all_reports[test].todense(), outcomes_cat[test], verbose=0)
+                else:
+                    autoencoder.fit_generator(generate_arrays(train),steps_per_epoch=int(len(train)/100), epochs=100,validation_data=generate_arrays(test),validation_steps=int(len(test)/100))
+                    scores = autoencoder.evaluate_generator(generate_arrays(test),steps=int(len(test)/100))
+                    #scores = autoencoder.evaluate_generator(generate_arrays(test),steps=int(len(test)/100))
+                    #predictions = autoencoder.predict(all_reports[test].todense())
+                    #scores = metrics_skl.roc_auc_score(outcomes_cat[test,1], predictions[:,1])
+
+                #print("%s: %.2f%" % (autoencoder.metrics_names[3], scores[3]))
+                #print("%.2f" % (scores))
+                print scores
+
+                cvscores.append(scores[3])
+                calculated_weights.append(autoencoder.get_weights())
+                
+            print "max val acc:",np.amax(cvscores)
+            print "model with max val acc:",np.argmax(cvscores)
+
+            autoencoder.set_weights(calculated_weights[np.argmax(cvscores)])
+
+            scores = autoencoder.evaluate_generator(generate_arrays(np.arange(all_reports.shape[0])),steps=int(all_reports.shape[0]/100))
+
+            print scores
+
+            if scores[3] < 0.80:
+                print "ACCURACY BELOW 80%, NOT SAVING SCORES"
+                sys.exit()
+
+
+            numsteps = X.shape[0]
             numsteps = np.ceil(float(numsteps)/float(batchsize))
 
             predictions = autoencoder.predict(X[0:batchsize].todense(), verbose=1)
@@ -202,8 +195,10 @@ if args.run_on_cpu:
                     end_point = X.shape[0]
                 thesepredictions = autoencoder.predict(X[start_point:end_point].todense(), verbose=0)
                 predictions = np.concatenate((predictions, thesepredictions))
-                #print "pred shape:",predictions.shape
                 del thesepredictions
+
+
+
 
             np.save("scores_dnn_"+str(i+1)+"_"+args.suffix+".npy",predictions[:,1])
 
@@ -216,14 +211,45 @@ else:
         n_hidden_1 = 200
         n_hidden_2 = 50
 
+        print "Building positive and negative report matrices..."
+
         pos_reports = io.mmread('model_0_posreports.mtx')
         pos_reports = pos_reports.tocsr()
+
+        neg_reports = io.mmread('model_0_negreports.mtx')
+        neg_reports = neg_reports.tocsr()
 
         for reportblock in range(1,50):
             print "Procesing",reportblock
             thispos = io.mmread('model_'+str(reportblock)+'_posreports.mtx')
             thispos = thispos.tocsr()
             pos_reports = vstack((pos_reports,thispos))
+
+            thisneg = io.mmread('model_'+str(reportblock)+'_negreports.mtx')
+            thisneg = thisneg.tocsr()
+            neg_reports = vstack((neg_reports,thisneg))
+
+        print "Done."
+
+        neg_ind = np.arange(neg_reports.shape[0])
+        pos_ind = np.arange(pos_reports.shape[0])
+
+        subset_neg_ind = np.random.choice(neg_ind, pos_reports.shape[0], replace=False)
+        neg_reports_subset = neg_reports[subset_neg_ind,:]
+
+        all_reports = vstack([pos_reports,neg_reports_subset])
+
+        outcomes = np.concatenate((np.ones(pos_reports.shape[0],np.bool),
+                                   np.zeros(neg_reports_subset.shape[0],np.bool)))
+
+        rowSums = sparse.csr_matrix.sum(all_reports,axis=1)
+        to_keep_rows = np.where(rowSums != 0)[0]
+
+        all_reports = all_reports[to_keep_rows,:]
+        outcomes = outcomes[to_keep_rows]
+        #outcomes = np_utils.to_categorical(outcomes, 2)
+
+
 
         input_data = Input(shape=(pos_reports.shape[1],))
         #encoded_1 = Dense(n_hidden_1, activation='relu', activity_regularizer=regularizers.l1(1e-4), use_bias=False)(input_data)
@@ -240,27 +266,63 @@ else:
         autoencoder.compile(optimizer='adam', loss=comb_loss, metrics=[metrics.categorical_crossentropy,
                                                                        metrics.mean_squared_error,
                                                                        'accuracy'])
+
+        initial_weights = autoencoder.get_weights()
+        
         batchsize = 1
-
-        if pos_reports.shape[0] < 200:
-            all_reports, outcomes = generate_arrays_smallbatch()
-            autoencoder.fit(all_reports.todense(),outcomes,epochs=100)
-
-        else:
-            autoencoder.fit_generator(generate_arrays(batchsize), steps_per_epoch=int(pos_reports.shape[0]*2/batchsize), epochs=10)
-
-        #X = np.load("model_"+model_num+"_reports.npy")
-
+        
         X = io.mmread("model_0_reports.mtx")
         X = X.tocsr()
         for reportblock in range(1,50):
             thisreport = io.mmread("model_"+str(reportblock)+"_reports.mtx")
             thisreport = thisreport.tocsr()
             X = vstack([X,thisreport])
-        
-        numsteps = X.shape[0]
 
-        batchsize=50000
+        kfold = StratifiedKFold(n_splits=3,shuffle=True)
+
+        cvscores = []
+        calculated_weights = []
+
+        for train,test in kfold.split(all_reports, outcomes):
+
+            outcomes_cat = np_utils.to_categorical(outcomes, 2)
+
+            shuffle_weights(autoencoder, initial_weights)
+
+            batchsize=50000
+
+            if pos_reports.shape[0] < 200:
+                autoencoder.fit(all_reports[train].todense(),outcomes_cat[train],validation_data=(all_reports[test].todense(),outcomes_cat[test]),epochs=100)
+                scores = autoencoder.evaluate(all_reports[test].todense(), outcomes_cat[test], verbose=0)
+            else:
+                autoencoder.fit_generator(generate_arrays(train),steps_per_epoch=int(len(train)/100), epochs=100,validation_data=generate_arrays(test),validation_steps=int(len(test)/100))
+                scores = autoencoder.evaluate_generator(generate_arrays(test),steps=int(len(test)/100))
+                #scores = autoencoder.evaluate_generator(generate_arrays(test),steps=int(len(test)/100))
+                #predictions = autoencoder.predict(all_reports[test].todense())
+                #scores = metrics_skl.roc_auc_score(outcomes_cat[test,1], predictions[:,1])
+
+            #print("%s: %.2f%" % (autoencoder.metrics_names[3], scores[3]))
+            #print("%.2f" % (scores))
+            print scores
+
+            cvscores.append(scores[3])
+            calculated_weights.append(autoencoder.get_weights())
+            
+        print "max val acc:",np.amax(cvscores)
+        print "model with max val acc:",np.argmax(cvscores)
+
+        autoencoder.set_weights(calculated_weights[np.argmax(cvscores)])
+
+        scores = autoencoder.evaluate_generator(generate_arrays(np.arange(all_reports.shape[0])),steps=int(all_reports.shape[0]/100))
+
+        print scores
+
+        if scores[3] < 0.80:
+            print "ACCURACY BELOW 80%, NOT SAVING SCORES"
+            sys.exit()
+
+
+        numsteps = X.shape[0]
         numsteps = np.ceil(float(numsteps)/float(batchsize))
 
         predictions = autoencoder.predict(X[0:batchsize].todense(), verbose=1)
@@ -274,8 +336,10 @@ else:
                 end_point = X.shape[0]
             thesepredictions = autoencoder.predict(X[start_point:end_point].todense(), verbose=0)
             predictions = np.concatenate((predictions, thesepredictions))
-            #print "pred shape:",predictions.shape
             del thesepredictions
+
+
+
 
         np.save("scores_dnn_"+str(i+1)+"_"+args.suffix+".npy",predictions[:,1])
 
