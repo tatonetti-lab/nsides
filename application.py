@@ -5,23 +5,35 @@ import query_nsides_aws
 
 @route('/')
 def index():
-    return static_file("nsides.html", root='')
+    return static_file("nsides_splash.html", root='')
 
 @route('/api')
 def faq():
-    return static_file("api.html", root='')
+    return static_file("nsides_api.html", root='')
+
+@route('/dev')
+def faq():
+    return static_file("nsides_dev.html", root='')
 
 @route('/index/css/<cssfile>')
 def static_css(cssfile):
     return static_file(cssfile, root='index/css/')
 
-@route('/index/img/<imgfile>')
-def static_img(imgfile):
-    return static_file(imgfile, root='index/img/')
+@route('/index/data/<datafile>')
+def static_css(datafile):
+    return static_file(datafile, root='index/data/')
 
 @route('/index/fonts/<fontfile>')
 def static_font(fontfile):
     return static_file(fontfile, root='index/fonts/')
+
+@route('/index/img/<imgfile>')
+def static_img(imgfile):
+    return static_file(imgfile, root='index/img/')
+
+@route('/index/js/<jsfile>')
+def static_css(jsfile):
+    return static_file(jsfile, root='index/js/')
 
 @route('/index/misc/<miscfile>')
 def static_font(miscfile):
