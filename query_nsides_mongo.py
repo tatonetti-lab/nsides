@@ -48,7 +48,7 @@ def main():
     
     print >> sys.stderr, "Reading the 'nsides' mongodb at %s:%s" % (MONGODB_HOST, MONGODB_PORT)
     
-    client = pymongo.MongoClient('mongodb://%s:%s@%s:%s/nsides' % (MONGODB_UN, MONGODB_PW, MONGODB_HOST, MONGODB_PORT))
+    client = pymongo.MongoClient('mongodb://%s:%s@%s:%s/admin' % (MONGODB_UN, MONGODB_PW, MONGODB_HOST, MONGODB_PORT))
     db = client.nsides
     estimates = db.estimates
 
