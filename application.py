@@ -114,6 +114,10 @@ def api_call():
             json = '''{"results": %s}''' %(str(service_result))
         elif meta == 'search_term':
             json = '''{"results": [c1, c2, c3 ... cn]} CONCEPT_ID'''
+    elif service == 'snomed':
+        if meta == 'getOutcomeFromSnomedId':
+            service_result = query_nsides_aws.query_db(service, meta, query)
+            json = '''{"results": %s}''' %(str(service_result))
     elif service == 'aeolus':
         if meta == 'ingredientList':
             service_result = query_nsides_aws.query_db(service, meta)

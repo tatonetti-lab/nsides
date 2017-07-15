@@ -18,25 +18,36 @@ http://creativecommons.org/licenses/by-nc-sa/4.0/
 <html>
 <head>
     <meta charset="utf-8">
-    <title>nsides</title>
+    <title>nSides - A comprehensive database of drug-drug(s)-effect relationships - Tatonetti Lab</title>
     <meta name="viewport" content="initial-scale=1.0,user-scalable=no,maximum-scale=1,width=device-width">
     <meta name="keywords" content="API">
     <meta name="description" content="">
     
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <!-- <link rel="apple-touch-icon" href="/index/img/apple-touch-icon.png">
+    <!-- 
+    <link rel="apple-touch-icon" href="/index/img/apple-touch-icon.png">
     <link rel="shortcut icon" href="/index/img/favicon.ico">
-    
-    <link rel="stylesheet" href="/index/css/react-select.css">
-    <link rel="stylesheet" href="/index/css/style.css" media="screen">
-    <link rel="stylesheet" href="/index/css/print.css" media="print">
     -->
+
+    <!-- Stylesheets for scaffold and fonts -->
+    <link type="text/css" rel="stylesheet" media="all" href="./index/misc/fonts.css">
+    <link type="text/css" rel="stylesheet" media="all" href="./index/misc/main.css">
+    <link type="text/css" rel="stylesheet" media="print" href="./index/misc/print.css">
+    <!-- styles for select bar -->
+    <link rel="stylesheet" href="./index/css/react-select.css">
 </head>
     
 <style>
-    body {
-        font: 10px sans-serif;
+    html, body
+    {
+        width: 100%;
+        height: 100%;
+
+        margin: 0;
+        padding: 0;
     }
+
+    
 
     svg {
         margin-left: auto; margin-right: auto;
@@ -92,10 +103,203 @@ http://creativecommons.org/licenses/by-nc-sa/4.0/
 */
 </style>
 
+<style>
+  .h2o-est {
+    white-space: nowrap;
+  }
+  html, body
+  {
+    width: 100%;
+    height: 100%;
+    
+    margin: 0;
+    padding: 0;
+
+  }
+
+
+  #page {
+    height:100%;
+
+  }
+
+  #root {
+    /*height:100%;*/
+    flex: 1;
+  }
+
+  #header {
+    flex: 0 1 auto;
+    /* The above is shorthand for:
+    flex-grow: 0,
+    flex-shrink: 1,
+    flex-basis: auto
+    */
+
+  }
+  #header-content {
+    position:relative;
+    padding-top:40px;
+    height:120px;
+    vertical-align: bottom;
+  }
+
+  #content {
+    height:100%;
+    width:100%;
+    display: flex;
+    flex-direction: column;
+    
+    justify-content: flex-start; /* align items in Main Axis */
+    align-items: stretch; /* align items in Cross Axis */
+    align-content: stretch; /* Extra space in Cross Axis */
+            
+    background: rgba(255, 255, 255, .1);
+    /*flex: 1;*/
+  }
+
+  header, section, footer {
+    max-width:850px;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  #bar {
+    width: 100vw;
+    margin-left: calc(-50vw + 50%);
+  }
+  .drug_title {
+    font-size: 22px;
+    font-weight:bold;
+    padding-top:25px;
+    padding-bottom:5px;
+  }
+
+  .effect_title {
+    font-size: 22px;
+    font-weight:bold;
+    padding-top:15px;
+    padding-bottom:5px;
+  }
+
+  #viz_container {
+        font: 10px sans-serif;
+
+    }
+
+    .select_container_effect {
+        padding-left:10px;
+    }
+    .select_container, .select_container_effect {
+        display: inline-block;
+        width:45%;
+    }
+
+    .y text { display: none; }
+
+    .y text text-anchor { display: visible; }
+  </style>
+
 <body>
-<!-- <script src="http://d3js.org/d3.v3.min.js"></script> -->
+<div id="content">
+
+    <div id="header">
+        <img class="logo" src="./index/img/wormhole.png" height="120px"/>
+        <div id="header-content">
+            <div>
+                <h1>nSides</h1>
+                <h3 style="white-space: nowrap;">A comprehensive database of drug-drug(s)-effect relationships</h3>
+            </div>
+        </div>
+    </div>
+
+    <div id="bar"></div>
+
+    <section>
+        <div class="select_container">
+            <div class="drug_title">Drug</div>
+            <div id="select_drug_container"></div>
+        </div>
+        <div class="select_container_effect">
+            <div class="effect_title">Effect</div>
+            <div id="select_effect_container"></div>
+        </div>
+
+        <br>
+        <div id="viz_container"></div><br><br><br><br><br>
+    </section>
+
+    <footer>
+        <div id="footer">
+            <img src="./index/misc/cumc.png" width="250px">
+        </div>
+    </footer>
+</div><!-- end #content -->
+
+<script src="/index/js/react.min.js"></script> 
+<script src="/index/js/react-dom.min.js"></script>
+<script src="/index/js/three.min.js"></script>
+<script src="/index/js/index.js"></script>
+<script src="/index/js/react-input-autosize.min.js"></script>
+<script src="/index/js/react-select-mod.js"></script> <!-- Updated to close menu after hitting Enter -->
+<script src="/index/js/drugs-brandnames-v4b.js"></script>
+
+<script>
+    // var options = [
+    //     { label: 'One', value: 1 },
+    //     { label: 'Two', value: 2 },
+    //     { label: 'Three', value: 3 },
+    // ];
+    var options = drugs;
+    var Container = React.createClass({
+        getInitialState () {
+            return { value: '' };
+        },
+        updateValue (value) {
+            this.setState({ value: value });
+        },
+        render () {
+            return React.createElement(Select, {
+                options: options,
+                onChange: this.updateValue,
+                value: this.state.value,
+            });
+        }
+    });
+    React.render(
+        React.createElement(Container),
+        document.getElementById('select_drug_container')
+    );
+
+    var effect_options = [
+        { label: 'snomed', value: 'snomed lookup' },
+    ];
+    var effect_Container = React.createClass({
+        getInitialState () {
+            return { value: '' };
+        },
+        updateValue (value) {
+            this.setState({ value: value });
+        },
+        render () {
+            return React.createElement(Select, {
+                options: effect_options,
+                onChange: this.updateValue,
+                value: this.state.value,
+            });
+        }
+    });
+    React.render(
+        React.createElement(effect_Container),
+        document.getElementById('select_effect_container')
+    );
+</script>
+
+
+
+
     <script src="./index/js/d3.min.js?v=3.2.8"></script>
-    <script type="text/javascript"charset="utf-8">
+    <script type="text/javascript" charset="utf-8">
         // Return standard error with 95% confidence
         function se95(p, n) {
             return Math.sqrt(p*(1-p)/n)*1.96;
@@ -133,7 +337,7 @@ http://creativecommons.org/licenses/by-nc-sa/4.0/
 
         var useEstimateLabels = true,
             yAxisTitle = "PRR",
-            cutoff = .25;
+            cutoff = .1;
 
         if (useEstimateLabels === true) { margin.right = 70; }
         // for the labels; 40 + 10 for each array.length > 4
@@ -153,7 +357,8 @@ http://creativecommons.org/licenses/by-nc-sa/4.0/
         var yAxis = d3.svg.axis()
             .scale(y)
             .orient("left")
-            .tickFormat(d3.format(".0"));
+            .tickFormat(d3.format(""));
+            //.tickFormat(d3.format(".0"));
             //.tickFormat(d3.format(".0"));
 
         var lineLeft = d3.svg.area()
@@ -182,7 +387,8 @@ http://creativecommons.org/licenses/by-nc-sa/4.0/
             .y1(function(d) {
                 return y(d["right"] + d["confidenceRight"]); });
 
-        var svg = d3.select("body").append("svg")
+        //var svg = d3.select("body").append("svg")
+        var svg = d3.select("#viz_container").append("svg")
             .attr({
                 "width": width + margin.left + margin.right,
                 "height": height + margin.top + margin.bottom
@@ -244,7 +450,7 @@ http://creativecommons.org/licenses/by-nc-sa/4.0/
                 }),
                 d3.max(data, function(d) {
                     //var max = Math.max(d["right"], d["left"]);
-                    max = .45;
+                    max = .25;
                     return max + se95(max, d["respondents"]);
                 })
             ]);

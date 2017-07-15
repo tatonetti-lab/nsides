@@ -18,7 +18,29 @@ def query_db(service, method, query=False, cache=False):
 
 	table_suffix = ""
 	json_return = []
-	if service == 'omop':
+	if service == 'va':
+		print "Service: ",service
+		print "Method: ",method
+		if method == 'get_ddi_alerts':
+			# if query[:4] == 'omop':
+			# 	query = query[5:]
+			SQL = '''select stitch_id1, stitch_id2, ddi
+				from va_drugdrug_interactions_alerts_stitch;'''
+
+			print SQL
+			    
+			cur.execute(SQL)
+			results = cur.fetchall()
+			
+			for result in results:
+			    #json_return.append(result)
+			    json_return.append({
+			    	"drug_1": str(result['stitch_id1']),
+			    	"drug_2": str(result['stitch_id2']),
+			    	"interaction": int(result['ddi'])
+			    })
+		return json_return
+	elif service == 'omop':
 		print "Service: ",service
 		print "Method: ",method
 		print "Query: ",query
@@ -79,6 +101,25 @@ def query_db(service, method, query=False, cache=False):
 			    json_return.append({
 			    	"stitch_id": str(result['stitch_id']),
 			    	"drug_name": str(result['drug_name'])
+			    })
+			    	#print result
+	elif service == 'snomed':
+		print "Service: ",service
+		if method == 'getOutcomeFromSnomedId':
+			SQL = '''select pt
+			from standard_case_outcome
+			where snomed_outcome_concept_id = '{query}' LIMIT 1;'''.format(query=query)
+
+			print SQL
+			    
+			cur.execute(SQL)
+			results = cur.fetchall()
+			
+
+			for result in results:
+			    #json_return.append(result)
+			    json_return.append({
+			    	"outcome": str(result['pt'])
 			    })
 			    	#print result
 	elif service == 'aeolus':
