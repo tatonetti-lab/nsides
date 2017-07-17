@@ -2,18 +2,23 @@
 from bottle import default_app, route, static_file, request, response, template
 import pymysql
 import query_nsides_aws
+import query_nsides_mongo
 
 @route('/')
 def index():
     return static_file("nsides_splash.html", root='')
 
 @route('/api')
-def faq():
+def api():
     return static_file("nsides_api.html", root='')
 
 @route('/dev')
-def faq():
+def dev():
     return static_file("nsides_dev.html", root='')
+
+@route('/dev2')
+def dev2():
+    return static_file("nsides_dev-14.html", root='')
 
 @route('/index/css/<cssfile>')
 def static_css(cssfile):
@@ -105,6 +110,15 @@ def api_call():
         return 'No service selected'
     elif len(service) == 1:
         json = '''{"results": "result"}'''
+    # New line for MongoDB service
+    elif service == 'nsides':
+        if meta == 'get_top_10_effects':
+            service_result = query_nsides_mongo.query_db(service, meta, query)
+            json = '''{"results": %s}''' %(str(service_result))
+    elif service == 'omop':
+        if meta == 'reference':
+            service_result = query_nsides_aws.query_db(service, meta, query)
+            json = '''{"results": %s}''' %(str(service_result))
     elif service == 'sider':
         if meta == 'drugForEffect':
             service_result = query_nsides_aws.query_db(service, meta, query)

@@ -1,0 +1,379 @@
+<!-- deltaQT Database - FAQ, Updated March 28,2017 
+
+Copyright (C) 2017, Tatonetti Lab
+Victor Nwankwo <vtn2106@cumc.columbia.edu>
+Tal Lorberbaum <tal.lorberbaum@columbia.edu>
+Joe Romano <dr2160@cumc.columbia.edu>
+Ram Vanguri <rami.vanguri@columbia.edu>
+Nicholas P. Tatonetti <nick.tatonetti@columbia.edu>
+All rights reserved.
+
+This site is released under a CC BY-NC-SA 4.0 license.
+For full license details see LICENSE.txt at 
+https://github.com/tatonetti-lab/nsides or go to:
+http://creativecommons.org/licenses/by-nc-sa/4.0/
+-->
+
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>nsides</title>
+    <meta name="viewport" content="initial-scale=1.0,user-scalable=no,maximum-scale=1,width=device-width">
+    <meta name="keywords" content="API">
+    <meta name="description" content="">
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <!-- <link rel="apple-touch-icon" href="/index/img/apple-touch-icon.png">
+    <link rel="shortcut icon" href="/index/img/favicon.ico">
+    
+    <link rel="stylesheet" href="/index/css/react-select.css">
+    <link rel="stylesheet" href="/index/css/style.css" media="screen">
+    <link rel="stylesheet" href="/index/css/print.css" media="print">
+    -->
+</head>
+    
+<style>
+    body {
+        font: 10px sans-serif;
+    }
+
+    svg {
+        margin-left: auto; margin-right: auto;
+        display: block;
+    }
+
+    line,
+    rect {
+        shape-rendering: crispEdges;
+    }
+
+    .axis path,
+    .axis line {
+        fill: none;
+        stroke: #000;
+        shape-rendering: crispEdges;
+    }
+
+    .x.axis path {
+        display: none;
+    }
+
+    .divider {
+        stroke: #777;
+        stroke-dasharray: 5,5;
+        opacity: 0.7;
+    }
+
+    .line {
+        fill: none;
+        stroke-width: 1.5px;
+    }
+
+    circle.dot {
+        fill: #FFF;
+        stroke-width: 1.5px;
+    }
+
+    .area.confidence {
+        zoom: 1;
+        filter: alpha(opacity=30);
+        opacity: 0.3;
+    }
+
+/**
+.area.above {
+    fill: #D7191C !important;
+}
+
+.area.below {
+    fill: #2B83BA !important;
+}
+*/
+</style>
+
+<body>
+<!-- <script src="http://d3js.org/d3.v3.min.js"></script> -->
+    <script src="./index/js/d3.min.js?v=3.2.8"></script>
+    <script type="text/javascript"charset="utf-8">
+        // Return standard error with 95% confidence
+        function se95(p, n) {
+            return Math.sqrt(p*(1-p)/n)*1.96;
+        };
+
+        // Settings
+        var width = 440,
+            height = 400,
+            padding = 30;
+
+        var margin = {
+            'top': 30,
+            'right': 35,
+            'bottom': 30,
+            'left': 30
+        };
+
+        margin.hor = margin.left + margin.right;
+        margin.ver = margin.top + margin.bottom;
+
+        // Config
+        // NOTE: This is where the magic happens (for now) ... instead of calling for a CSV file, we will call the API route
+        var dataset = "./index/data/data.csv",
+            parseDate = d3.time.format("%Y").parse,
+            electionDate = "",  // "2014/11"
+            interpolation = "linear";
+
+        var estimateOne = ["Methadone"],
+            estimateOneColor = "#D7191C", // blue
+            estimateTwo = ["V", "O", "K", "I", "C"],
+            estimateTwoColor = "#2B83BA", // red
+            //displaySingleEstimate = false;
+            displaySingleEstimate = "left"
+            // false, "left", "right"
+
+        var useEstimateLabels = true,
+            yAxisTitle = "PRR",
+            cutoff = .25;
+
+        if (useEstimateLabels === true) { margin.right = 70; }
+        // for the labels; 40 + 10 for each array.length > 4
+
+        var x = d3.time.scale()
+            .range([0, width]);
+
+        var y = d3.scale.linear()
+            .range([height, 0]);
+
+        var xAxis = d3.svg.axis()
+            .scale(x)
+            .orient("bottom")
+            .ticks(7)
+            .tickSubdivide(2);
+
+        var yAxis = d3.svg.axis()
+            .scale(y)
+            .orient("left")
+            .tickFormat(d3.format(".0"));
+            //.tickFormat(d3.format(".0"));
+
+        var lineLeft = d3.svg.area()
+            .interpolate(interpolation)
+            .x(function(d) { return x(d["date"]); })
+            .y(function(d) { return y(d["left"]); });
+
+        var lineRight = d3.svg.area()
+            .interpolate(interpolation)
+            .x(function(d) { return x(d["date"]); })
+            .y(function(d) { return y(d["right"]); });
+
+        var confidenceAreaLeft = d3.svg.area()
+            .interpolate(interpolation)
+            .x(function(d) { return x(d["date"]); })
+            .y0(function(d) {
+                return y(d["left"] - d["confidenceRight"]); })
+            .y1(function(d) {
+                return y(d["left"] + d["confidenceRight"]); });
+
+        var confidenceAreaRight = d3.svg.area()
+            .interpolate(interpolation)
+            .x(function(d) { return x(d["date"]); })
+            .y0(function(d) {
+                return y(d["right"] - d["confidenceRight"]); })
+            .y1(function(d) {
+                return y(d["right"] + d["confidenceRight"]); });
+
+        var svg = d3.select("body").append("svg")
+            .attr({
+                "width": width + margin.left + margin.right,
+                "height": height + margin.top + margin.bottom
+            })
+            .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        d3.csv(dataset, function(error, data) {
+            data.forEach(function(d) {
+                d.date = parseDate(d.date);
+                d.respondents = parseFloat(d.respondents);
+
+                estimateSum = function(d, estimate) {
+                    var votes = parseFloat(0);
+                    for (var i = 0; i < estimate.length; i++) {
+                        votes += parseFloat(d[estimate[i]])
+                    }
+                    // Return percentage in decimal format
+                    return votes>1 ? votes/100 : votes;
+                };
+                estimate = function(d, estimate) {
+                    var votes = parseFloat(0);
+                    for (var i = 0; i < estimate.length; i++) {
+                        votes += parseFloat(d[estimate[i]])
+                    }
+                    // Return percentage in decimal format
+                    return votes>1 ? votes/100 : votes;
+                };
+                d["left"] = estimate(d, estimateOne),
+                d["right"] = estimate(d, estimateTwo),
+                d["total"] = d["left"] + d["right"],
+                d["confidenceLeft"] = se95(d["left"], d["respondents"]),
+                d["confidenceRight"] = se95(d["right"], d["respondents"]);
+            });
+
+            if (electionDate === "") {
+                x.domain(d3.extent(data, function(d) {
+                    return d.date; }));
+            } else {
+                x.domain([
+                    d3.min(data, function(d) { return d.date; }),
+                    parseDate(electionDate)
+                ]);
+            }
+            // y.domain([
+            //     d3.min(data, function(d) {
+            //         var min = Math.min(d["right"], d["left"]);
+            //         return min - se95(min, d["respondents"]);
+            //     }),
+            //     d3.max(data, function(d) {
+            //         var max = Math.max(d["right"], d["left"]);
+            //         return max + se95(max, d["respondents"]);
+            //     })
+            // ]);
+            y.domain([
+                d3.min(data, function(d) {
+                    var min = 0.1;
+                    return min - se95(min, d["respondents"]);
+                }),
+                d3.max(data, function(d) {
+                    //var max = Math.max(d["right"], d["left"]);
+                    max = .45;
+                    return max + se95(max, d["respondents"]);
+                })
+            ]);
+
+            svg.datum(data);
+
+            // X axis
+            svg.append("g")
+                .attr({
+                    "class": "x axis",
+                    "transform": "translate(0," + height + ")"
+                })
+                .call(xAxis);
+
+            // Y axis
+            svg.append("g")
+                .attr("class", "y axis")
+                .call(yAxis)
+                .append("text")
+                .attr({
+                    "transform": "rotate(-90)",
+                    "y": 6,
+                    "dy": ".71em"
+                })
+                .style("text-anchor", "end")
+                .text(yAxisTitle);
+
+            // Confidence area
+            if (displaySingleEstimate !== "right") {
+                svg.append("path")
+                    .attr({
+                        "class": "area confidence",
+                        "fill": estimateOneColor,
+                        "d": confidenceAreaLeft
+                    });
+            }
+            if (displaySingleEstimate !== "left") {
+                svg.append("path")
+                    .attr({
+                        "class": "area confidence",
+                        "fill": estimateTwoColor,
+                        "d": confidenceAreaRight
+                    });
+            }
+
+            // Lines
+            if (displaySingleEstimate !== "right") {
+                svg.append("path")
+                    .attr({
+                        "class": "line",
+                        "d": lineLeft,
+                        "stroke": estimateOneColor
+                    });
+            }
+            if (displaySingleEstimate !== "left") {
+                svg.append("path")
+                    .attr({
+                        "class": "line",
+                        "d": lineRight,
+                        "stroke": estimateTwoColor
+                    });
+            }
+
+            // Dots
+            var dots = svg.selectAll("circle")
+                .data(data)
+                .enter();
+
+            if (displaySingleEstimate !== "right") {
+                var dotsLeft = dots.append("circle")
+                    .attr({
+                        "class": "dot",
+                        "r": 3,
+                        "cx": lineLeft.x(),
+                        "cy": lineLeft.y(),
+                        "stroke": estimateOneColor
+                    });
+            }
+            if (displaySingleEstimate !== "left") {
+                var dotsRight = dots.append("circle")
+                    .attr({
+                        "class": "dot",
+                        "r": 3,
+                        "cx": lineRight.x(),
+                        "cy": lineRight.y(),
+                        "stroke": estimateTwoColor
+                    });
+            }
+
+            // Divider
+            svg.append("line")
+                .attr("class", "divider")
+                .attr({
+                    "x1": x.range()[0],
+                    "x2": x.range()[1],
+                    "y1": y(cutoff),
+                    "y2": y(cutoff)
+                });
+
+            // Graph label
+            if (useEstimateLabels === true) {
+                if (displaySingleEstimate !== "right") {
+                    svg.append("text")
+                        .data(data)
+                        .attr("transform", function(d) {
+                            return "translate(" + x(data[data.length-1]["date"]) + "," + y(data[data.length-1]["left"]) + ")"; })
+                        .attr({
+                            "x": 10,
+                            "dy": ".35em",
+                            "class": "label",
+                            "id": "estimateOne"
+                        })
+                        .text(estimateOne.join(""));
+                }
+                if (displaySingleEstimate !== "left") {
+                    svg.append("text")
+                        .data(data)
+                        .attr("transform", function(d) {
+                            return "translate(" + x(data[data.length-1]["date"]) + "," + y(data[data.length-1]["right"]) + ")"; })
+                        .attr({
+                            "x": 10,
+                            "dy": ".35em",
+                            "class": "label",
+                            "id": "estimateTwo"
+                        })
+                        .text(estimateTwo.join(""));
+                }
+            }
+        });
+    </script>
+</body>
+</html>

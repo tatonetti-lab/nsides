@@ -1,0 +1,545 @@
+<!-- deltaQT Database - FAQ, Updated March 28,2017 
+
+Copyright (C) 2017, Tatonetti Lab
+Victor Nwankwo <vtn2106@cumc.columbia.edu>
+Tal Lorberbaum <tal.lorberbaum@columbia.edu>
+Joe Romano <dr2160@cumc.columbia.edu>
+Ram Vanguri <rami.vanguri@columbia.edu>
+Nicholas P. Tatonetti <nick.tatonetti@columbia.edu>
+All rights reserved.
+
+This site is released under a CC BY-NC-SA 4.0 license.
+For full license details see LICENSE.txt at 
+https://github.com/tatonetti-lab/nsides or go to:
+http://creativecommons.org/licenses/by-nc-sa/4.0/
+-->
+
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>nSides - A comprehensive database of drug-drug(s)-effect relationships - Tatonetti Lab</title>
+    <meta name="viewport" content="initial-scale=1.0,user-scalable=no,maximum-scale=1,width=device-width">
+    <meta name="keywords" content="API">
+    <meta name="description" content="">
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <!-- 
+    <link rel="apple-touch-icon" href="/index/img/apple-touch-icon.png">
+    <link rel="shortcut icon" href="/index/img/favicon.ico">
+    -->
+
+    <!-- Stylesheets for scaffold and fonts -->
+    <link type="text/css" rel="stylesheet" media="all" href="./index/misc/fonts.css">
+    <link type="text/css" rel="stylesheet" media="all" href="./index/misc/main.css">
+    <link type="text/css" rel="stylesheet" media="print" href="./index/misc/print.css">
+    <!-- styles for select bar -->
+    <link rel="stylesheet" href="./index/css/react-select.css">
+</head>
+    
+<style>
+    /*
+
+    MANY of these styles are unnecessary but included for reference. Please remove unused items prior to final publishing.
+
+    */
+    html, body
+    {
+        width: 100%;
+        height: 100%;
+
+        margin: 0;
+        padding: 0;
+    }
+    svg {
+        margin-left: auto; margin-right: auto;
+        display: block;
+    }
+    line,
+    rect {
+        shape-rendering: crispEdges;
+    }
+    .axis path,
+    .axis line {
+        fill: none;
+        stroke: #000;
+        shape-rendering: crispEdges;
+    }
+    .x.axis path {
+        /*display: none; Do we wish to show the x-axis? */
+    }
+    .divider {
+        stroke: #777;
+        stroke-dasharray: 5,5;
+        opacity: 0.7;
+    }
+    .line {
+        fill: none;
+        stroke-width: 1.5px;
+    }
+    circle.dot {
+        fill: #FFF;
+        stroke-width: 1.5px;
+    }
+    .area.confidence {
+        zoom: 1;
+        filter: alpha(opacity=30);
+        opacity: 0.3;
+    }
+    /**
+    .area.above {
+        fill: #D7191C !important;
+    }
+
+    .area.below {
+        fill: #2B83BA !important;
+    }
+    */
+    #page {
+        height:100%;
+    }
+    #root {
+        /*height:100%;*/
+        flex: 1;
+    }
+    #header {
+        flex: 0 1 auto;
+        /* The above is shorthand for:
+        flex-grow: 0,
+        flex-shrink: 1,
+        flex-basis: auto
+        */
+    }
+    #header-content {
+        position:relative;
+        /*padding-top:40px;*/
+        height:120px;
+        vertical-align: bottom;
+    }
+    #content {
+        height:100%;
+        width:100%;
+        display: flex;
+        flex-direction: column;
+
+        justify-content: flex-start; /* align items in Main Axis */
+        align-items: stretch; /* align items in Cross Axis */
+        align-content: stretch; /* Extra space in Cross Axis */
+            
+        background: rgba(255, 255, 255, .1);
+        /*flex: 1;*/
+    }
+    header, section, footer {
+        max-width:850px;
+        width: 100%;
+        margin: 0 auto;
+    }
+    #bar {
+        width: 100vw;
+        margin-left: calc(-50vw + 50%);
+    }
+    .drug_title {
+        font-size: 22px;
+        font-weight:bold;
+        padding-top:25px;
+        padding-bottom:5px;
+    }
+    .effect_title {
+        font-size: 22px;
+        font-weight:bold;
+        padding-top:15px;
+        padding-bottom:5px;
+    }
+    #viz_container {
+        font: 10px sans-serif;
+    }
+    .select_container_effect {
+        padding-left:10px;
+    }
+    .select_container, .select_container_effect {
+        display: inline-block;
+        width:45%;
+    }
+    .y text { display: none; }
+    .y text text-anchor { display: visible; }
+    .tick line{
+        opacity: 0.2;
+    }
+    path { 
+        stroke: steelblue;
+        stroke-width: 2;
+        fill: none;
+    }
+
+    .axis path,
+    .axis line {
+        fill: none;
+        stroke: grey;
+        stroke-width: 1;
+        shape-rendering: crispEdges;
+    }
+</style>
+
+<body>
+<div id="content">
+    <div id="header">
+        <img class="logo" src="./index/img/wormhole.png" height="120px"/>
+        <div id="header-content">
+            <div>
+                <br><br>
+                <h1>nSides</h1>
+                <h3 style="white-space: nowrap;">A comprehensive database of drug-drug(s)-effect relationships</h3>
+            </div>
+        </div>
+        <div id="bar"></div>
+    </div>
+    <div id="container"></div>
+    <section>
+        <br>
+        <div class="select_container">
+            <div class="drug_title">Drug</div>
+            <div id="select_drug_container"></div>
+        </div>
+        <div class="select_container_effect">
+            <div class="effect_title">Effect</div>
+            <div id="select_effect_container"></div>
+        </div>
+        <br>
+        <br>
+        <div id="viz_container"></div><br><br><br><br><br><br><br><br><br><br>
+    </section>
+    <footer>
+        <div id="footer">
+            <img src="./index/misc/cumc.png" width="250px">
+        </div>
+    </footer>
+</div><!-- end #content -->
+
+<!-- Javascript Includes; Positioned AFTER because of loading order -->
+<script src="/index/js/babel.js"></script>
+<script src="/index/js/react.min.js"></script> 
+<script src="/index/js/react-dom.min.js"></script>
+<script src="/index/js/three.min.js"></script>
+<script src="/index/js/index.js"></script>
+<script src="/index/js/react-input-autosize.min.js"></script>
+<script src="/index/js/react-select-mod.js"></script> <!-- Updated to close menu after hitting Enter -->
+<script src="/index/js/drugs-brandnames-v4b.js"></script>
+<!-- <script src="/index/js/nsides.js" type="text/babel"></script> --><!-- Place finalized APP inside this file -->
+
+<!-- <script src="./index/js/d3.min.js?v=3.2.8"></script> -->
+<!-- Consider adding this item to the repo as the above D3 include is not functioning correctly -->
+<script src="http://d3js.org/d3.v3.min.js"></script>
+
+<script>
+    // SIMPLIFIED REACT SELECT BARS -- UPDATE AS NECESSARY
+    var options = drugs;
+    var Container = React.createClass({
+        getInitialState () {
+            return { value: '' };
+        },
+        updateValue (value) {
+            this.setState({ value: value });
+        },
+        render () {
+            return React.createElement(Select, {
+                options: options,
+                onChange: this.updateValue,
+                value: this.state.value,
+            });
+        }
+    });
+    React.render(
+        React.createElement(Container),
+        document.getElementById('select_drug_container')
+    );
+
+    // EFFECTS PULLED FROM TOP OF MYSQL TABLE
+    // Use /
+    var effect_options = [
+        { label: '(1) 11-BETA-HYDROXYLASE DEFICIENCY', value: '35305836' },
+        { label: '(2) 17 KETOSTEROIDS URINE DECREASED', value: '36312357' },
+        { label: '(3) 17-HYDROXYPROGESTERONE DECREASED', value: '36312139' },
+        { label: '(4) 17-HYDROXYPROGESTERONE INCREASED', value: '36312140' },
+        { label: '(5) 2,5-OLIGOADENYLATE SYNTHETASE TEST INCREASED', value: '36312556' },
+        { label: '(6) 21-HYDROXYLASE DEFICIENCY', value: '35305840' },
+        { label: '(7) 5`NUCLEOTIDASE INCREASED', value: '36313520' },
+        { label: '(8) 5-ALPHA-REDUCTASE DEFICIENCY', value: '4212356' },
+        { label: '(9) 5Q MINUS SYNDROME', value: '136950' },
+        { label: '(10) ABASIA', value: '35809100' }
+    ];
+    var effect_Container = React.createClass({
+        getInitialState () {
+            return { value: '' };
+        },
+        updateValue (value) {
+            this.setState({ value: value });
+        },
+        render () {
+            return React.createElement(Select, {
+                options: effect_options,
+                onChange: this.updateValue,
+                value: this.state.value,
+            });
+        }
+    });
+    React.render(
+        React.createElement(effect_Container),
+        document.getElementById('select_effect_container')
+    );
+</script>
+
+<script type="application/json" id="timedata">
+    [
+    {"year":"2012","prr":0.6569027429509084},
+    {"year":"2013","prr":0.6627231444617859},
+    {"year":"2014","prr":0.6399101716895972},
+    {"year":"2015","prr":0.6399101716895972},
+    {"year":"2016","prr":0.6399101716895972}
+    ] 
+</script>
+<script>
+var data = JSON.parse(document.getElementById('timedata').innerHTML);
+
+/* Set variables */
+var data1 = data
+var title1 = "Proportional Reporting Ratio over time";
+var dateformat = "%Y"
+drawTimeSeriesGraph(data1,title1,dateformat);
+
+/* 
+Tooltip from: http://bl.ocks.org/d3noob/6eb506b129f585ce5c8a
+*/
+
+function drawTimeSeriesGraph(data,title,dateformat) {
+
+    //Set bounds for red dots
+    var lbound = 0.045,
+        ubound = 0.075;
+        
+    // Set the dimensions of the canvas / graph
+    var margin = {top: 50, right: 150, bottom: 50, left: 50},
+        width = 800 - margin.left - margin.right,
+        height = 270 - margin.top - margin.bottom;
+
+    // Parse the date / time
+    var parseDate = d3.time.format(dateformat).parse,
+        formatDate = d3.time.format(dateformat),
+        bisectDate = d3.bisector(function(d) { return d.year; }).left;
+
+    // Set the ranges
+    var x = d3.time.scale().range([0, width]);
+    var y = d3.scale.linear().range([height, 0]);
+
+    var xScale = d3.scale.linear()
+        .domain([0, d3.max(data, function(d){ return d.year; })])
+        .range([0, width]);
+
+    var yScale = d3.scale.linear()
+        .domain([0, d3.max(data, function(d){ return d.prr; })])
+        .range([height, 0]);
+
+    // Define the axes
+    // var xAxis = d3.svg.axis().scale(x)
+    //     .orient("bottom")
+    //     .ticks(d3.time.years, 1)//should display 1 year intervals
+
+    // var yAxis = d3.svg.axis().scale(y)
+    //     .orient("left").ticks(10);
+
+    var xAxis = d3.svg.axis()
+        .scale(x)
+        .ticks(d3.time.years, 1)//should display 1 year intervals
+        .orient("bottom")
+        .innerTickSize(-height)
+        .outerTickSize(0)
+        .tickPadding(10);
+
+    var yAxis = d3.svg.axis()
+        .scale(yScale)
+        .orient("left")
+        .innerTickSize(-width)
+        .outerTickSize(0)
+        .tickPadding(10);
+
+    // Define the line
+    var prrline = d3.svg.line()
+        .x(function(d) { return x(d.year); })
+        .y(function(d) { return y(d.prr); });
+        
+    // Adds the svg canvas
+    var svg = d3.select("#viz_container")
+        .append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+            .attr("transform", 
+                  "translate(" + margin.left + "," + margin.top + ")");
+
+    var lineSvg = svg.append("g"); 
+
+    var focus = svg.append("g") 
+        .style("display", "none");
+
+    // Get the data
+
+    data.forEach(function(d) {
+        d.year = parseDate(d.year);
+        d.prr = +d.prr;
+    });
+
+    // Scale the range of the data
+    x.domain(d3.extent(data, function(d) { return d.year; }));
+    //y.domain([0, d3.max(data, function(d) { return d.prr; })]);
+    //Use below if instead you want to define the y limits:
+    y.domain([0, 3]);
+
+    // Add the prrline path.
+    lineSvg.append("path")
+        .attr("class", "line")
+        .attr("d", prrline(data));
+
+    // Add the X Axis
+    svg.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(xAxis);
+
+    // Add the Y Axis
+    svg.append("g")
+        .attr("class", "y axis")
+        .call(yAxis);
+
+   // append the x line
+    focus.append("line")
+        .attr("class", "x")
+        .style("stroke", "blue")
+        .style("stroke-dasharray", "3,3")
+        .style("opacity", 0.5)
+        .attr("y1", 0)
+        .attr("y2", height);
+
+    // append the y line
+    focus.append("line")
+        .attr("class", "y")
+        .style("stroke", "blue")
+        .style("stroke-dasharray", "3,3")
+        .style("opacity", 0.5)
+        .attr("x1", width)
+        .attr("x2", width);
+
+    // append the circle at the intersection
+    focus.append("circle")
+        .attr("class", "y")
+        .style("fill", "none")
+        .style("stroke", "blue")
+        .attr("r", 4);
+
+    // place the prr at the intersection
+    focus.append("text")
+        .attr("class", "y1")
+        .style("stroke", "white")
+        .style("stroke-width", "3.5px")
+        .style("opacity", 0.8)
+        .attr("dx", 8)
+        .attr("dy", "-.3em");
+    focus.append("text")
+        .attr("class", "y2")
+        .attr("dx", 8)
+        .attr("dy", "-.3em");
+
+    // place the date at the intersection
+    focus.append("text")
+        .attr("class", "y3")
+        .style("stroke", "white")
+        .style("stroke-width", "3.5px")
+        .style("opacity", 0.8)
+        .attr("dx", 8)
+        .attr("dy", "1em");
+    focus.append("text")
+        .attr("class", "y4")
+        .attr("dx", 8)
+        .attr("dy", "1em");
+
+    // Cuttoff
+    var cutoff = 2;
+    svg.append("line")
+        .attr("class", "divider")
+        .attr({
+            "x1": x.range()[0],
+            "x2": x.range()[1],
+            "y1": y(cutoff),
+            "y2": y(cutoff)
+        });
+    
+    // append the rectangle to capture mouse
+    svg.append("rect")
+        .attr("width", width)
+        .attr("height", height)
+        .style("fill", "none")
+        .style("pointer-events", "all")
+        .on("mouseover", function() { focus.style("display", null); })
+        .on("mouseout", function() { focus.style("display", "none"); })
+        .on("mousemove", mousemove);
+
+    function mousemove() {
+        var x0 = x.invert(d3.mouse(this)[0]),
+            i = bisectDate(data, x0, 1),
+            d0 = data[i - 1],
+            d1 = data[i],
+            d = x0 - d0.year > d1.year - x0 ? d1 : d0;
+
+        focus.select("circle.y")
+            .attr("transform",
+                  "translate(" + x(d.year) + "," +
+                                 y(d.prr) + ")");
+                                 
+        focus.select("text.y1")
+            .attr("transform",
+                  "translate(" + x(d.year) + "," +
+                                 y(d.prr) + ")")
+            .text(d.prr.toFixed(2));
+
+        focus.select("text.y2")
+            .attr("transform",
+                  "translate(" + x(d.year) + "," +
+                                 y(d.prr) + ")")
+            .text(d.prr.toFixed(2));
+
+        focus.select("text.y3")
+            .attr("transform",
+                  "translate(" + x(d.year) + "," +
+                                 y(d.prr) + ")")
+            .text(formatDate(d.year));
+
+        focus.select("text.y4")
+            .attr("transform",
+                  "translate(" + x(d.year) + "," +
+                                 y(d.prr) + ")")
+            .text(formatDate(d.year));
+
+        focus.select(".x")
+            .attr("transform",
+                  "translate(" + x(d.year) + "," +
+                                 y(d.prr) + ")")
+                       .attr("y2", height - y(d.prr));
+
+        focus.select(".y")
+            .attr("transform",
+                  "translate(" + width * -1 + "," +
+                                 y(d.prr) + ")")
+                       .attr("x2", width + width);
+    };
+    
+    svg.append("text")
+        .attr("x", (width / 2))             
+        .attr("y", 0 - (margin.top / 2))
+        .attr("text-anchor", "middle")  
+        .style("font-size", "16px") 
+        //.style("text-decoration", "underline")  
+        .text(title);
+};
+
+</script>
+
+</body>
+</html>
