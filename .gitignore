@@ -25,3 +25,9 @@ packages/*
 
 query_nsides_aws.pyc
 
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
+.ebignore
