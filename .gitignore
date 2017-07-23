@@ -23,7 +23,7 @@ packages/*
 
 *~
 
-query_nsides_aws.pyc
+*.pyc
 
 
 # Elastic Beanstalk Files
