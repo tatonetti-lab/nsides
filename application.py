@@ -1,7 +1,7 @@
 # from bottle import route, run, template
 from bottle import default_app, route, static_file, request, response, template
 import pymysql
-import query_nsides_aws
+import query_nsides_mysql
 import query_nsides_mongo
 
 @route('/')
@@ -51,7 +51,7 @@ def getConcepts(service):
     pageNumber = request.params.get('pageNumber')
     pageSize = request.params.get('pageSize')
     meta = 'getConcepts'
-    beacon_result = query_nsides_aws.query_db(service, str(meta), 'cancer')
+    beacon_result = query_nsides_mysql.query_db(service, str(meta), 'cancer')
     json = '''%s''' %(str(beacon_result))
     json = json.replace("'", '"')
     response.content_type = 'application/json'
@@ -64,7 +64,7 @@ def getConceptDetails(service, conceptId):
     pageNumber = request.params.get('pageNumber')
     pageSize = request.params.get('pageSize')
     meta = 'getConceptDetails'
-    beacon_result = query_nsides_aws.query_db(service, str(meta), conceptId)
+    beacon_result = query_nsides_mysql.query_db(service, str(meta), conceptId)
     json = '''%s''' %(str(beacon_result))
     json = json.replace("'", '"')
     response.content_type = 'application/json'
@@ -117,54 +117,54 @@ def api_call():
             json = '''{"results": %s}''' %(str(service_result))
     elif service == 'omop':
         if meta == 'reference':
-            service_result = query_nsides_aws.query_db(service, meta, query)
+            service_result = query_nsides_mysql.query_db(service, meta, query)
             json = '''{"results": %s}''' %(str(service_result))
     elif service == 'sider':
         if meta == 'drugForEffect':
-            service_result = query_nsides_aws.query_db(service, meta, query)
+            service_result = query_nsides_mysql.query_db(service, meta, query)
             json = '''{"results": %s}''' %(str(service_result))
         elif meta == 'drugForEffectFreq':
-            service_result = query_nsides_aws.query_db(service, meta, query)
+            service_result = query_nsides_mysql.query_db(service, meta, query)
             json = '''{"results": %s}''' %(str(service_result))
         elif meta == 'search_term':
             json = '''{"results": [c1, c2, c3 ... cn]} CONCEPT_ID'''
     elif service == 'va':
         if meta == 'get_ddi_alerts':
-            service_result = query_nsides_aws.query_db(service, meta, query)
+            service_result = query_nsides_mysql.query_db(service, meta, query)
             json = '''{"results": %s}''' %(str(service_result))
     elif service == 'snomed':
         if meta == 'getOutcomeFromSnomedId':
-            service_result = query_nsides_aws.query_db(service, meta, query)
+            service_result = query_nsides_mysql.query_db(service, meta, query)
             json = '''{"results": %s}''' %(str(service_result))
     elif service == 'aeolus':
         if meta == 'ingredientList':
-            service_result = query_nsides_aws.query_db(service, meta)
+            service_result = query_nsides_mysql.query_db(service, meta)
             json = '''{"results": %s}''' %(str(service_result))
         elif meta == 'drugReactionCounts':
-            service_result_1 = query_nsides_aws.query_db(service, meta, query)
-            #service_result_2 = query_nsides_aws.query_db(service, meta)
+            service_result_1 = query_nsides_mysql.query_db(service, meta, query)
+            #service_result_2 = query_nsides_mysql.query_db(service, meta)
             #json = '''{"results": %s, "nrows": %s}, ''' %(str(service_result_1), str(service_result_2))
             json = '''%s''' %(str(service_result_1))
         elif meta == 'drugpairReactionCounts':
-            #service_result = query_nsides_aws.query_db(service, meta, query)
+            #service_result = query_nsides_mysql.query_db(service, meta, query)
             #json = '''{"results": %s}''' %(str(service_result))
-            service_result_1 = query_nsides_aws.query_db(service, meta, query)
+            service_result_1 = query_nsides_mysql.query_db(service, meta, query)
             json = '''%s''' %(str(service_result_1))
         elif meta == 'reactionListSNOMED':
-            service_result = query_nsides_aws.query_db(service, meta)
+            service_result = query_nsides_mysql.query_db(service, meta)
             json = '''{"results": %s}''' %(str(service_result))
         elif meta == 'reactionListMedDRA':
-            service_result = query_nsides_aws.query_db(service, meta)
+            service_result = query_nsides_mysql.query_db(service, meta)
             json = '''{"results": %s}''' %(str(service_result))
         elif meta == 'drugpairList':
-            service_result = query_nsides_aws.query_db(service, meta)
+            service_result = query_nsides_mysql.query_db(service, meta)
             json = '''{"results": %s}''' %(str(service_result))
         elif meta == 'drugpairReactionListMedDRA':
-            service_result  = query_nsides_aws.query_db(service, meta)
+            service_result  = query_nsides_mysql.query_db(service, meta)
             json = '''{"results": %s}''' %(str(service_result))
     elif service == 'omop':
         if meta == 'reference':
-            service_result = query_nsides_aws.query_db(service, meta, query)
+            service_result = query_nsides_mysql.query_db(service, meta, query)
             json = '''{"results": %s}''' %(str(service_result))
     else:
         json = '''{"": ""}'''
