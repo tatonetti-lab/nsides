@@ -1,4 +1,7 @@
 nsides.cnf
+nsides-mongo.cnf
+
+index/demos/
 
 # no .npy files indexed
 # *.npy

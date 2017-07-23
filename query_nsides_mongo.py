@@ -4,6 +4,7 @@ populate_nsides_mongodb.py
 Connects to MongoDB and extracts records for API's usage
 
 @author Victor Nwankwo, 2017
+@author Tal Lorberbaum, 2017
 
 USAGE:
 

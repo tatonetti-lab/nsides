@@ -1,2 +1,4 @@
 bottle==0.12.13
+pymongo==3.4.0
+numpy==1.11.2
 PyMySQL==0.7.9
