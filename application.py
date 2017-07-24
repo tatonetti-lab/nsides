@@ -219,7 +219,7 @@ def api_call():
         if meta == 'reference':
             service_result = query_nsides_mysql.query_db(service, meta, query)
             json = '''{"results": %s}''' %(str(service_result))
-    
+
     else:
         json = '''{"": ""}'''
 
