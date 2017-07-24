@@ -117,7 +117,7 @@ def api_call():
 
     # MongoDB (nSides)
     elif service == 'nsides':
-
+        # e.g. /api/v1/query?service=nsides&meta=estimateForDrug_Outcome&drugs=19097016&outcome=4294679&model=nopsm
         if meta == 'estimateForDrug_Outcome':
             #drugs = [drug.replace('|',',') for drug in request.params.get('drugs').split(',')]
             # ^ Separate individual drugs using comma. Drug class represented as `DrugA|DrugB|etc`
@@ -141,13 +141,33 @@ def api_call():
             service_result = query_nsides_mongo.query_db(service, meta, query)
             json = '''{"results": %s}''' %(str(service_result))
 
-        # e.g. /api/v1/query?service=nsides&meta=top10Effects&q=19097016
-        elif meta == 'top10Effects': #'get_top_10_effects':
+        # e.g. /api/v1/query?service=nsides&meta=topOutcomesForDrug&numResults=10&drugs=19097016
+        elif meta == 'topOutcomesForDrug': #'get_top_10_effects':
+            drugs = request.params.get('drugs')
+            if drugs == [''] or drugs is None:
+                response.status = 400
+                return 'No drug(s) selected'
+
+            num_results = request.params.get('numResults')
+            if num_results == [''] or num_results is None:
+                num_results = 10
+
+            model_type = request.params.get('model')
+            if model_type == [''] or model_type is None:
+                model_type = 'dnn'
+
+            query = {'drugs': drugs, 'numResults': num_results, 'model': model_type}
+            print "Parsed query:", query
+
             service_result = query_nsides_mongo.query_db(service, meta, query)
             json = '''{"results": %s}''' %(str(service_result))
 
 
     # MySQL
+    elif service == 'lab':
+        if meta == 'ae_to_lab':
+            service_result = query_nsides_mysql.query_db(service, meta, query)
+            json = '''{"results": %s}''' %(str(service_result))
     elif service == 'omop':
         if meta == 'reference':
             service_result = query_nsides_mysql.query_db(service, meta, query)

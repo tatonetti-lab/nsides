@@ -42,7 +42,7 @@ http://creativecommons.org/licenses/by-nc-sa/4.0/
 <body>
 <div id="content">
     <div id="header">
-        <img class="logo" src="./index/img/wormhole.png" height="120px"/>
+<!--        <img class="logo" src="./index/img/wormhole.png" height="120px"/>-->
         <div id="header-content">
             <div>
                 <br><br>
@@ -82,7 +82,10 @@ http://creativecommons.org/licenses/by-nc-sa/4.0/
 <script src="/index/js/index.js"></script>
 <script src="/index/js/react-input-autosize.min.js"></script>
 <script src="/index/js/react-select-mod.js"></script> <!-- Updated to close menu after hitting Enter -->
-<script src="/index/js/drugs-brandnames-v4b.js"></script>
+<!--<script src="/index/js/drugs-brandnames-v4b.js"></script>-->
+<script src="/index/js/drugs.js"></script>
+    
+
 <!-- <script src="/index/js/nsides.js" type="text/babel"></script> --><!-- Place finalized APP inside this file -->
 
 <!-- <script src="./index/js/d3.min.js?v=3.2.8"></script> -->
@@ -106,17 +109,19 @@ http://creativecommons.org/licenses/by-nc-sa/4.0/
     
 <script>
     // SIMPLIFIED REACT SELECT BARS -- UPDATE AS NECESSARY
-    var options = drugs;
+    var drugOptions = drugs;
     var Container = React.createClass({
         getInitialState () {
             return { value: '' };
         },
         updateValue (value) {
-            this.setState({ value: value });
+//            this.setState({ value: value });
+            this.setState({ value
+            }, () => { console.log("done") } );      
         },
         render () {
             return React.createElement(Select, {
-                options: options,
+                options: drugOptions,
                 onChange: this.updateValue,
                 value: this.state.value,
             });
@@ -129,7 +134,7 @@ http://creativecommons.org/licenses/by-nc-sa/4.0/
 
     // EFFECTS PULLED FROM TOP OF MYSQL TABLE
     // Use /
-    var effect_options = [
+    var outcomeOptions = [
         { label: '(1) 11-BETA-HYDROXYLASE DEFICIENCY', value: '35305836' },
         { label: '(2) 17 KETOSTEROIDS URINE DECREASED', value: '36312357' },
         { label: '(3) 17-HYDROXYPROGESTERONE DECREASED', value: '36312139' },
@@ -151,7 +156,7 @@ http://creativecommons.org/licenses/by-nc-sa/4.0/
         },
         render () {
             return React.createElement(Select, {
-                options: effect_options,
+                options: outcomeOptions,
                 onChange: this.updateValue,
                 value: this.state.value,
             });
@@ -163,51 +168,8 @@ http://creativecommons.org/licenses/by-nc-sa/4.0/
         document.getElementById('select_effect_container')
     );
 </script>
-
-<!--
-<script type="application/json" id="timedata">
-    [
-    {"year":"2012","prr":0.6569027429509084},
-    {"year":"2013","prr":0.6627231444617859},
-    {"year":"2014","prr":0.6399101716895972},
-    {"year":"2015","prr":0.6399101716895972},
-    {"year":"2016","prr":0.6399101716895972}
-    ] 
-</script>
--->
-
-<!--
-<script type="application/json" id="timedata">
-    [
-    {"year":"2012", "prr":1.6569027429509084, "ci":0.52},
-    {"year":"2013", "prr":2.6627231444617859, "ci":0.41},
-    {"year":"2014", "prr":3.6399101716895972, "ci":0.31},
-    {"year":"2015", "prr":3.6399101716895972, "ci":0.24},
-    {"year":"2016", "prr":5.6399101716895972, "ci":0.11}
-    ] 
-</script>
--->
     
 <!--
-<script type="application/json" id="timedata">
-    [
-    {"year":"2004", "prr":1.6569027429509084, "ci":0.52},
-    {"year":"2005", "prr":1.6569027429509084, "ci":0.52},
-    {"year":"2006", "prr":1.6569027429509084, "ci":0.52},
-    {"year":"2007", "prr":1.6569027429509084, "ci":0.52},
-    {"year":"2008", "prr":1.6569027429509084, "ci":0.52},
-    {"year":"2009", "prr":1.6569027429509084, "ci":0.52},
-    {"year":"2010", "prr":1.6569027429509084, "ci":0.52},
-    {"year":"2011", "prr":1.6569027429509084, "ci":0.52},
-    {"year":"2012", "prr":1.6569027429509084, "ci":0.52},
-    {"year":"2013", "prr":2.6627231444617859, "ci":0.41},
-    {"year":"2014", "prr":3.6399101716895972, "ci":0.31},
-    {"year":"2015", "prr":3.6399101716895972, "ci":0.24},
-    {"year":"2016", "prr":5.6399101716895972, "ci":0.11}
-    ] 
-</script>
--->
-    
 <script type="application/json" id="timedata">
     [
     {"year": 2004, "prr":1.6569027429509084, "ci":0.52},
@@ -226,6 +188,7 @@ http://creativecommons.org/licenses/by-nc-sa/4.0/
     ] 
 </script>
     
+-->
 <script>
 var title1;
 var data1;
@@ -332,7 +295,6 @@ function drawTimeSeriesGraph(data,title,dateformat) {
                   "translate(" + margin.left + "," + margin.top + ")");
     
     // Get the data
-
     data.forEach(function(d) {
         d.year = parseDate(d.year);
         d.prr = +d.prr;
@@ -366,14 +328,13 @@ function drawTimeSeriesGraph(data,title,dateformat) {
     // Add the Y Axis
     svg.append("g")
         .attr("class", "y axis")
-        .attr("font-size", "13px")
         .call(yAxis);
     
     // Only show every other y-axis tick
     // From https://stackoverflow.com/a/38921326
     var ticks = d3.selectAll(".tick text");
     ticks.attr("class", function(d,i){
-     if(i%2 != 0) d3.select(this).remove();
+        if(i%2 != 0) d3.select(this).remove();
     });
     
     
@@ -381,7 +342,6 @@ function drawTimeSeriesGraph(data,title,dateformat) {
     svg.append("g")
         .attr("class", "x axis")
         .attr("transform", "translate(0," + height + ")")
-        .attr("font-size", "13px")
         .call(xAxis);
     
     

@@ -139,6 +139,8 @@ path {
     fill: none;
 }
 
+.axis { font: 13px sans-serif; }
+
 .axis path,
 .axis line {
     fill: none;

@@ -20,6 +20,7 @@ import sys
 # import shutil
 # import tarfile
 import pymongo
+from operator import itemgetter
 # from bson.json_util import dumps
 # from bson.code import Code # for some this needs to be pymongo.bson
 
@@ -119,7 +120,36 @@ def query_db(service, method, query=False, cache=False):
                     "estimates": processed_estimates #estimate_record[u"estimates"]
                 }) 
 
-        elif method == 'top10Effects': #'get_top_10_effects':
+        elif method == 'topOutcomesForDrug': #'get_top_10_effects':
+            # Given drug and model, return top 10 outcomes ordered by 2016 CI
+            # For now, fetch all documents and process in Python
+            num_results = int(query["numResults"])
+
+            estimate_record = estimates.find(
+                                { '$and':
+                                    [ { 'rxnorm': int(query["drugs"]) },
+                                      { 'model': query["model"] }
+                                    ]
+                                });
+            
+            all_outcomes = []
+            for record in estimate_record:
+                for estimate in record[u'estimates']:
+                    if estimate[u'year'] == 2016:
+                        all_outcomes.append( (int(record[u'snomed']), estimate[u'ci'], estimate[u'prr']) )
+                        # print record[u'snomed'], estimate[u'prr']
+                        # all_outcomes.append((record[u'snomed'], estimate[u'prr']))
+                        
+            print len(all_outcomes), "total outcomes"
+
+            # sorted(all_outcomes,key=itemgetter(1), reverse=True)[:num_results]
+            top_results = sorted(all_outcomes,key=itemgetter(1))[:num_results]
+            # print top_results
+            top_outcome_ids = [r[0] for r in top_results]
+            print top_outcome_ids
+            
+
+
             ## Use aggregate to count number of instances of unique drugs
             # estimates_aggregate = estimates.aggregate([
             #     { "$group": {
