@@ -148,7 +148,12 @@ def query_db(service, method, query=False, cache=False):
             top_outcome_ids = [r[0] for r in top_results]
             print top_outcome_ids
             
-
+            json_return.append({ 
+                    # "effect_string" : "estimateForDrug_Outcome",
+                    "topOutcomes" : top_outcome_ids,
+                    "drug" : int(query["drugs"]),
+                    # "estimates": processed_estimates #estimate_record[u"estimates"]
+                }) 
 
             ## Use aggregate to count number of instances of unique drugs
             # estimates_aggregate = estimates.aggregate([
@@ -193,12 +198,12 @@ def query_db(service, method, query=False, cache=False):
             #     count++
 
             # Comment the next 6 lines out ... Uncomment out everything above
-            json_return.append({ 
-                "effect_string" : "Example Effect",
-                "effect_rank" : "10",
-                "effect_snomed" : "435459",
-                "effect_rxnorm" : "19097016"
-            }) 
+            # json_return.append({ 
+            #     "effect_string" : "Example Effect",
+            #     "effect_rank" : "10",
+            #     "effect_snomed" : "435459",
+            #     "effect_rxnorm" : "19097016"
+            # }) 
         return json_return
 
 if __name__ == '__main__':
