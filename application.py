@@ -116,9 +116,33 @@ def api_call():
 
 
     # MongoDB (nSides)
-    # e.g. /api/v1/query?service=nsides&meta=top10Effects&q=19097016
     elif service == 'nsides':
-        if meta == 'top10Effects': #'get_top_10_effects':
+
+        if meta == 'estimateForDrug_Outcome':
+            #drugs = [drug.replace('|',',') for drug in request.params.get('drugs').split(',')]
+            # ^ Separate individual drugs using comma. Drug class represented as `DrugA|DrugB|etc`
+            drugs = request.params.get('drugs')
+            if drugs == [''] or drugs is None:
+                response.status = 400
+                return 'No drug(s) selected'
+
+            outcome = request.params.get('outcome')
+            if outcome == [''] or outcome is None:
+                response.status = 400
+                return 'No outcome selected'
+
+            model_type = request.params.get('model')
+            if model_type == [''] or model_type is None:
+                model_type = 'dnn'
+
+            query = {'drugs': drugs, 'outcome': outcome, 'model': model_type}
+            print "Parsed query:", query
+
+            service_result = query_nsides_mongo.query_db(service, meta, query)
+            json = '''{"results": %s}''' %(str(service_result))
+
+        # e.g. /api/v1/query?service=nsides&meta=top10Effects&q=19097016
+        elif meta == 'top10Effects': #'get_top_10_effects':
             service_result = query_nsides_mongo.query_db(service, meta, query)
             json = '''{"results": %s}''' %(str(service_result))
 

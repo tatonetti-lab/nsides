@@ -20,6 +20,7 @@ import sys
 # import shutil
 # import tarfile
 import pymongo
+# from bson.json_util import dumps
 # from bson.code import Code # for some this needs to be pymongo.bson
 
 EXTRACTED_DIR = './results/extracted'
@@ -57,8 +58,9 @@ def main():
     print >> sys.stderr, "%s" % db.collection_names()
     print >> sys.stderr, "%s" % str(estimates.count())
 
-    record_by_find = estimates.find_one({"rxnorm": "19097016"})
-    record_by_id = estimates.find_one({"_id": "595fe5316246306dc7d048e2"})
+    # record_by_find = estimates.find_one({"rxnorm": "19097016"})
+    # record_by_id = estimates.find_one({"_id": "595fe5316246306dc7d048e2"})
+    query_db('nsides', 'estimateForDrug_Outcome', {'drugs': '19097016', 'model': 'dnn', 'outcome': '4294679'})
 
     return True
 
@@ -83,7 +85,41 @@ def query_db(service, method, query=False, cache=False):
         print "Service: ",service
         print "Method: ", method
         print "Query : ", query
-        if method == 'top10Effects': #'get_top_10_effects':
+
+        if method == 'estimateForDrug_Outcome':
+            estimate_record = estimates.find_one(
+                                { '$and':
+                                    [ { 'rxnorm': int(query["drugs"]) },
+                                      { 'snomed': int(query["outcome"]) },
+                                      { 'model': query["model"] }
+                                    ]
+                                });
+            
+            if estimate_record is None:
+                print "No record found"
+
+            else:
+                # Sort estimates by year and remove unicode from estimate keys
+                sorted_estimates = sorted(estimate_record[u"estimates"], key=lambda k: k[u'year'])
+
+                processed_estimates = []
+                for s in sorted_estimates:
+                    processed_year_estimate = dict()
+                    for k in s.keys():
+                        processed_year_estimate[k.encode('ascii','ignore')] = s[k]
+                    processed_estimates.append( processed_year_estimate )
+                # print s.keys()
+                # print estimate_record[u"estimates"], '\n'
+                print processed_estimates
+
+                json_return.append({ 
+                    # "effect_string" : "estimateForDrug_Outcome",
+                    "outcome" : int(estimate_record[u"snomed"]), #query["outcome"],
+                    "drug" : int(estimate_record[u"rxnorm"]), #query["drugs"],
+                    "estimates": processed_estimates #estimate_record[u"estimates"]
+                }) 
+
+        elif method == 'top10Effects': #'get_top_10_effects':
             ## Use aggregate to count number of instances of unique drugs
             # estimates_aggregate = estimates.aggregate([
             #     { "$group": {

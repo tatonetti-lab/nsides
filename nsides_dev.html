@@ -188,6 +188,7 @@ http://creativecommons.org/licenses/by-nc-sa/4.0/
 </script>
 -->
     
+<!--
 <script type="application/json" id="timedata">
     [
     {"year":"2004", "prr":1.6569027429509084, "ci":0.52},
@@ -205,15 +206,62 @@ http://creativecommons.org/licenses/by-nc-sa/4.0/
     {"year":"2016", "prr":5.6399101716895972, "ci":0.11}
     ] 
 </script>
+-->
+    
+<script type="application/json" id="timedata">
+    [
+    {"year": 2004, "prr":1.6569027429509084, "ci":0.52},
+    {"year": 2005, "prr":1.6569027429509084, "ci":0.52},
+    {"year": 2006, "prr":1.6569027429509084, "ci":0.52},
+    {"year": 2007, "prr":1.6569027429509084, "ci":0.52},
+    {"year": 2008, "prr":1.6569027429509084, "ci":0.52},
+    {"year": 2009, "prr":1.6569027429509084, "ci":0.52},
+    {"year": 2010, "prr":1.6569027429509084, "ci":0.52},
+    {"year": 2011, "prr":1.6569027429509084, "ci":0.52},
+    {"year": 2012, "prr":1.6569027429509084, "ci":0.52},
+    {"year": 2013, "prr":2.6627231444617859, "ci":0.41},
+    {"year": 2014, "prr":3.6399101716895972, "ci":0.31},
+    {"year": 2015, "prr":3.6399101716895972, "ci":0.24},
+    {"year": 2016, "prr":5.6399101716895972, "ci":0.11}
+    ] 
+</script>
     
 <script>
-var data = JSON.parse(document.getElementById('timedata').innerHTML);
-
-/* Set variables */
-var data1 = data
-var title1 = "Proportional Reporting Ratio over time";
+var title1;
+var data1;
 var dateformat = "%Y"
-drawTimeSeriesGraph(data1,title1,dateformat);
+    
+// Fetch from nsides API
+var api_call = "/api/v1/query?service=nsides&meta=estimateForDrug_Outcome&drugs=19097016&outcome=4294679";
+
+request = fetch(api_call) // http://stackoverflow.com/a/41059178
+            .then(function(response) {
+                // Convert to JSON
+                // console.log("response", response)
+                return response.json();
+            })
+            .then(function(j) {
+                var data = j["results"][0]["estimates"];
+                console.log(data);
+
+                /* Set variables */
+                data1 = data;
+                title1 = "Proportional Reporting Ratio over time";
+                drawTimeSeriesGraph(data1,title1,dateformat);
+            })
+            .catch(function(ex) {
+                console.log('Parsing failed', ex);
+                request = null;
+                title1 = "No results found";
+                drawTimeSeriesGraph([],title1,dateformat);
+            })
+
+///* Set variables */
+//var data = JSON.parse(document.getElementById('timedata').innerHTML);
+//var data1 = data
+//var title1 = "Proportional Reporting Ratio over time";
+//var dateformat = "%Y"
+//drawTimeSeriesGraph(data1,title1,dateformat);
 
 /* 
 Tooltip from: http://bl.ocks.org/d3noob/6eb506b129f585ce5c8a
