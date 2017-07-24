@@ -28,10 +28,10 @@ def query_db(service, method, query=False, cache=False):
 				from va_drugdrug_interactions_alerts_stitch;'''
 
 			print SQL
-			    
+
 			cur.execute(SQL)
 			results = cur.fetchall()
-			
+
 			for result in results:
 			    #json_return.append(result)
 			    json_return.append({
@@ -40,6 +40,30 @@ def query_db(service, method, query=False, cache=False):
 			    	"interaction": int(result['ddi'])
 			    })
 		return json_return
+
+	elif service == 'lab':
+		print "Service: ",service
+		print "Method: ",method
+		print "Query: ",query
+		if method == 'ae_to_lab':
+			SQL = '''select adverse_effect_name, lab_test_name, loinc_code, normal_range, unit
+				from ebdb.adverse_event_to_lab_test;'''.format(query=query)
+
+			print SQL
+
+			cur.execute(SQL)
+			results = cur.fetchall()
+
+			for result in results:
+				json_return.append({
+					"adverse_event": str(result['adverse_effect_name']),
+					"lab_test": str(result['lab_test_name']),
+					"loinc": str(result['loinc_code']),
+					"normal_range": str(result['normal_range']),
+					"unit": str(result['unit'])
+				})
+			return json_return
+
 	elif service == 'omop':
 		print "Service: ",service
 		print "Method: ",method
@@ -51,10 +75,10 @@ def query_db(service, method, query=False, cache=False):
 				and adverse_event = '{query}';'''.format(query=query)
 
 			print SQL
-			    
+
 			cur.execute(SQL)
 			results = cur.fetchall()
-			
+
 
 			for result in results:
 			    #json_return.append(result)
@@ -76,7 +100,7 @@ def query_db(service, method, query=False, cache=False):
                     where umls_id = '{query}'""".format(query=query)
             cur.execute(SQL)
             results = cur.fetchall()
-            
+
             for result in results:
                 json_return.append({
                     "stitch_id": str(result['stitch_id']),
@@ -84,17 +108,17 @@ def query_db(service, method, query=False, cache=False):
                     "lower_bound": str(result['lower_bound']),
                     "upper_bound": str(result['upper_bound'])
                 })
-        
+
 		if method == 'drugForEffect':
 			SQL = '''select stitch_id, drug_name
 				from mapped_adverse_effects
 				where umls_id = '{query}';'''.format(query=query)
 
 			print SQL
-			    
+
 			cur.execute(SQL)
 			results = cur.fetchall()
-			
+
 
 			for result in results:
 			    #json_return.append(result)
@@ -111,10 +135,10 @@ def query_db(service, method, query=False, cache=False):
 			where snomed_outcome_concept_id = '{query}' LIMIT 1;'''.format(query=query)
 
 			print SQL
-			    
+
 			cur.execute(SQL)
 			results = cur.fetchall()
-			
+
 
 			for result in results:
 			    #json_return.append(result)
@@ -132,10 +156,10 @@ def query_db(service, method, query=False, cache=False):
 			where concept_class_id = "Ingredient";'''.format(suffix=table_suffix)
 
 			print SQL
-			    
+
 			cur.execute(SQL)
 			results = cur.fetchall()
-			
+
 
 			for result in results:
 			    #json_return.append(result)
@@ -146,10 +170,10 @@ def query_db(service, method, query=False, cache=False):
 			    	"valid_end_date": str(result['valid_end_date']),
 			    	"concept_name": str(result['concept_name'].replace("'", "")),
 			    	"invalid_reason": str(result['invalid_reason']),
-			    	"concept_code": str(result['concept_code']), 
-			    	"standard_concept_id": int(result['standard_concept_id']), 
-			    	"standard_concept": str(result['standard_concept']), 
-			    	"concept_code": int(result['concept_code']), 
+			    	"concept_code": str(result['concept_code']),
+			    	"standard_concept_id": int(result['standard_concept_id']),
+			    	"standard_concept": str(result['standard_concept']),
+			    	"concept_code": int(result['concept_code']),
 			    	"domain_id": str(result['domain_id']),
 			    	"concept_id": int(result['concept_id'])
 			    })
@@ -157,7 +181,7 @@ def query_db(service, method, query=False, cache=False):
 		elif method == 'drugReactionCounts':
 			json_pre_return_1 = []
 			json_pre_return_2 = []
-			if query != ['']: 
+			if query != ['']:
 				# SQL = '''select drug_concept_id, outcome_concept_id, count_a as nreports, count_b + count_a as ndrugreports
 				# 	from standard_drug_outcome_contingency_table
 				# 	where count_a > 10;'''.format(suffix=table_suffix)
@@ -167,7 +191,7 @@ def query_db(service, method, query=False, cache=False):
 					limit {query},10000;'''.format(query=query)
 
 				print SQL
-				    
+
 				cur.execute(SQL)
 				results = cur.fetchall()
 
@@ -185,7 +209,7 @@ def query_db(service, method, query=False, cache=False):
 				where count_a > 10;'''
 
 			print SQL
-			    
+
 			cur.execute(SQL)
 			results = cur.fetchall()
 
@@ -208,7 +232,7 @@ def query_db(service, method, query=False, cache=False):
 		elif method == 'drugpairReactionCounts':
 			json_pre_return_1 = []
 			json_pre_return_2 = []
-			if query != ['']: 
+			if query != ['']:
 				# SQL = '''select drug_concept_id, outcome_concept_id, count_a as nreports, count_b + count_a as ndrugreports
 				# 	from standard_drug_outcome_contingency_table
 				# 	where count_a > 10;'''.format(suffix=table_suffix)
@@ -219,7 +243,7 @@ def query_db(service, method, query=False, cache=False):
 					limit {query},10000;'''.format(query=query)
 
 				print SQL
-				    
+
 				cur.execute(SQL)
 				results = cur.fetchall()
 
@@ -238,7 +262,7 @@ def query_db(service, method, query=False, cache=False):
 				from standard_drugpair_outcome_count'''
 
 			print SQL
-			    
+
 			cur.execute(SQL)
 			results = cur.fetchall()
 
@@ -263,7 +287,7 @@ def query_db(service, method, query=False, cache=False):
 				join concept on (concept_id = snomed_outcome_concept_id);'''.format(suffix=table_suffix)
 
 			print SQL
-			    
+
 			cur.execute(SQL)
 			results = cur.fetchall()
 
@@ -288,7 +312,7 @@ def query_db(service, method, query=False, cache=False):
 				join concept on (concept_id = outcome_concept_id);'''.format(suffix=table_suffix)
 
 			print SQL
-			    
+
 			cur.execute(SQL)
 			results = cur.fetchall()
 
@@ -311,7 +335,7 @@ def query_db(service, method, query=False, cache=False):
 			SQL = '''select * from standard_drugpair_list;'''
 
 			print SQL
-			    
+
 			cur.execute(SQL)
 			results = cur.fetchall()
 
@@ -321,14 +345,14 @@ def query_db(service, method, query=False, cache=False):
 			    	"drug1_concept_id": int(result['drug1_concept_id']),
 			    	"drug2_concept_id": int(result['drug2_concept_id'])
 			    })
-			
+
 		elif method == 'drugpairReactionListMedDRA':
 			SQL = '''select *
 				from standard_drugpair_outcome_list
 				join concept on (concept_id = outcome_concept_id);'''
 
 			print SQL
-			    
+
 			cur.execute(SQL)
 			results = cur.fetchall()
 
@@ -350,7 +374,7 @@ def query_db(service, method, query=False, cache=False):
 		# BEACON REQUESTS
 		elif method == 'getConcepts':
 			SQL = '''select * from concept WHERE concept_name LIKE '{query}' limit 10'''.format(query=query)
-			
+
 			print SQL
 			print service
 			print method
@@ -375,7 +399,7 @@ def query_db(service, method, query=False, cache=False):
 			print query
 			#SQL = '''select * from concept WHERE concept_id = '{query}';'''.format(query=query)
 			SQL = '''select * from concept where concept_id = {query} and domain_id in ("Drug", "Condition", "Procedure", "Measurement");'''.format(query=query)
-			
+
 			print SQL
 			print service
 			print method
@@ -418,7 +442,7 @@ def query_db(service, method, query=False, cache=False):
 			elif query[:6] == 'snomed':
 				query = query[7:]
 				SQL = '''select * from concept where concept_code = {query} and domain_id in ("Drug", "Condition", "Procedure", "Measurement");'''.format(query=query)
-			
+
 			print SQL
 			print service
 			print method
@@ -430,7 +454,7 @@ def query_db(service, method, query=False, cache=False):
 			for result in results:
 			    json_return.append(
 			    	'aeolus:'+str(result['concept_id'])
-			    )			
+			    )
 			return json_return
 		elif method == 'getExactMatchesToConcept':
 			if query[:6] == 'aeolus':
@@ -450,7 +474,7 @@ def query_db(service, method, query=False, cache=False):
 			elif query[:6] == 'snomed':
 				query = query[7:]
 				SQL = '''select * from concept where concept_code = {query} and domain_id in ("Drug", "Condition", "Procedure", "Measurement");'''.format(query=query)
-			
+
 			print SQL
 			print service
 			print method
@@ -462,7 +486,7 @@ def query_db(service, method, query=False, cache=False):
 			for result in results:
 			    json_return.append(
 			    	'aeolus:'+str(result['concept_id'])
-			    )			
+			    )
 			return json_return
 		elif method == 'getEvidence':
 			print query
@@ -479,7 +503,7 @@ def query_db(service, method, query=False, cache=False):
 				    	str('object:{')+str(result['concept_class_id'])+str('},')+
 				    	str('subject:{')+str(result['concept_name'])+str('},')+
 				    	str('id:id')
-				    )	
+				    )
 				return json_return
 			elif query[:6] == 'rxnorm':
 				query = query[7:]
@@ -487,7 +511,7 @@ def query_db(service, method, query=False, cache=False):
 			elif query[:6] == 'snomed':
 				query = query[7:]
 				SQL = '''select * from concept where concept_code = {query} and domain_id in ("Drug", "Condition", "Procedure", "Measurement");'''.format(query=query)
-			
+
 			print SQL
 			print service
 			print method
@@ -503,7 +527,7 @@ def query_db(service, method, query=False, cache=False):
 			    	'subject:{'+'}',
 			    	'id:id',
 			    }
-			    )			
+			    )
 			return json_return
 
 
