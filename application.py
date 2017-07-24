@@ -18,7 +18,7 @@ def dev():
 
 @route('/dev2')
 def dev2():
-    return static_file("nsides_dev-14.html", root='')
+    return static_file("nsides_dev-ci.html", root='')
 
 @route('/index/css/<cssfile>')
 def static_css(cssfile):
@@ -44,6 +44,8 @@ def static_css(jsfile):
 def static_font(miscfile):
     return static_file(miscfile, root='index/misc/')
 
+
+# Beacon
 @route('/beacon/<service>/concepts')
 def getConcepts(service):
     keywords = request.params.get('keywords')
@@ -95,6 +97,7 @@ def getStatemetns(service):
     return '[]'
 
 
+# API
 @route('/api/v1/query')
 def api_call():
     service = request.params.get('service')
@@ -105,16 +108,22 @@ def api_call():
     print "Meta/Method: ",meta
     print "Query: ",query
 
-    if service == ['']:
+    if service == [''] or service is None:
         response.status = 400
         return 'No service selected'
     elif len(service) == 1:
         json = '''{"results": "result"}'''
-    # New line for MongoDB service
+
+
+    # MongoDB (nSides)
+    # e.g. /api/v1/query?service=nsides&meta=top10Effects&q=19097016
     elif service == 'nsides':
-        if meta == 'get_top_10_effects':
+        if meta == 'top10Effects': #'get_top_10_effects':
             service_result = query_nsides_mongo.query_db(service, meta, query)
             json = '''{"results": %s}''' %(str(service_result))
+
+
+    # MySQL
     elif service == 'omop':
         if meta == 'reference':
             service_result = query_nsides_mysql.query_db(service, meta, query)
@@ -166,6 +175,7 @@ def api_call():
         if meta == 'reference':
             service_result = query_nsides_mysql.query_db(service, meta, query)
             json = '''{"results": %s}''' %(str(service_result))
+    
     else:
         json = '''{"": ""}'''
 

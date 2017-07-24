@@ -1,4 +1,4 @@
-<!-- deltaQT Database - FAQ, Updated March 28,2017 
+<!-- nSides, Updated July 2017
 
 Copyright (C) 2017, Tatonetti Lab
 Victor Nwankwo <vtn2106@cumc.columbia.edu>
@@ -24,198 +24,37 @@ http://creativecommons.org/licenses/by-nc-sa/4.0/
     <meta name="description" content="">
     
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <!-- 
-    <link rel="apple-touch-icon" href="/index/img/apple-touch-icon.png">
+     
+<!--    <link rel="apple-touch-icon" href="/index/img/apple-touch-icon.png">-->
     <link rel="shortcut icon" href="/index/img/favicon.ico">
-    -->
+    
 
     <!-- Stylesheets for scaffold and fonts -->
-    <link type="text/css" rel="stylesheet" media="all" href="./index/misc/fonts.css">
-    <link type="text/css" rel="stylesheet" media="all" href="./index/misc/main.css">
-    <link type="text/css" rel="stylesheet" media="print" href="./index/misc/print.css">
+    <link type="text/css" rel="stylesheet" media="all" href="./index/css/fonts.css">
+    <link type="text/css" rel="stylesheet" media="all" href="./index/css/main.css">
+    <link type="text/css" rel="stylesheet" media="print" href="./index/css/print.css">
     <!-- styles for select bar -->
     <link rel="stylesheet" href="./index/css/react-select.css">
+    <!-- styles for scatter plot -->
+    <link rel="stylesheet" href="./index/css/scatter-plot.css">
 </head>
-    
-<style>
-    html, body
-    {
-        width: 100%;
-        height: 100%;
-
-        margin: 0;
-        padding: 0;
-    }
-
-    
-
-    svg {
-        margin-left: auto; margin-right: auto;
-        display: block;
-    }
-
-    line,
-    rect {
-        shape-rendering: crispEdges;
-    }
-
-    .axis path,
-    .axis line {
-        fill: none;
-        stroke: #000;
-        shape-rendering: crispEdges;
-    }
-
-    .x.axis path {
-        display: none;
-    }
-
-    .divider {
-        stroke: #777;
-        stroke-dasharray: 5,5;
-        opacity: 0.7;
-    }
-
-    .line {
-        fill: none;
-        stroke-width: 1.5px;
-    }
-
-    circle.dot {
-        fill: #FFF;
-        stroke-width: 1.5px;
-    }
-
-    .area.confidence {
-        zoom: 1;
-        filter: alpha(opacity=30);
-        opacity: 0.3;
-    }
-
-/**
-.area.above {
-    fill: #D7191C !important;
-}
-
-.area.below {
-    fill: #2B83BA !important;
-}
-*/
-</style>
-
-<style>
-  .h2o-est {
-    white-space: nowrap;
-  }
-  html, body
-  {
-    width: 100%;
-    height: 100%;
-    
-    margin: 0;
-    padding: 0;
-
-  }
-
-
-  #page {
-    height:100%;
-
-  }
-
-  #root {
-    /*height:100%;*/
-    flex: 1;
-  }
-
-  #header {
-    flex: 0 1 auto;
-    /* The above is shorthand for:
-    flex-grow: 0,
-    flex-shrink: 1,
-    flex-basis: auto
-    */
-
-  }
-  #header-content {
-    position:relative;
-    padding-top:40px;
-    height:120px;
-    vertical-align: bottom;
-  }
-
-  #content {
-    height:100%;
-    width:100%;
-    display: flex;
-    flex-direction: column;
-    
-    justify-content: flex-start; /* align items in Main Axis */
-    align-items: stretch; /* align items in Cross Axis */
-    align-content: stretch; /* Extra space in Cross Axis */
-            
-    background: rgba(255, 255, 255, .1);
-    /*flex: 1;*/
-  }
-
-  header, section, footer {
-    max-width:850px;
-    width: 100%;
-    margin: 0 auto;
-  }
-
-  #bar {
-    width: 100vw;
-    margin-left: calc(-50vw + 50%);
-  }
-  .drug_title {
-    font-size: 22px;
-    font-weight:bold;
-    padding-top:25px;
-    padding-bottom:5px;
-  }
-
-  .effect_title {
-    font-size: 22px;
-    font-weight:bold;
-    padding-top:15px;
-    padding-bottom:5px;
-  }
-
-  #viz_container {
-        font: 10px sans-serif;
-
-    }
-
-    .select_container_effect {
-        padding-left:10px;
-    }
-    .select_container, .select_container_effect {
-        display: inline-block;
-        width:45%;
-    }
-
-    .y text { display: none; }
-
-    .y text text-anchor { display: visible; }
-  </style>
 
 <body>
 <div id="content">
-
     <div id="header">
         <img class="logo" src="./index/img/wormhole.png" height="120px"/>
         <div id="header-content">
             <div>
-                <h1>nSides</h1>
+                <br><br>
+                <h1><img src="/index/img/nsides-logo.svg" style="height:50px;vertical-align:middle;" /> nSides</h1>
                 <h3 style="white-space: nowrap;">A comprehensive database of drug-drug(s)-effect relationships</h3>
             </div>
         </div>
+        <div id="bar"></div>
     </div>
-
-    <div id="bar"></div>
-
+    <div id="container"></div>
     <section>
+        <br>
         <div class="select_container">
             <div class="drug_title">Drug</div>
             <div id="select_drug_container"></div>
@@ -224,18 +63,19 @@ http://creativecommons.org/licenses/by-nc-sa/4.0/
             <div class="effect_title">Effect</div>
             <div id="select_effect_container"></div>
         </div>
-
         <br>
-        <div id="viz_container"></div><br><br><br><br><br>
+        <br>
+        <div id="viz_container"></div><br><br><br><br><br><br><br><br><br><br>
     </section>
-
     <footer>
         <div id="footer">
-            <img src="./index/misc/cumc.png" width="250px">
+            <img src="./index/img/cumc.png" width="250px">
         </div>
     </footer>
 </div><!-- end #content -->
 
+<!-- Javascript Includes; Positioned AFTER because of loading order -->
+<script src="/index/js/babel.js"></script>
 <script src="/index/js/react.min.js"></script> 
 <script src="/index/js/react-dom.min.js"></script>
 <script src="/index/js/three.min.js"></script>
@@ -243,13 +83,29 @@ http://creativecommons.org/licenses/by-nc-sa/4.0/
 <script src="/index/js/react-input-autosize.min.js"></script>
 <script src="/index/js/react-select-mod.js"></script> <!-- Updated to close menu after hitting Enter -->
 <script src="/index/js/drugs-brandnames-v4b.js"></script>
+<!-- <script src="/index/js/nsides.js" type="text/babel"></script> --><!-- Place finalized APP inside this file -->
 
+<!-- <script src="./index/js/d3.min.js?v=3.2.8"></script> -->
+<!-- Consider adding this item to the repo as the above D3 include is not functioning correctly -->
+<!--<script src="http://d3js.org/d3.v3.min.js"></script>-->
+<script src="http://d3js.org/d3.v4.min.js"></script>
+
+<script type="text/babel">
+    var PRINT_DEBUG = false; //true;
+    function debug(...args) {
+        if (PRINT_DEBUG == false) {
+            return;
+        }
+        console.log(...args);
+    }
+
+
+
+    
+</script> 
+    
 <script>
-    // var options = [
-    //     { label: 'One', value: 1 },
-    //     { label: 'Two', value: 2 },
-    //     { label: 'Three', value: 3 },
-    // ];
+    // SIMPLIFIED REACT SELECT BARS -- UPDATE AS NECESSARY
     var options = drugs;
     var Container = React.createClass({
         getInitialState () {
@@ -271,9 +127,21 @@ http://creativecommons.org/licenses/by-nc-sa/4.0/
         document.getElementById('select_drug_container')
     );
 
+    // EFFECTS PULLED FROM TOP OF MYSQL TABLE
+    // Use /
     var effect_options = [
-        { label: 'snomed', value: 'snomed lookup' },
+        { label: '(1) 11-BETA-HYDROXYLASE DEFICIENCY', value: '35305836' },
+        { label: '(2) 17 KETOSTEROIDS URINE DECREASED', value: '36312357' },
+        { label: '(3) 17-HYDROXYPROGESTERONE DECREASED', value: '36312139' },
+        { label: '(4) 17-HYDROXYPROGESTERONE INCREASED', value: '36312140' },
+        { label: '(5) 2,5-OLIGOADENYLATE SYNTHETASE TEST INCREASED', value: '36312556' },
+        { label: '(6) 21-HYDROXYLASE DEFICIENCY', value: '35305840' },
+        { label: '(7) 5`NUCLEOTIDASE INCREASED', value: '36313520' },
+        { label: '(8) 5-ALPHA-REDUCTASE DEFICIENCY', value: '4212356' },
+        { label: '(9) 5Q MINUS SYNDROME', value: '136950' },
+        { label: '(10) ABASIA', value: '35809100' }
     ];
+    
     var effect_Container = React.createClass({
         getInitialState () {
             return { value: '' };
@@ -289,297 +157,338 @@ http://creativecommons.org/licenses/by-nc-sa/4.0/
             });
         }
     });
+    
     React.render(
         React.createElement(effect_Container),
         document.getElementById('select_effect_container')
     );
 </script>
 
+<!--
+<script type="application/json" id="timedata">
+    [
+    {"year":"2012","prr":0.6569027429509084},
+    {"year":"2013","prr":0.6627231444617859},
+    {"year":"2014","prr":0.6399101716895972},
+    {"year":"2015","prr":0.6399101716895972},
+    {"year":"2016","prr":0.6399101716895972}
+    ] 
+</script>
+-->
 
+<!--
+<script type="application/json" id="timedata">
+    [
+    {"year":"2012", "prr":1.6569027429509084, "ci":0.52},
+    {"year":"2013", "prr":2.6627231444617859, "ci":0.41},
+    {"year":"2014", "prr":3.6399101716895972, "ci":0.31},
+    {"year":"2015", "prr":3.6399101716895972, "ci":0.24},
+    {"year":"2016", "prr":5.6399101716895972, "ci":0.11}
+    ] 
+</script>
+-->
+    
+<script type="application/json" id="timedata">
+    [
+    {"year":"2004", "prr":1.6569027429509084, "ci":0.52},
+    {"year":"2005", "prr":1.6569027429509084, "ci":0.52},
+    {"year":"2006", "prr":1.6569027429509084, "ci":0.52},
+    {"year":"2007", "prr":1.6569027429509084, "ci":0.52},
+    {"year":"2008", "prr":1.6569027429509084, "ci":0.52},
+    {"year":"2009", "prr":1.6569027429509084, "ci":0.52},
+    {"year":"2010", "prr":1.6569027429509084, "ci":0.52},
+    {"year":"2011", "prr":1.6569027429509084, "ci":0.52},
+    {"year":"2012", "prr":1.6569027429509084, "ci":0.52},
+    {"year":"2013", "prr":2.6627231444617859, "ci":0.41},
+    {"year":"2014", "prr":3.6399101716895972, "ci":0.31},
+    {"year":"2015", "prr":3.6399101716895972, "ci":0.24},
+    {"year":"2016", "prr":5.6399101716895972, "ci":0.11}
+    ] 
+</script>
+    
+<script>
+var data = JSON.parse(document.getElementById('timedata').innerHTML);
 
+/* Set variables */
+var data1 = data
+var title1 = "Proportional Reporting Ratio over time";
+var dateformat = "%Y"
+drawTimeSeriesGraph(data1,title1,dateformat);
 
-    <script src="./index/js/d3.min.js?v=3.2.8"></script>
-    <script type="text/javascript" charset="utf-8">
-        // Return standard error with 95% confidence
-        function se95(p, n) {
-            return Math.sqrt(p*(1-p)/n)*1.96;
-        };
+/* 
+Tooltip from: http://bl.ocks.org/d3noob/6eb506b129f585ce5c8a
+*/
 
-        // Settings
-        var width = 440,
-            height = 400,
-            padding = 30;
+function drawTimeSeriesGraph(data,title,dateformat) {
 
-        var margin = {
-            'top': 30,
-            'right': 35,
-            'bottom': 30,
-            'left': 30
-        };
+    //Set bounds for red dots
+    var lbound = 0.045,
+        ubound = 0.075;
+        
+    // Set the dimensions of the canvas / graph
+    var margin = {top: 50, right: 150, bottom: 50, left: 50},
+        width = 800 - margin.left - margin.right,
+        height = 270 - margin.top - margin.bottom;
 
-        margin.hor = margin.left + margin.right;
-        margin.ver = margin.top + margin.bottom;
+    // Parse the date / time
+    var parseDate = d3.timeParse(dateformat),
+        formatDate = d3.timeFormat(dateformat),
+        bisectDate = d3.bisector(function(d) { return d.year; }).left;
 
-        // Config
-        // NOTE: This is where the magic happens (for now) ... instead of calling for a CSV file, we will call the API route
-        var dataset = "./index/data/data.csv",
-            parseDate = d3.time.format("%Y").parse,
-            electionDate = "",  // "2014/11"
-            interpolation = "linear";
+    // Set the ranges
+    var x = d3.scaleTime().range([0, width]);
+    var y = d3.scaleLinear().range([height, 0]);
 
-        var estimateOne = ["Methadone"],
-            estimateOneColor = "#D7191C", // blue
-            estimateTwo = ["V", "O", "K", "I", "C"],
-            estimateTwoColor = "#2B83BA", // red
-            //displaySingleEstimate = false;
-            displaySingleEstimate = "left"
-            // false, "left", "right"
+//    var xScale = d3.scale.linear()
+//        .domain([0, d3.max(data, function(d){ return d.year; })])
+//        .range([0, width]);
+//
+//    var yScale = d3.scale.linear()
+////        .domain([0, d3.max(data, function(d){ return d.prr; })])
+////        .domain([0, 1])
+//        .range([height, 0]);
 
-        var useEstimateLabels = true,
-            yAxisTitle = "PRR",
-            cutoff = .1;
+    // Define the axes
+    // var xAxis = d3.svg.axis().scale(x)
+    //     .orient("bottom")
+    //     .ticks(d3.time.years, 1)//should display 1 year intervals
 
-        if (useEstimateLabels === true) { margin.right = 70; }
-        // for the labels; 40 + 10 for each array.length > 4
+    // var yAxis = d3.svg.axis().scale(y)
+    //     .orient("left").ticks(10);
 
-        var x = d3.time.scale()
-            .range([0, width]);
+    var xAxis = d3.axisBottom()
+        .scale(x)
+        .ticks(d3.timeYear.every(1)) // display 1 year intervals
+        .tickSizeInner(-height)
+        .tickSizeOuter(0)
+        .tickPadding(10);
 
-        var y = d3.scale.linear()
-            .range([height, 0]);
+    var yAxis = d3.axisLeft()
+        .scale(y)
+        .tickSizeInner(-width)
+        .tickSizeOuter(0)
+        .tickPadding(5);
 
-        var xAxis = d3.svg.axis()
-            .scale(x)
-            .orient("bottom")
-            .ticks(7)
-            .tickSubdivide(2);
+    // Define the line
+    var prrline = d3.line()
+        .x(function(d) { return x(d.year); })
+        .y(function(d) { return y(d.prr); });
+        
+    // Adds the svg canvas
+    var svg = d3.select("#viz_container")
+        .append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+            .attr("transform", 
+                  "translate(" + margin.left + "," + margin.top + ")");
+    
+    // Get the data
 
-        var yAxis = d3.svg.axis()
-            .scale(y)
-            .orient("left")
-            .tickFormat(d3.format(""));
-            //.tickFormat(d3.format(".0"));
-            //.tickFormat(d3.format(".0"));
+    data.forEach(function(d) {
+        d.year = parseDate(d.year);
+        d.prr = +d.prr;
+        
+        d.ci = +d.ci;
+    });
 
-        var lineLeft = d3.svg.area()
-            .interpolate(interpolation)
-            .x(function(d) { return x(d["date"]); })
-            .y(function(d) { return y(d["left"]); });
+    // Scale the range of the data
+    x.domain(d3.extent(data, function(d) { return d.year; }));
+    y.domain([0, 0.5 + d3.max(data, function(d) { return d.prr; })]);
+//    y.domain([0, d3.max(data, function(d) { return d.prr; })]);
+    
+    //Use below if instead you want to define the y limits:
+    // y.domain([0, 3]);
+    
+    // Threshold line
+    var prrThreshold = 2;
+    svg.append("line")
+        .attr("class", "divider")
+        .attr("x1", x.range()[0])
+        .attr("x2", x.range()[1])
+        .attr("y1", y(prrThreshold))
+        .attr("y2", y(prrThreshold));
 
-        var lineRight = d3.svg.area()
-            .interpolate(interpolation)
-            .x(function(d) { return x(d["date"]); })
-            .y(function(d) { return y(d["right"]); });
+    // Add the prrline path.
+    var lineSvg = svg.append("g"); 
+    lineSvg.append("path")
+        .attr("class", "line")
+        .attr("d", prrline(data));
 
-        var confidenceAreaLeft = d3.svg.area()
-            .interpolate(interpolation)
-            .x(function(d) { return x(d["date"]); })
-            .y0(function(d) {
-                return y(d["left"] - d["confidenceRight"]); })
-            .y1(function(d) {
-                return y(d["left"] + d["confidenceRight"]); });
+    // Add the Y Axis
+    svg.append("g")
+        .attr("class", "y axis")
+        .attr("font-size", "13px")
+        .call(yAxis);
+    
+    // Only show every other y-axis tick
+    // From https://stackoverflow.com/a/38921326
+    var ticks = d3.selectAll(".tick text");
+    ticks.attr("class", function(d,i){
+     if(i%2 != 0) d3.select(this).remove();
+    });
+    
+    
+    // Add the X Axis
+    svg.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + height + ")")
+        .attr("font-size", "13px")
+        .call(xAxis);
+    
+    
+    // Y axis title
+    padding = 70;
+    svg.append("text")
+       .attr("class", "ylabel")
+       .attr("text-anchor", "middle")  // this makes it easy to center the text as the transform is applied to the anchor
+       .attr("transform", "translate(-"+ (padding/2) +","+(height/2)+")rotate(-90)")  // text is drawn off the screen top left, move down and out and rotate
+       .attr("font-size", "13px")
+       .text("PRR");
+    
+    
+    // Confidence area
+    var confidenceArea = d3.area()
+            .curve(d3.curveLinear)
+            .x( function(d) { return x(d.year); })
+            .y0(function(d) { return y(d.prr - d.ci); })
+            .y1(function(d) { return y(d.prr + d.ci); });
+//    console.log(confidenceArea)
+    
+    svg.append("path")
+        .datum(data)
+        .attr("class", "area confidence")
+//        .attr("fill", "red") //estimateOneColor,
+        .attr("d", confidenceArea);
+    
+    
+    var focus = svg.append("g") 
+        .style("display", "none");
+    
+    // append the x line
+    focus.append("line")
+        .attr("class", "x")
+        .style("stroke", "black")
+        .style("stroke-dasharray", "3,3")
+        .style("opacity", 0.5)
+        .attr("y1", 0)
+        .attr("y2", height);
 
-        var confidenceAreaRight = d3.svg.area()
-            .interpolate(interpolation)
-            .x(function(d) { return x(d["date"]); })
-            .y0(function(d) {
-                return y(d["right"] - d["confidenceRight"]); })
-            .y1(function(d) {
-                return y(d["right"] + d["confidenceRight"]); });
+    // append the y line
+    focus.append("line")
+        .attr("class", "y")
+        .style("stroke", "black")
+        .style("stroke-dasharray", "3,3")
+        .style("opacity", 0.5)
+        .attr("x1", width)
+        .attr("x2", width);
 
-        //var svg = d3.select("body").append("svg")
-        var svg = d3.select("#viz_container").append("svg")
-            .attr({
-                "width": width + margin.left + margin.right,
-                "height": height + margin.top + margin.bottom
-            })
-            .append("g")
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    // append the circle at the intersection
+    focus.append("circle")
+        .attr("class", "y")
+        .style("fill", "none")
+        .style("stroke", "steelblue")
+        .style("stroke-width", 1.5)
+        .attr("r", 4);
 
-        d3.csv(dataset, function(error, data) {
-            data.forEach(function(d) {
-                d.date = parseDate(d.date);
-                d.respondents = parseFloat(d.respondents);
+    // place the prr at the intersection
+    focus.append("text")
+        .attr("class", "y1")
+        .style("stroke", "white")
+        .style("stroke-width", "3.5px")
+        .style("opacity", 0.8)
+        .attr("dx", 8)
+        .attr("dy", "-.3em");
+    focus.append("text")
+        .attr("class", "y2")
+        .attr("dx", 8)
+        .attr("dy", "-.3em");
 
-                estimateSum = function(d, estimate) {
-                    var votes = parseFloat(0);
-                    for (var i = 0; i < estimate.length; i++) {
-                        votes += parseFloat(d[estimate[i]])
-                    }
-                    // Return percentage in decimal format
-                    return votes>1 ? votes/100 : votes;
-                };
-                estimate = function(d, estimate) {
-                    var votes = parseFloat(0);
-                    for (var i = 0; i < estimate.length; i++) {
-                        votes += parseFloat(d[estimate[i]])
-                    }
-                    // Return percentage in decimal format
-                    return votes>1 ? votes/100 : votes;
-                };
-                d["left"] = estimate(d, estimateOne),
-                d["right"] = estimate(d, estimateTwo),
-                d["total"] = d["left"] + d["right"],
-                d["confidenceLeft"] = se95(d["left"], d["respondents"]),
-                d["confidenceRight"] = se95(d["right"], d["respondents"]);
-            });
+    // place the date at the intersection
+    focus.append("text")
+        .attr("class", "y3")
+        .style("stroke", "white")
+        .style("stroke-width", "3.5px")
+        .style("opacity", 0.8)
+        .attr("dx", 8)
+        .attr("dy", "1em");
+    focus.append("text")
+        .attr("class", "y4")
+        .attr("dx", 8)
+        .attr("dy", "1em");
+    
+    
+    // append the rectangle to capture mouse
+    svg.append("rect")
+        .attr("width", width)
+        .attr("height", height)
+        .style("fill", "none")
+        .style("pointer-events", "all")
+        .on("mouseover", function() { focus.style("display", null); })
+        .on("mouseout", function() { focus.style("display", "none"); })
+        .on("mousemove", mousemove);
 
-            if (electionDate === "") {
-                x.domain(d3.extent(data, function(d) {
-                    return d.date; }));
-            } else {
-                x.domain([
-                    d3.min(data, function(d) { return d.date; }),
-                    parseDate(electionDate)
-                ]);
-            }
-            // y.domain([
-            //     d3.min(data, function(d) {
-            //         var min = Math.min(d["right"], d["left"]);
-            //         return min - se95(min, d["respondents"]);
-            //     }),
-            //     d3.max(data, function(d) {
-            //         var max = Math.max(d["right"], d["left"]);
-            //         return max + se95(max, d["respondents"]);
-            //     })
-            // ]);
-            y.domain([
-                d3.min(data, function(d) {
-                    var min = 0.1;
-                    return min - se95(min, d["respondents"]);
-                }),
-                d3.max(data, function(d) {
-                    //var max = Math.max(d["right"], d["left"]);
-                    max = .25;
-                    return max + se95(max, d["respondents"]);
-                })
-            ]);
+    function mousemove() {
+        var x0 = x.invert(d3.mouse(this)[0]),
+            i = bisectDate(data, x0, 1),
+            d0 = data[i - 1],
+            d1 = data[i],
+            d = x0 - d0.year > d1.year - x0 ? d1 : d0;
 
-            svg.datum(data);
+        focus.select("circle.y")
+            .attr("transform",
+                  "translate(" + x(d.year) + "," +
+                                 y(d.prr) + ")");
+                                 
+//        focus.select("text.y1")
+//            .attr("transform",
+//                  "translate(" + x(d.year) + "," +
+//                                 y(d.prr) + ")")
+//            .text(d.prr.toFixed(2));
 
-            // X axis
-            svg.append("g")
-                .attr({
-                    "class": "x axis",
-                    "transform": "translate(0," + height + ")"
-                })
-                .call(xAxis);
+        focus.select("text.y2")
+            .attr("transform",
+                  "translate(" + x(d.year) + "," +
+                                 y(d.prr) + ")")
+            .attr("font-size", "12px")
+            .text(d.prr.toFixed(2));
 
-            // Y axis
-            svg.append("g")
-                .attr("class", "y axis")
-                .call(yAxis)
-                .append("text")
-                .attr({
-                    "transform": "rotate(-90)",
-                    "y": 6,
-                    "dy": ".71em"
-                })
-                .style("text-anchor", "end")
-                .text(yAxisTitle);
+//        focus.select("text.y3")
+//            .attr("transform",
+//                  "translate(" + x(d.year) + "," +
+//                                 y(d.prr) + ")")
+//            .text(formatDate(d.year));
 
-            // Confidence area
-            if (displaySingleEstimate !== "right") {
-                svg.append("path")
-                    .attr({
-                        "class": "area confidence",
-                        "fill": estimateOneColor,
-                        "d": confidenceAreaLeft
-                    });
-            }
-            if (displaySingleEstimate !== "left") {
-                svg.append("path")
-                    .attr({
-                        "class": "area confidence",
-                        "fill": estimateTwoColor,
-                        "d": confidenceAreaRight
-                    });
-            }
+        focus.select("text.y4")
+            .attr("transform",
+                  "translate(" + x(d.year) + "," +
+                                 y(d.prr) + ")")
+            .attr("font-size", "12px")
+            .text(formatDate(d.year));
 
-            // Lines
-            if (displaySingleEstimate !== "right") {
-                svg.append("path")
-                    .attr({
-                        "class": "line",
-                        "d": lineLeft,
-                        "stroke": estimateOneColor
-                    });
-            }
-            if (displaySingleEstimate !== "left") {
-                svg.append("path")
-                    .attr({
-                        "class": "line",
-                        "d": lineRight,
-                        "stroke": estimateTwoColor
-                    });
-            }
+        focus.select(".x")
+            .attr("transform",
+                  "translate(" + x(d.year) + "," +
+                                 y(d.prr) + ")")
+            .attr("y2", height - y(d.prr));
 
-            // Dots
-            var dots = svg.selectAll("circle")
-                .data(data)
-                .enter();
+        focus.select(".y")
+            .attr("transform",
+                  "translate(" + width * -1 + "," +
+                                 y(d.prr) + ")")
+            .attr("x2", width + width);
+    };
+    
+    svg.append("text")
+        .attr("x", (width / 2))             
+        .attr("y", 0 - (margin.top / 2))
+        .attr("text-anchor", "middle")  
+        .style("font-size", "16px") 
+        //.style("text-decoration", "underline")  
+        .text(title);
+};
 
-            if (displaySingleEstimate !== "right") {
-                var dotsLeft = dots.append("circle")
-                    .attr({
-                        "class": "dot",
-                        "r": 3,
-                        "cx": lineLeft.x(),
-                        "cy": lineLeft.y(),
-                        "stroke": estimateOneColor
-                    });
-            }
-            if (displaySingleEstimate !== "left") {
-                var dotsRight = dots.append("circle")
-                    .attr({
-                        "class": "dot",
-                        "r": 3,
-                        "cx": lineRight.x(),
-                        "cy": lineRight.y(),
-                        "stroke": estimateTwoColor
-                    });
-            }
+</script>
 
-            // Divider
-            svg.append("line")
-                .attr("class", "divider")
-                .attr({
-                    "x1": x.range()[0],
-                    "x2": x.range()[1],
-                    "y1": y(cutoff),
-                    "y2": y(cutoff)
-                });
-
-            // Graph label
-            if (useEstimateLabels === true) {
-                if (displaySingleEstimate !== "right") {
-                    svg.append("text")
-                        .data(data)
-                        .attr("transform", function(d) {
-                            return "translate(" + x(data[data.length-1]["date"]) + "," + y(data[data.length-1]["left"]) + ")"; })
-                        .attr({
-                            "x": 10,
-                            "dy": ".35em",
-                            "class": "label",
-                            "id": "estimateOne"
-                        })
-                        .text(estimateOne.join(""));
-                }
-                if (displaySingleEstimate !== "left") {
-                    svg.append("text")
-                        .data(data)
-                        .attr("transform", function(d) {
-                            return "translate(" + x(data[data.length-1]["date"]) + "," + y(data[data.length-1]["right"]) + ")"; })
-                        .attr({
-                            "x": 10,
-                            "dy": ".35em",
-                            "class": "label",
-                            "id": "estimateTwo"
-                        })
-                        .text(estimateTwo.join(""));
-                }
-            }
-        });
-    </script>
 </body>
 </html>

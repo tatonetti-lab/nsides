@@ -83,7 +83,7 @@ def query_db(service, method, query=False, cache=False):
         print "Service: ",service
         print "Method: ", method
         print "Query : ", query
-        if method == 'get_top_10_effects':
+        if method == 'top10Effects': #'get_top_10_effects':
             ## Use aggregate to count number of instances of unique drugs
             # estimates_aggregate = estimates.aggregate([
             #     { "$group": {

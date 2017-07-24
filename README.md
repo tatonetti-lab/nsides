@@ -15,6 +15,6 @@ To run: `python application.py`
 
 1. Make sure Elastic Beanstalk command line interface is installed (`pip install awsebcli`)
 2. `eb init` -> select region `1) us-east-1 : US East (N. Virginia)` -> select an application to use `1) nsides-eb`
-3. Make sure `.ebignore` is configured as desired
+3. Make sure `.ebignore` is configured as desired, and enter login credentials for `nsides.cnf` and `nsides-mongo.cnf`
 4. If adding new dependencies, update `requirements.txt` using `pipreqs` (`pip install pipreqs`) by running `pipreqs --force --ignore /condor,/db .`
 4. After making changes and pushing to this repo, run `eb deploy`
