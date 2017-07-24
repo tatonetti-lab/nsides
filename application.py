@@ -2,7 +2,7 @@
 from bottle import default_app, route, static_file, request, response, template
 import pymysql
 import query_nsides_mysql
-# import query_nsides_mongo
+import query_nsides_mongo
 
 @route('/')
 def index():

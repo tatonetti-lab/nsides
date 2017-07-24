@@ -13,14 +13,14 @@ Ensure that nsides-mongo.cnf file exists
 
 """
 
-import os
+# import os
 import sys
-import numpy
-import pickle
-import shutil
-import tarfile
+# import numpy
+# import pickle
+# import shutil
+# import tarfile
 import pymongo
-from bson.code import Code # for some this needs to be pymongo.bson
+# from bson.code import Code # for some this needs to be pymongo.bson
 
 EXTRACTED_DIR = './results/extracted'
 REFERNCE_DIR = './reference'
