@@ -21,7 +21,7 @@ class EffectSelectBox extends React.Component {
         this.handleSelectChange = this.handleSelectChange.bind(this);
 		this.state = {
 			options: this.props.outcomeOptions,
-			value: '', //[],
+			value: this.props.outcome, //'', //[],
             // numOutcomeResults: this.props.numOutcomeResults
             // loadingIconStyle: {float:"right", display:"none"},
 		};
@@ -50,7 +50,7 @@ class EffectSelectBox extends React.Component {
 			<div className="section select_container_effect">
                 <div className="effect_title">Effect</div>
 				<Select name="selected-effect"
-                 value={this.state.value}
+                 value={this.props.outcome} //{this.state.value}
                  placeholder="Select effect..."
                  noResultsText="No effects found" 
                  options={this.props.outcomeOptions}

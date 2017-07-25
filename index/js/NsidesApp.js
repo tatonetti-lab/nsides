@@ -19,6 +19,7 @@ class NsidesApp extends React.Component {
                />
                <EffectSelectBox
                       outcomeOptions={this.state.outcomeOptions}
+                      outcome={this.state.outcome}
                       selectedDrug={this.state.drugs}
                       onDrugOutcomeChange={(newDrug,newOutcome) => this.handleDrugOutcomeChange(newDrug,newOutcome)}
                />
@@ -31,14 +32,16 @@ class NsidesApp extends React.Component {
         this.setState({ drugs: newDrug,
                         outcome: '',
                         outcomeOptions: topOutcomes}, () => {
-          debug('drug updated')
+          debug('drug updated');
+          title1 = "Select a drug and effect";
+          drawTimeSeriesGraph([],title1,dateformat,blank=true);
         });
     }
 
     handleDrugOutcomeChange(newDrug,newOutcome) {
         this.setState({ drugs: newDrug,
                         outcome: newOutcome}, () => {
-            // debug("newDrug", newDrug, "newOutcome", newOutcome)
+            debug("newDrug", newDrug, "newOutcome", newOutcome)
             if ( (newDrug == "") || (newOutcome == "") ) {
                 title1 = "Select a drug and effect";
                 drawTimeSeriesGraph([],title1,dateformat,blank=true);
