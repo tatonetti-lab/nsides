@@ -6,19 +6,19 @@ import query_nsides_mongo
 
 @route('/')
 def index():
-    return static_file("nsides_splash.html", root='')
+    return static_file("nsides_dev.html", root='')
 
-@route('/api')
-def api():
-    return static_file("nsides_api.html", root='')
+@route('/splash')
+def splash():
+    return static_file("nsides_splash.html", root='')
 
 @route('/dev')
 def dev():
     return static_file("nsides_dev.html", root='')
 
-@route('/dev2')
-def dev2():
-    return static_file("nsides_dev-ci.html", root='')
+@route('/api')
+def api():
+    return static_file("nsides_api.html", root='')
 
 @route('/index/css/<cssfile>')
 def static_css(cssfile):
@@ -170,6 +170,9 @@ def api_call():
             json = '''{"results": %s}''' %(str(service_result))
     elif service == 'omop':
         if meta == 'reference':
+            service_result = query_nsides_mysql.query_db(service, meta, query)
+            json = '''{"results": %s}''' %(str(service_result))
+        elif meta == 'conceptsToName':
             service_result = query_nsides_mysql.query_db(service, meta, query)
             json = '''{"results": %s}''' %(str(service_result))
     elif service == 'sider':

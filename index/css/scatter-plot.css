@@ -148,3 +148,5 @@ path {
     stroke-width: 1;
     shape-rendering: crispEdges;
 }
+
+.select-row{display:flex; flex-direction:row;}

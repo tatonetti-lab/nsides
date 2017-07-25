@@ -23,6 +23,7 @@ import pymongo
 from operator import itemgetter
 # from bson.json_util import dumps
 # from bson.code import Code # for some this needs to be pymongo.bson
+import query_nsides_mysql
 
 EXTRACTED_DIR = './results/extracted'
 REFERNCE_DIR = './reference'
@@ -145,14 +146,33 @@ def query_db(service, method, query=False, cache=False):
             # sorted(all_outcomes,key=itemgetter(1), reverse=True)[:num_results]
             top_results = sorted(all_outcomes,key=itemgetter(1))[:num_results]
             # print top_results
-            top_outcome_ids = [r[0] for r in top_results]
+            top_outcome_ids = [str(r[0]) for r in top_results]
             print top_outcome_ids
+
+            if len(top_outcome_ids) == 0:
+                return []
+
+            concept_mappings = query_nsides_mysql.query_db(service='omop', method='conceptsToName',
+                                                           query= ",".join(top_outcome_ids) )
+            # print len(concept_mappings)
+            # print concept_mappings
+
+            concept_id2name = dict()
+            for m in concept_mappings:
+                concept_id2name[ str(m['concept_id']) ] = m['concept_name']
+            
+            outcome_options = []
+            for concept_id in top_outcome_ids:
+                if concept_id in concept_id2name:
+                    outcome_options.append( { 'value': concept_id, 'label': concept_id2name[concept_id] } )
+            
+            # print outcome_options
+
             
             json_return.append({ 
                     # "effect_string" : "estimateForDrug_Outcome",
-                    "topOutcomes" : top_outcome_ids,
+                    "topOutcomes" : outcome_options, #top_outcome_ids,
                     "drug" : int(query["drugs"]),
-                    # "estimates": processed_estimates #estimate_record[u"estimates"]
                 }) 
 
             ## Use aggregate to count number of instances of unique drugs
