@@ -202,7 +202,8 @@ function drawTimeSeriesGraph(data,title,dateformat,blank=false) {
 
         // Scale the range of the data
         x.domain(d3.extent(data, function(d) { return d.year; }));
-        y.domain([0, 0.5 + d3.max(data, function(d) { return d.prr; })]);
+//        y.domain([0, 0.5 + d3.max(data, function(d) { return d.prr; })]);
+        y.domain([0, d3.max(data, function(d) { return d.prr; }) > 2 ? 0.5 + d3.max(data, function(d) { return d.prr; }) : 2.5]);
         // y.domain([0, d3.max(data, function(d) { return d.prr; })]);
     
         // Threshold line

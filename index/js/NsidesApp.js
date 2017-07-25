@@ -1,3 +1,18 @@
+// nSides App, Updated July 2017
+
+// Copyright (C) 2017, Tatonetti Lab
+// Tal Lorberbaum <tal.lorberbaum@columbia.edu>
+// Victor Nwankwo <vtn2106@cumc.columbia.edu>
+// Joe Romano <dr2160@cumc.columbia.edu>
+// Ram Vanguri <rami.vanguri@columbia.edu>
+// Nicholas P. Tatonetti <nick.tatonetti@columbia.edu>
+// All rights reserved.
+
+// This site is released under a CC BY-NC-SA 4.0 license.
+// For full license details see LICENSE.txt at 
+// https://github.com/tatonetti-lab/nsides or go to:
+// http://creativecommons.org/licenses/by-nc-sa/4.0/
+
 class NsidesApp extends React.Component {
     constructor(props) {
     super(props);
