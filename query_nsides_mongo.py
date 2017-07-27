@@ -1,5 +1,5 @@
 """
-populate_nsides_mongodb.py
+query_nsides_mongo.py
 
 Connects to MongoDB and extracts records for API's usage
 

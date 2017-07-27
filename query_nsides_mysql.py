@@ -95,10 +95,16 @@ def query_db(service, method, query=False, cache=False):
         # Provide comma-separated list of concept_ids to map to names
         # e.g. /api/v1/query?service=omop&meta=conceptsToName&q=4196636,437643
         elif method == 'conceptsToName':
-            concept_ids = str(tuple([int(c) for c in query.split(',')]))
+            if len(query.split(',')) > 1:
+                concept_ids = str(tuple([int(c) for c in query.split(',')]))
+                query_str = "in"
+            else:
+                concept_ids = query
+                query_str = "="
+            
             SQL = '''select concept_id, concept_name
                      from concept
-                     where concept_id in %s''' %concept_ids
+                     where concept_id %s %s''' %(query_str, concept_ids)
             print SQL
 
             cur.execute(SQL)

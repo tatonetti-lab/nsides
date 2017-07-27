@@ -35,4 +35,4 @@ packages/*
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
-.ebignore
+# .ebignore

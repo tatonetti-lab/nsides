@@ -1,0 +1,10 @@
+*.pyc
+condor/
+db/
+index/demos/
+site_notebooks/
+.git/
+package.json
+README.md
+nsides-config-example.cnf
+nsides-mongo-example.cnf
