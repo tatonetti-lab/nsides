@@ -45,15 +45,14 @@ http://creativecommons.org/licenses/by-nc-sa/4.0/
 <!--        <img class="logo" src="./index/img/wormhole.png" height="120px"/>-->
         <div id="header-content">
             <div>
-                <br><br>
-                <h1><img src="/index/img/nsides-logo.svg" style="height:50px;vertical-align:middle;" /> nSides</h1>
-                <h3 style="white-space: nowrap;">A comprehensive database of drug-drug(s)-effect relationships</h3>
+                <h1 class="logo-h1"><img src="/index/img/nsides-logo.svg" style="height:50px;vertical-align:middle;" /> nSides</h1>
+                <h3>A comprehensive database of drug-drug(s)-effect relationships</h3>
             </div>
         </div>
         <div id="bar"></div>
     </div>
-    <div id="container"></div>
-    <section>
+    <div id="container" style="text-align:center;"></div>
+    <section class="select_bar">
 <!--        <br>-->
 <!--
         <div class="select_container">
@@ -67,11 +66,11 @@ http://creativecommons.org/licenses/by-nc-sa/4.0/
         <br>
         <br>
 -->
-        <div id="viz_container"></div><br><br><br><br><br><br><br><br><br><br>
+        <div id="viz_container" style="text-align:center;"></div>
     </section>
     <footer>
         <div id="footer">
-            <img src="./index/img/cumc.png" width="250px">
+            <img class="footer-img" src="./index/img/cumc.png" width="250px">
         </div>
     </footer>
 </div><!-- end #content -->
@@ -185,9 +184,15 @@ function drawTimeSeriesGraph(data,title,dateformat,blank=false) {
         
     // Adds the svg canvas
     var svg = d3.select("#viz_container")
+        .append("div")
+            .classed("svg-container", true) //container class to make it responsive
         .append("svg")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
+            // .attr("width", width + margin.left + margin.right)
+            // .attr("height", height + margin.top + margin.bottom)
+            //responsive SVG needs these 2 attributes and no width and height attr
+           .attr("preserveAspectRatio", "xMinYMin meet")
+           .attr("viewBox", "0 0 700 270")
+           .classed("svg-content-responsive", true)
         .append("g")
             .attr("transform", 
                   "translate(" + margin.left + "," + margin.top + ")");
