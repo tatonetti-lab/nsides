@@ -48,7 +48,7 @@ def query_db(service, method, query=False, cache=False):
         print "Method: ",method
         print "Query: ",query
         if method == 'ae_to_lab':
-            SQL = '''select adverse_effect_name, lab_test_name, loinc_code, normal_range, unit
+            SQL = '''select adverse_effect_name, lab_test_name, loinc_code, normal_range_low, normal_range_high, limit_value_low, limit_value_high, unit
                 from ebdb.adverse_event_to_lab_test;'''.format(query=query)
 
             print SQL
@@ -61,7 +61,10 @@ def query_db(service, method, query=False, cache=False):
                     "adverse_event": str(result['adverse_effect_name']),
                     "lab_test": str(result['lab_test_name']),
                     "loinc": str(result['loinc_code']),
-                    "normal_range": str(result['normal_range']),
+                    "normal_range_low": str(result['normal_range_low']),
+                    "normal_range_high": str(result['normal_range_high']),
+                    "limit_value_low": str(result['limit_value_low']),
+                    "limit_value_high": str(result['limit_value_high']),
                     "unit": str(result['unit'])
                 })
             return json_return
@@ -101,7 +104,7 @@ def query_db(service, method, query=False, cache=False):
             else:
                 concept_ids = query
                 query_str = "="
-            
+
             SQL = '''select concept_id, concept_name
                      from concept
                      where concept_id %s %s''' %(query_str, concept_ids)
