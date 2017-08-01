@@ -1,0 +1,27 @@
+{
+  "owner": "cyoun",
+  "available": true,
+  "description": "flat file storage system for the Drug effect gateway",
+  "storage": {
+    "proxy": null,
+    "protocol": "SFTP",
+    "mirror": false,
+    "port": 22,
+    "auth": {
+      "type": "SSHKEYS"
+    },
+    "publicAppsDir": "/apps",
+    "host": "192.31.21.207",
+    "rootDir": "/",
+    "homeDir": "/home/cyoun/projects/agave",
+    "proxyTunnel": "NO"
+  },
+  "type": "STORAGE",
+  "site": "degosg.org",
+  "default": false,
+  "public": false,
+  "globalDefault": false,
+  "name": "Drug Effect Database Gateway Repository",
+  "id": "deg.osg.resp",
+  "status": "UP"
+}

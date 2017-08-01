@@ -1,0 +1,59 @@
+{
+  "maxSystemJobs": 100,
+  "executionType": "CONDOR",
+  "available": true,
+  "description": "The Open Science Grid (OSG) advances science through open distributed computing. The OSG is a multi-disciplinary partnership to federate local, regional, community and national cyberinfrastructures to meet the needs of research and academic communities at all scales.",
+  "storage": {
+    "proxy": null,
+    "protocol": "SFTP",
+    "mirror": false,
+    "port": 22,
+    "auth": {
+      "type": "SSHKEYS"
+    },
+    "host": "login.osgconnect.net",
+    "rootDir": "/",
+    "homeDir": "/home/cyoun",
+    "proxyTunnel": "NO"
+  },
+  "type": "EXECUTION",
+  "login": {
+    "proxy": null,
+    "protocol": "SSH",
+    "port": 22,
+    "auth": {
+      "type": "SSHKEYS"
+    },
+    "host": "login.osgconnect.net",
+    "proxyTunnel": "NO"
+  },
+  "startupScript": "./bashrc",
+  "scheduler": "CONDOR",
+  "default": false,
+  "public": false,
+  "maxSystemJobsPerUser": 10,
+  "id": "deg.osg.org",
+  "workDir": "/home/cyoun/scratch/",
+  "owner": "cyoun",
+  "site": "opensciencegrid.org",
+  "environment": ""
+  "queues": [
+    {
+      "maxJobs": 100,
+      "maxMemoryPerNode": "2GB",
+      "default": true,
+      "maxRequestedTime": "48:00:00",
+      "name": "condorqueue",
+      "description": "",
+      "maxNodes": 1,
+      "maxProcessorsPerNode": 1,
+      "mappedName": null,
+      "maxUserJobs": 10,
+      "customDirectives": "Arguments = $(Process)\nRequirements = HAS_SINGULARITY == TRUE\n+SingularityImage = \"/cvmfs/singularity.opensciencegrid.org/tensorflow/tensorflow:latest/\"\n+SingularityBindCVMFS = True\n\ntransfer_output_files = nsides_cpu_results_$(Process).tgz"
+    }
+    ],
+    "globalDefault": false,
+  "name": "Drug Effect Database Gateway",
+  "status": "UP",
+  "scratchDir": "/home/cyoun/scratch/"
+}
