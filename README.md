@@ -1,4 +1,4 @@
-# nsides
+# nsides front-end
 Exploring drug interactions on a massive scale.
 
 ## Installation
@@ -18,3 +18,9 @@ To run: `python application.py`
 3. Make sure `.ebignore` is configured as desired, and enter login credentials for `nsides.cnf` and `nsides-mongo.cnf`
 4. If adding new dependencies, update `requirements.txt` using `pipreqs` (`pip install pipreqs`) by running `pipreqs --force --ignore /condor,/db .`
 4. After making changes and pushing to this repo, run `eb deploy`
+
+# nsides back-end (drug effect database population)
+Please see [here](https://github.com/tatonetti-lab/nsides/tree/master/condor)
+
+# nsides middleware (on-demand job submission)
+Please see [here](https://github.com/tatonetti-lab/nsides/tree/master/job_api)
