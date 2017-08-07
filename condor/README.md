@@ -44,7 +44,7 @@ To submit an logistic regression job:
 
 ## DAG Workflow
 
-![nSides DAG Workflow](dag_workflow_v2.png)
+There are 2 DAG workflows, one for DNN and a separate one for logistic regression.
 
 ## Script Summary
 The scripts in this folder accomplish the following workflow:
@@ -54,8 +54,8 @@ The scripts in this folder accomplish the following workflow:
   * `prepare_data_osg.py` aggregates all reports and outcomes, used for forming model
 3. Run the models.  The output should be each report and the model score.
   * `mlp_dnn_streaming.py` runs the deep neural network multilayer perceptron
-  * `mlp_shallow_osg.py` runs shallow classifiers including scikit-learn to run AdaBoost, RandomForest and Logistic Regression
-4. Evaluate a given model model by calculating propensity score adjusted proportional reporting ratios (PRRs) for each reaction. `eval_model.py`
+  * `mlp_shallow_osg_lrc.py` runs logistic regression via scikit-learn
+4. Evaluate a given model model (DNN, logistic regression) by calculating propensity score adjusted proportional reporting ratios (PRRs) for each reaction. `eval_model.py`
 
 ## Example Local Workflow
 
@@ -71,9 +71,7 @@ An example local workflow on OSG follows:
 6. `mkdir data; cd data; python ../get_data.py; cd ..`
 7. `python prepare_data_osg.py --model-number 0`
 8. `python mlp_dnn_streaming.py --run-on-cpu --suffix 0`
-9. `python mlp_shallow_osg.py --suffix 0`
-10. `python eval_model.py --model-type bdt --model-number 0`
-11. `python eval_model.py --model-type rfc --model-number 0`
+9. `python mlp_shallow_osg_lrc.py --suffix 0`
 12. `python eval_model.py --model-type lrc --model-number 0`
 13. `python eval_model.py --model-type dnn --model-number 0`
 14. `python eval_model.py --model-type nopsm --model-number 0`
