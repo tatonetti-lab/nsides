@@ -8,14 +8,20 @@ Make the submission tarball and DAG runners:
 3. `cd ..`
 4. `source make_nsides_tarball.sh`
 5. `source make_workflows.sh`
+6. `source make_nsides_tarball_lrc.sh`
+7. `source make_workflows_LRonly.sh`
 
-To submit a job to a **CPU** node:
-1. `source make_workflows.sh`
-2. `condor_submit_dag workflowdir/workflow_0.dag`
 
-To submit a job to a **GPU** node:
-1. `source make_workflows.sh`
-2. `condor_submit_dag workflowdir_gpu/workflow_0.dag`
+To submit a DNN job to a **CPU** node:
+`condor_submit_dag workflowdir/workflow_0.dag`
+
+To submit a DNN job to a **GPU** node:
+`condor_submit_dag workflowdir_gpu/workflow_0.dag`
+
+To submit an logistic regression job:
+`condor_submit_dag workflowdir_LRonly/workflow_0.dag`
+
+*Please note that logistic regression jobs should only be submitted to **CPU** nodes, as they do not take advantage of GPU.*
 
 ## DAG Workflow
 
