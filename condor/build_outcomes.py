@@ -28,7 +28,7 @@ def subjob(num):
             #print "%d %d" % (x_index,y_index)
             all_data[x_index,y_index] = True
             
-    np.save("EUDRAVIGILANCE_all_reports_outcomes_"+str(num), all_data)
+    np.save("CUSTOM_all_reports_outcomes_"+str(num), all_data)
 
 if __name__ == '__main__':
 
