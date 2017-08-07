@@ -1,3 +1,22 @@
+# Dataset preparation (if not using AEOLUS dataset provided)
+
+## Import CSV file with reports
+To run the nsides back-end framework on a custom dataset, first make a CSV file with the following fields:
+`drug_concept_id, outcome_concept_id, report_id`
+Drugs and outcomes do not need to use any specific vocabulary.
+
+Next, run `python import_custom_data.py --data yourdata.csv`
+
+This creates the following files: `drugmap.npy`, `alldrugstrings.npy`, `allreports.npy`, `outcomemap.npy`, `alloutcomestrings.npy`
+
+## Build feature matrix
+To build the drug and outcome feature matrices, run:
+`python build_drugs.py`
+`python build_outcomes.py`
+`python combine_matrices.py`
+
+The result should be 2 files: `CUSTOM_all_reports_outcomes.npy` and `CUSTOM_all_reports.npy` which will be used for submitting jobs.
+
 # Submission of condor jobs to Open Science Grid
 
 ## How to submit jobs
