@@ -124,7 +124,12 @@ def query_db(service, method, query=False, cache=False):
         elif method == 'topOutcomesForDrug': #'get_top_10_effects':
             # Given drug and model, return top 10 outcomes ordered by 2016 CI
             # For now, fetch all documents and process in Python
-            num_results = int(query["numResults"])
+            # Also check if we are looking for a subset or ALL results
+            if query["numResults"] == 'all':
+                num_results = 'all';
+            else:
+                num_results = int(query["numResults"])
+            # print num_results, "number of results"
 
             estimate_record = estimates.find(
                                 { '$and':
@@ -144,7 +149,11 @@ def query_db(service, method, query=False, cache=False):
             print len(all_outcomes), "total outcomes"
 
             # sorted(all_outcomes,key=itemgetter(1), reverse=True)[:num_results]
-            top_results = sorted(all_outcomes,key=itemgetter(1))[:num_results]
+            # Check if we should show all or just a limited number of sorted results 
+            if num_results == 'all':
+                top_results = sorted(all_outcomes,key=itemgetter(1))
+            else:
+                top_results = sorted(all_outcomes,key=itemgetter(1))[:num_results]
             # print top_results
             top_outcome_ids = [str(r[0]) for r in top_results]
             print top_outcome_ids
@@ -162,10 +171,10 @@ def query_db(service, method, query=False, cache=False):
                 concept_id2name[ str(m['concept_id']) ] = m['concept_name']
             
             outcome_options = []
-            for concept_id in top_outcome_ids:
+            for position, concept_id in enumerate(top_outcome_ids): # Added enumeration to list
                 if concept_id in concept_id2name:
-                    outcome_options.append( { 'value': concept_id, 'label': concept_id2name[concept_id] } )
-            
+                    outcome_options.append( { 'value': concept_id, 'label': str(position + 1) + " - " + concept_id2name[concept_id].replace("'", "") } )
+                    # print position
             # print outcome_options
 
             

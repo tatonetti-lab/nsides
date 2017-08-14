@@ -18,7 +18,7 @@ class NsidesApp extends React.Component {
     super(props);
         this.state = {drugs: '',
                       outcome: '',
-                      numOutcomeResults: 10,
+                      numOutcomeResults: 'all', //10,
                       outcomeOptions: []};
                     // plotWidth: window.innerWidth < 625 ? (window.innerWidth-50) : 625,
                     // plotHeight: 350};
