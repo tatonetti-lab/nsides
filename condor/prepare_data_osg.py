@@ -13,6 +13,12 @@ parser.add_argument('--use-run-indices',
                     action='store_true',
                     default=False,
                     dest='use_run_indices')
+
+parser.add_argument('--ingredient-level',
+                    action='store_true',
+                    default=False,
+                    dest='ingredient_level')
+
 args = parser.parse_args()
 
 args.model_num = (args.model_num).split("_")
@@ -24,7 +30,13 @@ runIndices = [2451,2465,2571,2512,2200,2431,2596,2875,2889,2912,2882,1931,2973,2
 
 def main():
 
-    reportBlock0 = np.load("data/AEOLUS_all_reports_0.npy").item()
+    reportBlock0 = 0
+    
+    if args.ingredient_level == True:
+        reportBlock0 = np.load("data/AEOLUS_all_reports_IN_0.npy").item()
+    else:
+        reportBlock0 = np.load("data/AEOLUS_all_reports_0.npy").item()
+        
     reportBlock0 = reportBlock0.tocsr()
     posReports = sparse.csr_matrix((1,reportBlock0.shape[1]))
 
@@ -62,7 +74,11 @@ def main():
     for reportblock in range(0,50):
         #if args.verbose:
             #print("Report Block: {0} out of 49.".format(reportblock))
-        thisReportBlock = np.load("data/AEOLUS_all_reports_"+str(reportblock)+".npy").item()
+        thisReportBlock = 0
+        if args.ingredient_level == True:
+            thisReportBlock = np.load("data/AEOLUS_all_reports_IN_"+str(reportblock)+".npy").item()
+        else:
+            thisReportBlock = np.load("data/AEOLUS_all_reports_"+str(reportblock)+".npy").item()
 
         print "Processed ",reportblock
     
@@ -115,7 +131,11 @@ def main():
     print "MODEL:",save_string
     
     for reportblock in range(0,50):
-        thisReportBlock = np.load("data/AEOLUS_all_reports_"+str(reportblock)+".npy").item()
+        thisReportBlock = 0
+        if args.ingredient_level == True:
+            thisReportBlock = np.load("data/AEOLUS_all_reports_IN_"+str(reportblock)+".npy").item()
+        else:
+            thisReportBlock = np.load("data/AEOLUS_all_reports_"+str(reportblock)+".npy").item()
 
         print "Processed ",reportblock
     

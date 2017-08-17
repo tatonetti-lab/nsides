@@ -28,6 +28,11 @@ parser.add_argument('--use-run-indices',
                     default=False,
                     dest='use_run_indices')
 
+parser.add_argument('--ingredient-level',
+                    action='store_true',
+                    default=False,
+                    dest='ingredient_level')
+
 args = parser.parse_args()
 
 runIndices = [
@@ -67,7 +72,12 @@ for model in modelIdx:
 
 print "MODEL",save_string
 
-all_reportids = np.array(np.load("data/all_reportids.npy"))
+all_reportids = 0
+if args.ingredient_level == True:
+    all_reportids = np.array(np.load("data/all_reportids_IN.npy"))
+else:
+    all_reportids = np.array(np.load("data/all_reportids.npy"))
+
 all_ages = np.load("data/all_ages.npy").item()
 all_years = np.load("data/all_years.npy").item()
 
@@ -88,12 +98,24 @@ mrns_exp = np.expand_dims(all_reportids,axis=1)
 ages_exp = np.expand_dims(ord_ages,axis=1)
 years_exp = np.expand_dims(ord_years,axis=1)
 
+totReports = 0
+if args.ingredient_level == True:
+    totReports = 4694086
+else:
+    totReports = 4855498
+
+
 if args.model_type == 'nopsm':
-    reactions = io.mmread("data/AEOLUS_all_reports_alloutcomes.mtx")
+    reactions = 0
+    if args.ingredient_level == True:
+        reactions = io.mmread("data/AEOLUS_all_reports_IN_alloutcomes.mtx")
+    else:
+        reactions = io.mmread("data/AEOLUS_all_reports_alloutcomes.mtx")
+        
     reactions = reactions.tocsr()
     y = np.load("model_outcomes.npy")
     print "NUMBER OF POSITIVE REPORTS:",np.sum(y)
-    y = y[0:4855498]
+    y = y[0:totReports]
     invy = np.ones((y.shape[0],y.shape[1]))
     invy[np.where(y==1)[0]] = 0
 
@@ -159,7 +181,7 @@ if len(scores_files) == 0:
     sys.exit(0)
 
 comb_scores = np.load(scores_files[0])
-comb_scores = comb_scores[0:4855498]
+comb_scores = comb_scores[0:totReports]
 sum_tracker = np.ones(comb_scores.shape[0], np.int)
 sum_tracker[np.where(comb_scores == 0.5)[0]] = 0
 comb_scores[np.where(comb_scores == 0.5)[0]] = 0
@@ -169,7 +191,7 @@ for score_file in scores_files:
         continue
     
     thisScore = np.load(score_file)
-    thisScore = thisScore[0:4855498]
+    thisScore = thisScore[0:totReports]
     thisTracker = np.ones(thisScore.shape[0], np.int)
     thisTracker[np.where(thisScore == 0.5)[0]] = 0
     thisScore[np.where(thisScore == 0.5)[0]] = 0
@@ -187,7 +209,7 @@ norm_comb_scores = np.divide(comb_scores, sum_tracker)
 
 y = np.load("model_outcomes.npy")
 print "NUMBER OF POSITIVE REPORTS:",np.sum(y)
-y = y[0:4855498]
+y = y[0:totReports]
 
 resu_exp = y
 outc_exp = np.expand_dims(norm_comb_scores, axis=1)
@@ -269,8 +291,13 @@ for year in range(2004,2017):
         posAvg = posAvg/totPosReports
     print "Weighted average of controls:",negAvg
     print "Weighted average of cases:",posAvg
-    
-    reactions = io.mmread("data/AEOLUS_all_reports_alloutcomes.mtx")
+
+    reactions = 0
+    if args.ingredient_level == True:
+        reactions = io.mmread("data/AEOLUS_all_reports_IN_alloutcomes.mtx")
+    else:
+        reactions = io.mmread("data/AEOLUS_all_reports_alloutcomes.mtx")
+        
     reactions = reactions.tocsr()
     
     binList.append(1.0)
