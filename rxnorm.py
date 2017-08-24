@@ -45,6 +45,16 @@ def rxnorm2concept(rxnorm_id, rxnorm2concept):
 		return 'not found'
 
 
+def process_input():
+	# print 'Number of arguments:', len(sys.argv), 'arguments.'
+	# print 'Argument List:', str(sys.argv)
+
+	if len(sys.argv) > 1: 
+		return sys.argv[1]
+	else :
+		return ''
+
+
 def main():
 	weird_rxnorm = np.load('index/data/weird_rxnorm.npy')
 	rxnorm2concept_obj = np.load('index/data/rxnorm2concept.npy').item()
@@ -57,8 +67,16 @@ def main():
 
 	print "Hello World"
 
-	print "Start with a CUI ... 42898278"
-	rxnorm_from_concept = concept2rxnorm('42898278', concept2rxnorm_obj)
+	cui = ''
+
+	if process_input() != '':
+		print "Start with a CUI ... " + process_input()
+		cui = process_input()
+	else :
+		print "Start with a CUI ... 42898278"
+		cui = '42898278'
+
+	rxnorm_from_concept = concept2rxnorm(cui, concept2rxnorm_obj)
 	print "Recieve back RxNorm CUI ... " + rxnorm_from_concept
 
 	print "Is this RxNorm ID in our set?"
@@ -73,9 +91,10 @@ def main():
 	
 	print rxclass_from_rxnorm
 
-	if rxclass_from_rxnorm != 'None Found'
-		print getClassMembers('N0000008638', 'DAILYMED', 'has_PE')
-		print getClassMembers('N0000029067', 'NDFRT', 'has_VAClass')
+	if rxclass_from_rxnorm != "None Found" :
+		#print getClassMembers('N0000008638', 'DAILYMED', 'has_PE')
+		#print getClassMembers('N0000029067', 'NDFRT', 'has_VAClass')
+		print "Classes Found"
 
 
 	
