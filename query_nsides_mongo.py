@@ -5,6 +5,7 @@ Connects to MongoDB and extracts records for API's usage
 
 @author Victor Nwankwo, 2017
 @author Tal Lorberbaum, 2017
+@author Joe Romano, 2017
 
 USAGE:
 
@@ -54,7 +55,7 @@ def main():
     print >> sys.stderr, "Reading the 'nsides' mongodb at %s:%s" % (MONGODB_HOST, MONGODB_PORT)
     
     client = pymongo.MongoClient('mongodb://%s:%s@%s:%s/admin' % (MONGODB_UN, MONGODB_PW, MONGODB_HOST, MONGODB_PORT))
-    db = client.nsides
+    db = client.nsides_dev
     estimates = db.estimates
 
     print >> sys.stderr, "%s" % db.collection_names()
@@ -79,7 +80,7 @@ def query_db(service, method, query=False, cache=False):
     print >> sys.stderr, "Reading the 'nsides' mongodb at %s:%s" % (MONGODB_HOST, MONGODB_PORT)
     
     client = pymongo.MongoClient('mongodb://%s:%s@%s:%s/admin' % (MONGODB_UN, MONGODB_PW, MONGODB_HOST, MONGODB_PORT))
-    db = client.nsides
+    db = client.nsides_dev
     estimates = db.estimates
 
     json_return = []

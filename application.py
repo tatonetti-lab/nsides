@@ -20,6 +20,18 @@ def dev():
 def api():
     return static_file("nsides_api.html", root='')
 
+@route('/login')
+def login():
+    return static_file("nsides_login.html", root='')
+
+@route('/logout')
+def login():
+    return static_file("nsides_logout.html", root='')
+
+@route('/signup')
+def login():
+    return static_file("nsides_signup.html", root='')
+
 @route('/index/css/<cssfile>')
 def static_css(cssfile):
     return static_file(cssfile, root='index/css/')
