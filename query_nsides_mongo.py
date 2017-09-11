@@ -22,6 +22,7 @@ import sys
 # import tarfile
 import pymongo
 from operator import itemgetter
+from pprint import pprint
 # from bson.json_util import dumps
 # from bson.code import Code # for some this needs to be pymongo.bson
 import query_nsides_mysql
@@ -141,9 +142,11 @@ def query_db(service, method, query=False, cache=False):
             
             all_outcomes = []
             for record in estimate_record:
+                pprint(record)
                 for estimate in record[u'estimates']:
                     if estimate[u'year'] == 2016:
-                        all_outcomes.append( (int(record[u'snomed']), estimate[u'ci'], estimate[u'prr']) )
+                        #all_outcomes.append( (int(record[u'snomed']), estimate[u'ci'], estimate[u'prr']) )
+                        all_outcomes.append( (int(record[u'snomed']) ) )
                         # print record[u'snomed'], estimate[u'prr']
                         # all_outcomes.append((record[u'snomed'], estimate[u'prr']))
                         
