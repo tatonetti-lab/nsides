@@ -1,3 +1,5 @@
+#!/bin/bash
+
 tar xvfz nsides_scripts.tgz
 
 python prepare_data_osg.py --model-number $1 | tee prepare_data.log
