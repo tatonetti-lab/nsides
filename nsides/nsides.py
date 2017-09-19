@@ -1,78 +1,46 @@
-#from bottle import default_app, route, static_file, request, response, template
-from flask import Flask, render_template as template, request, make_response, jsonify, abort, send_from_directory
+"""
+NSIDES
+
+The nSides web front-end, implemented in Flask
+
+@author: Joseph D. Romano
+@author: Rami Vanguri
+
+(c) 2017 Tatonetti Lab
+
+"""
 
 import os
-
-import pymysql
-import query_nsides_mysql
-import query_nsides_mongo
-
+import ipdb
+from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash
 
 app = Flask(__name__)
-ROOT_DIR = os.path.dirname(os.getcwd())
-STATIC_FILES_DIR = os.path.join(ROOT_DIR, 'nsides', 'index', 'static')
-
+app.config.from_envvar('NSIDES_FRONTEND_SETTINGS', silent=True)
 
 @app.route('/')
-def index():
-    print(STATIC_FILES_DIR)
-    return send_from_directory(STATIC_FILES_DIR, 'nsides_dev.html')
+def nsides_main():
+    return render_template('nsides_main.html')
 
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    return render_template('nsides_login.html')
 
-# @app.route('/')
-# def index():
-#     return static_file("nsides_dev.html", root='')
+@app.route('/logout')
+def logout():
+    return render_template('nsides_logout.html')
 
-@app.route('/splash')
-def splash():
-    return static_file("nsides_splash.html", root='')
-
-@app.route('/dev')
-def dev():
-    return static_file("nsides_dev.html", root='')
+@app.route('/signup')
+def signup():
+    return render_template('nsides_signup.html')
 
 @app.route('/api')
 def api():
-    return static_file("nsides_api.html", root='')
-
-@app.route('/login')
-def login_page():
-    return static_file("nsides_login.html", root='')
-
-@app.route('/logout')
-def logout_page():
-    return static_file("nsides_logout.html", root='')
-
-@app.route('/signup')
-def signup_page():
-    return static_file("nsides_signup.html", root='')
-
-@app.route('/index/css/<cssfile>')
-def static_css(cssfile):
-    return static_file(cssfile, root='index/css/')
-
-@app.route('/index/data/<datafile>')
-def static_data(datafile):
-    return static_file(datafile, root='index/data/')
-
-@app.route('/index/fonts/<fontfile>')
-def static_font(fontfile):
-    return static_file(fontfile, root='index/fonts/')
-
-@app.route('/index/img/<imgfile>')
-def static_img(imgfile):
-    return static_file(imgfile, root='index/img/')
-
-@app.route('/index/js/<jsfile>')
-def static_js(jsfile):
-    return static_file(jsfile, root='index/js/')
-
-@app.route('/index/misc/<miscfile>')
-def static_file(miscfile):
-    return static_file(miscfile, root='index/misc/')
+    return render_template('nsides_api.html')
 
 
-# Beacon
+# BEACON STUFF
+# are these still necessary?
+
 @app.route('/beacon/<service>/concepts')
 def getConcepts(service):
     keywords = request.params.get('keywords')
@@ -124,9 +92,12 @@ def getStatemetns(service):
     return '[]'
 
 
-# API
+
+# API STUFF
+
 @app.route('/api/v1/query')
 def api_call():
+    ipdb.set_trace()
     service = request.params.get('service')
     meta = request.params.get('meta')
     query = request.params.get('q')
@@ -258,10 +229,3 @@ def api_call():
     response.content_type = 'application/json'
 
     return json
-
-# run(host='localhost', port=8080)
-#application = default_app()
-
-
-if __name__ == '__main__':
-    app.run(debug=True)
