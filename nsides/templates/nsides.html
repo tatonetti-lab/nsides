@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8" />
+    <title>nSides</title>
+
+    <meta name="viewport" content="initial-scale=1.0,user-scalable=no,maximum-scale=1,width=device-width" />
+    <meta name="keywords" content="API" />
+    <meta name="description" content="" />
+
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" />
+
+    <!-- We use bootstrap for login/logout pages -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
+
+    <link rel=stylesheet type=text/css href="{{ url_for('static', filename='login.css') }}" />
+    <link rel=stylesheet type=text/css href="{{ url_for('static', filename='fonts.css') }}" />
+    <link rel=stylesheet type=text/css href="{{ url_for('static', filename='main.css') }}" />
+    <link rel=stylesheet type=text/css href="{{ url_for('static', filename='print.css') }}" />
+
+    <link rel=stylesheet type=text/css href="{{ url_for('static', filename='react-select.css') }}" />
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+  </head>
+
+  <body>
+    <div id="content">
+      <div id="header">
+	<div id="header-content">
+
+	  <div id="login-link">
+	    {% if not session.logged_in %}
+	    <a href="{{ url_for('login') }}">log in</a>
+	    {% else %}
+	    <a href="{{ url_for('logout') }}">log out</a>
+	    {% endif %}
+	  </div>
+	  
+	  <div>
+	    <h1 class="logo-h1"><a href="/" style="text-decoration:none; color:inherit;"><img src="{{ url_for('static', filename='nsides-logo.svg') }}" style="height:50px;vertical-align:middle;" />nSides</a></h1>
+	    <h3>A comprehensive database of drug-drug(s)-effect relationships</h3>
+	  </div>
+
+	</div> <!-- header-content -->
+	<div id="bar"></div>
+      </div>
+
+      {% block body %}{% endblock %}
+
+      <footer>
+	<div id="footer">
+	  <img class="footer-img" src="{{ url_for('static', filename='cumc.png') }}"/>
+	</div>
+      </footer>
+
+    </div> <!-- end content -->
+
+    <script src="{{ url_for('static', filename='babel.js') }}"></script>
+    <script src="{{ url_for('static', filename='react.min.js') }}"></script> 
+    <script src="{{ url_for('static', filename='react-dom.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='three.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='index.js') }}"></script>
+    <script src="{{ url_for('static', filename='react-input-autosize.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='react-select-mod.js') }}"></script> <!-- Updated to close menu after hitting Enter -->
+    <script src="{{ url_for('static', filename='drugs-dnn.js') }}"></script>
+
+    <script src="http://d3js.org/d3.v4.min.js"></script>
+
+    <script type="text/babel" src="{{ url_for('static', filename='DrugSelectBox.js') }}"></script>
+    <script type="text/babel" src="{{ url_for('static', filename='EffectSelectBox.js') }}"></script>
+    <script type="text/babel" src="{{ url_for('static', filename='NsidesApp.js') }}"></script>  
+
+    <script type="text/babel">
+      var PRINT_DEBUG = true; //true;
+      function debug(...args) {
+      if (PRINT_DEBUG == false) {
+      return;
+      }
+      console.log(...args);
+      }
+    </script>
+    
+  </body>
+</html>
