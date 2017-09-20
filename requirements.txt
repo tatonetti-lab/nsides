@@ -1,3 +1,4 @@
 flask==0.12.2
 PyMySQL==0.7.9
 pymongo==3.4.0
+ipdb==ipdb-0.10.3

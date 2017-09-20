@@ -1,5 +1,5 @@
 # nsides front-end
-Exploring drug interactions on a massive scale.
+A comprehensive database of drug-drug(s)-effect relationships
 
 ## Installation
 To install
@@ -10,6 +10,10 @@ To install
 ## Running the Application
 
 To run: `python application.py`
+To run using Flask: 
+1. cd to subdirectory /nsides and run `export FLASK_APP=nsides.py` 
+2. The application can with the comman `python -m flask run`
+
 
 ## Deploying to AWS Elastic Beanstalk
 
