@@ -114,9 +114,13 @@ def process_input():
 
 
 def main():
-	weird_rxnorm = np.load('index/data/weird_rxnorm.npy')
-	rxnorm2concept_obj = np.load('index/data/rxnorm2concept.npy').item()
-	concept2rxnorm_obj = np.load('index/data/concept2rxnorm.npy').item()
+	# weird_rxnorm = np.load('index/data/weird_rxnorm.npy')
+	# rxnorm2concept_obj = np.load('index/data/rxnorm2concept.npy').item()
+	# concept2rxnorm_obj = np.load('index/data/concept2rxnorm.npy').item()
+
+	weird_rxnorm = np.load('nsides/static/weird_rxnorm.npy')
+	rxnorm2concept_obj = np.load('nsides/static/rxnorm2concept.npy').item()
+	concept2rxnorm_obj = np.load('nsides/static/concept2rxnorm.npy').item()
 
 	# Generate a list of RxNorm IDs concept IDs we have in the mongoDB minus 360 drugs that don't have well defined RxNorm inforamtion inthe API.
 	mappable_rxnorm = list(set(rxnorm2concept_obj.keys()) - set(weird_rxnorm))
