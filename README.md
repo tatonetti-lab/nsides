@@ -15,13 +15,12 @@ To run using Flask:
 2. The application can with the comman `python -m flask run`
 
 
-## Deploying to AWS Elastic Beanstalk
+## Deploying and running nSides on AWS
+nSides is served on an AWS EC2 instance using Nginx and uWSGI. For consistency, use the approach in the following blog post: http://vladikk.com/2013/09/12/serving-flask-with-nginx-on-ubuntu/
 
-1. Make sure Elastic Beanstalk command line interface is installed (`pip install awsebcli`)
-2. `eb init` -> select region `1) us-east-1 : US East (N. Virginia)` -> select an application to use `1) nsides-eb`. If prompted `Do you want to set up SSH for your instances?`, choose `y` and select the appropriate keypair (e.g. `tatonettilab-website`)
-3. Make sure `.ebignore` is configured as desired, and enter login credentials for `nsides.cnf` and `nsides-mongo.cnf`
-4. If adding new dependencies, update `requirements.txt` using `pipreqs` (`pip install pipreqs`) by running `pipreqs --force --ignore /condor,/db .`
-4. After making changes and pushing to this repo, run `eb deploy`
+Caveats:
+
+- If using virtualenv, you either have to have the virtualenv directory in the same location as the nsides.py application, or specify the location of the virtualenv using the `uWSGI -H` parameter.
 
 # nsides back-end (drug effect database population)
 Please see [here](https://github.com/tatonetti-lab/nsides/tree/master/condor)
