@@ -20,8 +20,6 @@ class NsidesApp extends React.Component {
                       outcome: '',
                       numOutcomeResults: 'all', //10,
                       outcomeOptions: []};
-                    // plotWidth: window.innerWidth < 625 ? (window.innerWidth-50) : 625,
-                    // plotHeight: 350};
     }
 
     render() {

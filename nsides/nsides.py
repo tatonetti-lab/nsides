@@ -12,7 +12,9 @@ The nSides web front-end, implemented in Flask
 
 import os
 import ipdb
-from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash
+from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash, make_response
+import query_nsides_mongo
+import query_nsides_mysql
 
 app = Flask(__name__)
 app.config.from_envvar('NSIDES_FRONTEND_SETTINGS', silent=True)
@@ -97,10 +99,10 @@ def getStatemetns(service):
 
 @app.route('/api/v1/query')
 def api_call():
-    ipdb.set_trace()
-    service = request.params.get('service')
-    meta = request.params.get('meta')
-    query = request.params.get('q')
+    #ipdb.set_trace()
+    service = request.args.get('service')
+    meta = request.args.get('meta')
+    query = request.args.get('q')
 
     print "Service: ",service
     print "Meta/Method: ",meta
@@ -119,17 +121,17 @@ def api_call():
         if meta == 'estimateForDrug_Outcome':
             #drugs = [drug.replace('|',',') for drug in request.params.get('drugs').split(',')]
             # ^ Separate individual drugs using comma. Drug class represented as `DrugA|DrugB|etc`
-            drugs = request.params.get('drugs')
+            drugs = request.args.get('drugs')
             if drugs == [''] or drugs is None:
                 response.status = 400
                 return 'No drug(s) selected'
 
-            outcome = request.params.get('outcome')
+            outcome = request.args.get('outcome')
             if outcome == [''] or outcome is None:
                 response.status = 400
                 return 'No outcome selected'
 
-            model_type = request.params.get('model')
+            model_type = request.args.get('model')
             if model_type == [''] or model_type is None:
                 model_type = 'dnn'
 
@@ -141,16 +143,16 @@ def api_call():
 
         # e.g. /api/v1/query?service=nsides&meta=topOutcomesForDrug&numResults=10&drugs=19097016
         elif meta == 'topOutcomesForDrug': #'get_top_10_effects':
-            drugs = request.params.get('drugs')
+            drugs = request.args.get('drugs')
             if drugs == [''] or drugs is None:
                 response.status = 400
                 return 'No drug(s) selected'
 
-            num_results = request.params.get('numResults')
+            num_results = request.args.get('numResults')
             if num_results == [''] or num_results is None:
                 num_results = 10
 
-            model_type = request.params.get('model')
+            model_type = request.args.get('model')
             if model_type == [''] or model_type is None:
                 model_type = 'dnn'
 
@@ -226,6 +228,7 @@ def api_call():
 
     json = json.replace("'", '"')
 
-    response.content_type = 'application/json'
+    #ipdb.set_trace()
+    #response.content_type = 'application/json'
 
     return json
