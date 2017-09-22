@@ -16,6 +16,7 @@ Ensure that nsides-mongo.cnf file exists
 
 # import os
 import sys
+import ipdb
 # import numpy
 # import pickle
 # import shutil
@@ -52,10 +53,14 @@ def main():
     
     print >> sys.stderr, "Loading password from ./nsides-mongo.cnf..."
     MONGODB_HOST, MONGODB_UN, MONGODB_PW = open('./nsides-mongo.cnf').read().strip().split('\n')
-    
+
+    print 'MongoDB host: ', MONGODB_HOST
+    print 'MongoDB username: ', MONGODB_UN
+    print 'MongoDB password: ', MONGODB_PW
+        
     print >> sys.stderr, "Reading the 'nsides' mongodb at %s:%s" % (MONGODB_HOST, MONGODB_PORT)
     
-    client = pymongo.MongoClient('mongodb://%s:%s@%s:%s/admin' % (MONGODB_UN, MONGODB_PW, MONGODB_HOST, MONGODB_PORT))
+    client = pymongo.MongoClient('mongodb://%s:%s@%s:%s/nsides_dev' % (MONGODB_UN, MONGODB_PW, MONGODB_HOST, MONGODB_PORT))
     db = client.nsides_dev
     estimates = db.estimates
 
@@ -77,10 +82,14 @@ def query_db(service, method, query=False, cache=False):
 
     print >> sys.stderr, "Loading password from ./nsides-mongo.cnf..."
     MONGODB_HOST, MONGODB_UN, MONGODB_PW = open('./nsides-mongo.cnf').read().strip().split('\n')
+
+    print 'MongoDB host: ', MONGODB_HOST
+    print 'MongoDB username: ', MONGODB_UN
+    print 'MongoDB password: ', MONGODB_PW
     
     print >> sys.stderr, "Reading the 'nsides' mongodb at %s:%s" % (MONGODB_HOST, MONGODB_PORT)
     
-    client = pymongo.MongoClient('mongodb://%s:%s@%s:%s/admin' % (MONGODB_UN, MONGODB_PW, MONGODB_HOST, MONGODB_PORT))
+    client = pymongo.MongoClient('mongodb://%s:%s@%s:%s/nsides_dev' % (MONGODB_UN, MONGODB_PW, MONGODB_HOST, MONGODB_PORT))
     db = client.nsides_dev
     estimates = db.estimates
 
@@ -136,13 +145,14 @@ def query_db(service, method, query=False, cache=False):
             estimate_record = estimates.find(
                                 { '$and':
                                     [ { 'rxnorm': int(query["drugs"]) },
-                                      { 'model': query["model"] }
+                                      { 'model': query["model"] },
+                                      { 'snomed': {'$ne':None} }
                                     ]
                                 });
             
             all_outcomes = []
             for record in estimate_record:
-                pprint(record)
+                #pprint(record)
                 for estimate in record[u'estimates']:
                     if estimate[u'year'] == 2016:
                         #all_outcomes.append( (int(record[u'snomed']), estimate[u'ci'], estimate[u'prr']) )
@@ -155,11 +165,11 @@ def query_db(service, method, query=False, cache=False):
             # sorted(all_outcomes,key=itemgetter(1), reverse=True)[:num_results]
             # Check if we should show all or just a limited number of sorted results 
             if num_results == 'all':
-                top_results = sorted(all_outcomes,key=itemgetter(1))
+                top_results = sorted(all_outcomes)
             else:
-                top_results = sorted(all_outcomes,key=itemgetter(1))[:num_results]
+                top_results = sorted(all_outcomes)[:num_results]
             # print top_results
-            top_outcome_ids = [str(r[0]) for r in top_results]
+            top_outcome_ids = [str(r) for r in top_results]
             print top_outcome_ids
 
             if len(top_outcome_ids) == 0:
