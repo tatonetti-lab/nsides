@@ -1,0 +1,12 @@
+tar xvfz nsides_scripts_lrc.tgz
+
+touch prepare_data.log
+touch mlp_shallow_lrc_$2.log
+
+python prepare_data_osg.py --model-number $1
+
+python mlp_shallow_osg_lrc.py --suffix $2
+
+tar cvfz shallow_out_$1_$2.tgz scores*.npy *.log *.py model*.npy
+
+ls -lrth
