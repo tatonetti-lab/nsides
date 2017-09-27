@@ -5,10 +5,10 @@ import pymysql
 
 def query_db(service, method, query=False, cache=False):
 
-    print "Connecting to the API..."
+    print "Connecting to the MySQL API..."
 
     # Connect to MySQL database
-    print "Connecting to database"
+    print "Connecting to MySQL database"
 
     conn = pymysql.connect(read_default_file='nsides.cnf',
                 db='ebdb',
@@ -73,7 +73,8 @@ def query_db(service, method, query=False, cache=False):
     elif service == 'omop':
         print "Service: ",service
         print "Method: ",method
-        print "Query: ",query
+        #print "Query: ",query
+
         if method == 'reference':
             SQL = '''select *
                 from omop_reference_effects
@@ -108,18 +109,21 @@ def query_db(service, method, query=False, cache=False):
             SQL = '''select concept_id, concept_name
                      from concept
                      where concept_id %s %s''' %(query_str, concept_ids)
-            print SQL
+            #print SQL
 
+            print "RUNNING MYSQL QUERY..."
             cur.execute(SQL)
             results = cur.fetchall()
+            print "...QUERY FINISHED."
 
+            #print "MYSQL QUERY RESULTS:"
             for result in results:
-                # print result
+                #print result
                 json_return.append({
                     "concept_id": int(result[u'concept_id']),
                     "concept_name": result[u'concept_name'].encode('ascii','ignore')
                 })
-
+                
 
         return json_return
 

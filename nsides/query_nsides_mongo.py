@@ -95,9 +95,9 @@ def query_db(service, method, query=False, cache=False):
 
     json_return = []
     if service == 'nsides':
-        print "Service: ",service
-        print "Method: ", method
-        print "Query : ", query
+        print "  Service: ",service
+        print "  Method: ", method
+        print "  Query : ", query
 
         if method == 'estimateForDrug_Outcome':
             estimate_record = estimates.find_one(
@@ -109,7 +109,7 @@ def query_db(service, method, query=False, cache=False):
                                 });
             
             if estimate_record is None:
-                print "No record found"
+                print "  No record found"
 
             else:
                 # Sort estimates by year and remove unicode from estimate keys
@@ -123,7 +123,7 @@ def query_db(service, method, query=False, cache=False):
                     processed_estimates.append( processed_year_estimate )
                 # print s.keys()
                 # print estimate_record[u"estimates"], '\n'
-                print processed_estimates
+                print "  ", processed_estimates
 
                 json_return.append({ 
                     # "effect_string" : "estimateForDrug_Outcome",
@@ -160,7 +160,7 @@ def query_db(service, method, query=False, cache=False):
                         # print record[u'snomed'], estimate[u'prr']
                         # all_outcomes.append((record[u'snomed'], estimate[u'prr']))
                         
-            print len(all_outcomes), "total outcomes"
+            print "  ", len(all_outcomes), "total outcomes"
 
             # sorted(all_outcomes,key=itemgetter(1), reverse=True)[:num_results]
             # Check if we should show all or just a limited number of sorted results 
@@ -170,11 +170,12 @@ def query_db(service, method, query=False, cache=False):
                 top_results = sorted(all_outcomes)[:num_results]
             # print top_results
             top_outcome_ids = [str(r) for r in top_results]
-            print top_outcome_ids
+            #print "  ", top_outcome_ids
 
             if len(top_outcome_ids) == 0:
                 return []
 
+            print "CALLING MYSQL DATABASE QUERY"
             concept_mappings = query_nsides_mysql.query_db(service='omop', method='conceptsToName',
                                                            query= ",".join(top_outcome_ids) )
             # print len(concept_mappings)
@@ -183,13 +184,13 @@ def query_db(service, method, query=False, cache=False):
             concept_id2name = dict()
             for m in concept_mappings:
                 concept_id2name[ str(m['concept_id']) ] = m['concept_name']
-            
+
             outcome_options = []
             for position, concept_id in enumerate(top_outcome_ids): # Added enumeration to list
                 if concept_id in concept_id2name:
                     outcome_options.append( { 'value': concept_id, 'label': str(position + 1) + " - " + concept_id2name[concept_id].replace("'", "") } )
                     # print position
-            # print outcome_options
+            print outcome_options
 
             
             json_return.append({ 

@@ -20,6 +20,8 @@ class NsidesApp extends React.Component {
                       outcome: '',
                       numOutcomeResults: 'all', //10,
                       outcomeOptions: []};
+                    // plotWidth: window.innerWidth < 625 ? (window.innerWidth-50) : 625,
+                    // plotHeight: 350};
     }
 
     render() {
@@ -45,10 +47,10 @@ class NsidesApp extends React.Component {
         this.setState({ drugs: newDrug,
                         outcome: '',
                         outcomeOptions: topOutcomes}, () => {
-          debug('drug updated');
-          title1 = "Select a drug and effect";
-          drawTimeSeriesGraph([],title1,dateformat,blank=true);
-        });
+			    debug('drug updated');
+			    title1 = "Select a drug and effect";
+			    drawTimeSeriesGraph([],title1,dateformat,blank=true);
+			});
     }
 
     handleDrugOutcomeChange(newDrug,newOutcome) {
