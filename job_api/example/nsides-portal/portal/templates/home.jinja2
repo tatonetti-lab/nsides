@@ -1,0 +1,26 @@
+{%extends "base.jinja2"%}
+
+{%block title%}Home{%endblock%}
+
+{%block body%}
+<!-- Page Header -->
+<!-- Set background image for this header on the line below. -->
+    <header class="intro-header" style="background-image: url({{url_for('static', filename='img/wormhole.png')}})">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <div class="site-heading">
+          <h2>nSides</h2>
+          <hr class="small">
+          <span class="subheading">A comprehensive database of drug-drug(s)-effect relationships</span>
+        </div>
+      </div>
+    </div>
+  </div>
+    </header>
+<!-- Main Content -->
+<div class="container">
+  {%include 'messages.jinja2'%}
+</div>
+<hr />
+{%endblock%}
