@@ -1,33 +1,33 @@
 {% extends "nsides.html" %}
 {% block body %}
 <div class="container">
-  <form class="form-signup">
+  <form class="form-signup" method="POST" action="signup">
     <h2 class="form-signin-heading" style="text-align: left;">Registration</h2>
     <div class="form-group">
       <label for="inputName">Full name</label>
-      <input class="form-control" id="inputName" type="text" placeholder="Enter name"/>
+      <input class="form-control" id="name" name="name" type="text" placeholder="Enter name"/>
     </div>
     <div class="form-group">
       <label for="inputInstitution">Institution / Organization</label>
-      <input class="form-control" id="inputInstitution" type="text" placeholder="Enter institution or organization"/>
+      <input class="form-control" id="institution" name="institution" type="text" placeholder="Enter institution or organization"/>
     </div>
     <div class="form-group">
       <label for="inputEmail">Email address</label>
-      <input class="form-control" id="inputEmail" aria-describedby="emailHelp" type="email" placeholder="Enter email" />
+      <input class="form-control" id="email" name="email" aria-describedby="emailHelp" type="email" placeholder="Enter email" />
       <small id="emailHelp" class="form-text text-muted">You will use your email address to log in</small>
     </div>
     <div class="form-group">
       <label for="inputPassword1">Password</label>
-      <input class="form-control" id="password1" type="password" placeholder="Password" />
+      <input class="form-control" id="password1" name="password1" type="password" placeholder="Password" />
       <small id="password1Help" class="form-text text-muted">7 or more characters, containing at least 1 letter and 1 number</small>
     </div>
     <div class="form-group">
       <label for="inputPassword2">Enter password again</label>
-      <input class="form-control" id="password2" type="password" placeholder="Password" />
+      <input class="form-control" id="password2" name="password2" type="password" placeholder="Password" />
     </div>
     <div class="checkbox">
       <label>
-	<input type="checkbox" value="agree" /> I agree to the <a href="terms.html">terms of use</a>
+	<input type="checkbox" value="agree" id="agree" name="agree" /> I agree to the <a href="terms.html">terms of use</a>
       </label>
     </div>
     <button class="btn btn-lg btn-primary btn-block" type="submit">Submit</button>
