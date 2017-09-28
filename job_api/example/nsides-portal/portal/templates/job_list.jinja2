@@ -1,0 +1,43 @@
+{%extends "base.jinja2"%}
+
+{%block title%}Job Monitoring{%endblock%}
+
+{%block body%}
+
+{%include "header.jinja2"%}
+    <div class="container">
+        <div class="page-header">
+            <h1>Job Monitoring</h1>
+        </div>
+
+        <div class="row">
+            <table class="table table-bordered">
+              <th>ID</th>
+              <th>Name</th>
+              <th>Execution system</th>
+              <th>Application</th>
+              <th>Status</th>
+              <th>Owner</th>
+              <th>Start Time</th>
+              <th>End Time</th>
+
+              {%if joblist[0]%}
+                {%for job in joblist[1]%}
+                  <tr>
+                    <td>{{ job['id'] }}</td>
+                    <td>{{ job['name'] }}</td>
+                    <td>{{ job['executionSystem'] }}</td>
+                    <td>{{ job['appId'] }}</td>
+                    <td>{{ job['status'] }}</td>
+                    <td>{{ job['owner'] }}</td>
+                    <td>{{ job['startTime'] }}</td>
+                    <td>{{ job['endTime'] }}</td>
+                  </tr>
+                {%endfor%}
+              {%else%}
+                <p>No jobs found.</p>
+              {%endif%}
+            </table>
+        </div>
+</div>
+{%endblock%}
