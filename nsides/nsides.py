@@ -20,6 +20,16 @@ import flask_login
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
 
+from flask_wtf import FlaskForm
+from wtforms import Form, StringField, PasswordField, BooleanField
+from wtforms.validators import DataRequired
+
+
+class LoginForm(Form):
+    email = StringField('email', validators=[DataRequired()])
+    password = PasswordField('password', validators=[DataRequired()])
+    rememberme = BooleanField('remember')
+
 
 #########
 # INITS #
@@ -51,7 +61,7 @@ class UserDb(object):
         except DuplicateKeyError:
             print("Error creating user - email already exists")
             return None
-            
+
 udb = UserDb()
         
 
@@ -60,6 +70,18 @@ udb = UserDb()
 ##############
 
 class User(flask_login.UserMixin):
+    def __init__(self, email):
+        self.email = email
+
+    def is_authenticated(self):
+        return True
+
+    def is_active(self):
+        return True
+
+    def get_id(self):
+        return self.email
+
     @staticmethod
     def validate_login(password_hash, password):
         return check_password_hash(password_hash, password)
@@ -69,12 +91,11 @@ users = {'foo@bar.tld': {'pw': 'secret'}}
 
 @login_manager.user_loader
 def user_loader(email):
-    if email not in users:
-        return
+    u = udb.users.find_one({"_id": email})
+    if not u:
+        return None
+    return User(u['_id'])
 
-    user = User()
-    user.id = email
-    return user
 
 @login_manager.request_loader
 def request_loader(request):
@@ -92,7 +113,8 @@ def request_loader(request):
 
 @login_manager.unauthorized_handler
 def unauthorized_handler():
-    return 'Unauthorized'
+    flash("Error: You have to log in to access this page")
+    return redirect(url_for('nsides_main'))
 
 
 ##########
@@ -105,28 +127,31 @@ def nsides_main():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    if request.method == 'GET':
-        return render_template('nsides_login.html')
-    email = request.form['email']
-    print request.form
-    if request.form['pw'] == users[email]['pw']:
-        user = User()
-        user.id = email
-        flask_login.login_user(user)
-        return redirect(url_for('protected'))
-    
-    return 'Bad login'
+    form = LoginForm(request.form)
+    if request.method == 'POST' and form.validate():
+        print "got here"
+        user = udb.users.find_one({"_id": form.email.data})
+        print(user)
+        if user and User.validate_login(user['pw_hash'], form.password.data):
+            user_obj = User(user['_id'])
+            flask_login.login_user(user_obj)
+            flash("Logged in successfully", category="success")
+            return redirect(url_for('nsides_main'))
+        flash("Wrong email or password", category='error')
+    return render_template('nsides_login.html', form=form)
 
 @app.route('/protected')
 @flask_login.login_required
 def protected():
-    return 'Logged in as: ' + flask_login.current_user.id
+    flash('This is a secret message', category="success")
+    flash('Logged in as: ' + flask_login.current_user.email, category="succes")
 
 @app.route('/logout')
+@flask_login.login_required
 def logout():
-    #return render_template('nsides_logout.html')
     flask_login.logout_user()
-    return 'Logged out'
+    flash("Logged out successfully", category="success")
+    return redirect(url_for('nsides_main'))
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():

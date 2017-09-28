@@ -424,8 +424,19 @@ path {
 #login-link {
     position: absolute;
     right: 0px;
+    text-align: right;
 }
 
+.flashes {
+    max-width: 200px;
+    list-style-type: none;
+    border: 1px solid #004272;
+    border-radius: 4px;
+    text-align: center;
+    margin: auto;
+    padding-left: 15px;
+    padding-right: 15px;
+}
 
 
 

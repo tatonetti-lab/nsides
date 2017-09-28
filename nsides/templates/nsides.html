@@ -33,10 +33,17 @@
 	<div id="header-content">
 
 	  <div id="login-link">
-	    {% if not session.logged_in %}
-	    <a href="{{ url_for('login') }}">log in</a>
-	    {% else %}
+	    <!-- {% if not session.logged_in %} -->
+	    <!-- <a href="{{ url_for('login') }}">log in</a> -->
+	    <!-- {% else %} -->
+	    <!-- <a href="{{ url_for('logout') }}">log out</a> -->
+	    <!-- {% endif %} -->
+	    {% if current_user.is_authenticated %}
 	    <a href="{{ url_for('logout') }}">log out</a>
+	    <br>
+	    Current user: {{ current_user.email }}
+	    {% else %}
+	    <a href="{{ url_for('login') }}">log in</a>
 	    {% endif %}
 	  </div>
 	  
@@ -48,6 +55,26 @@
 	</div> <!-- header-content -->
 	<div id="bar"></div>
       </div>
+
+      {% with messages = get_flashed_messages(category_filter=["error"]) %}
+      {% if messages %}
+      <ul class=flashes style="border-color: red;">
+	{% for message in messages %}
+	<li>{{ message }}</li>
+	{% endfor %}
+      </ul>
+      {% endif %}
+      {% endwith %}
+
+      {% with messages = get_flashed_messages(category_filter=["success"]) %}
+      {% if messages %}
+      <ul class=flashes style="border-color: green;">
+	{% for message in messages %}
+	<li>{{ message }}</li>
+	{% endfor %}
+      </ul>
+      {% endif %}
+      {% endwith %}
 
       {% block body %}{% endblock %}
 
