@@ -1,0 +1,29 @@
+{
+    "name":"<job name>",
+    "appId":"<app id>",
+    "inputs":{},
+    "archive":true,
+    "archiveSystem":"<system storage id>",
+    "archivePath":"<storage path",
+    "parameters":{
+	    "model_type":"<model type>",
+	    "model_indexes":"<model indexes>"
+    },
+    "notifications": [
+	    {
+	        "url":"https://requestbin.agaveapi.co/1fh0chr1?job_id=${JOB_ID}&status=${JOB_STATUS}",
+	        "event":"*",
+	        "persistent":true
+	    },
+	    {
+	        "url":"<user email address>",
+	        "event":"FINISHED",
+            "persistent":false
+	    },
+	    {
+	        "url":"<user email address>",
+	        "event":"FAILED",
+	        "persistent":false
+	    }
+    ]
+}

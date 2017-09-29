@@ -1,0 +1,44 @@
+{%extends "base.jinja2"%}
+
+{%block title%}Job Status{%endblock%}
+
+{%block body%}
+
+{%include "header.jinja2"%}
+
+<div class="container">
+  <div class="page-header">
+    <h1>Job Status</h1>
+  </div>
+
+  <p class="job-detail">
+    <strong>Job ID</strong>: {{jobinfo[1]["id"]}}
+  </p>
+  <p class="job-detail">
+    <strong>Job Name</strong>: {{jobinfo[1]["name"]}}
+  </p>
+  <p class="job-detail">
+    <strong>App ID</strong>: {{jobinfo[1]["appId"]}}
+  </p>
+  <p class="job-detail">
+    <strong>Execution System</strong>: {{jobinfo[1]["executionSystem"]}}
+  </p>
+  <p class="job-detail">
+    <strong>Status</strong>: {{jobinfo[1]["status"]}}
+  </p>
+  <p class="job-detail">
+    <strong>Output Path</strong>: {{jobinfo[1]["outputPath"]}}
+  </p>
+  <p class="job-detail">
+    <strong>Message</strong>: {{jobinfo[1]["message"]}}
+  </p>
+
+  <div>
+    <a href="{{url_for('job_status', job_id=jobinfo[1].id)}}">
+      <button type="button" class="btn btn-primary">
+        Refresh
+      </button>
+    </a>
+  </div>
+</div>
+{%endblock%}
