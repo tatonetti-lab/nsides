@@ -13,10 +13,10 @@ echo $dnn_files_edit
 
 sed "s/DNN_FILES_TO_TRANSFER/$dnn_files_edit/g" ../eval_model_dnn.submit.template > eval_model_dnn.submit
 
-MEM="2GB"
+MEM="4GB"
 
 if [ "$RETRY" -gt "1" ]; then
-    MEM="4GB"
+    MEM="6GB"
 fi
 
 sed -i "s/REDEFINE_MEMORY/$MEM/g" eval_model_dnn.submit
