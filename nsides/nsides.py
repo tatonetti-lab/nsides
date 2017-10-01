@@ -40,7 +40,7 @@ app.secret_key = 'changeme'
 app.config.from_envvar('NSIDES_FRONTEND_SETTINGS', silent=True)
 
 login_manager = flask_login.LoginManager()
-
+login_manager.session_protection = "strong"
 login_manager.init_app(app)
 
 MONGODB_HOST, MONGODB_UN, MONGODB_PW = open('./nsides-mongo.cnf').read().strip().split('\n')
@@ -281,6 +281,8 @@ def api_call():
         # e.g. /api/v1/query?service=nsides&meta=topOutcomesForDrug&numResults=10&drugs=19097016
         elif meta == 'topOutcomesForDrug': #'get_top_10_effects':
             drugs = request.args.get('drugs')
+            print('DRUGS:')
+            print(drugs)
             if drugs == [''] or drugs is None:
                 response.status = 400
                 return 'No drug(s) selected'

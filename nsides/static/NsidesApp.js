@@ -48,7 +48,7 @@ class NsidesApp extends React.Component {
                         outcome: '',
                         outcomeOptions: topOutcomes}, () => {
 			    debug('drug updated');
-			    title1 = "Select a drug and effect";
+			    var title1 = "Select a drug and effect";
 			    drawTimeSeriesGraph([],title1,dateformat,blank=true);
 			});
     }
@@ -78,6 +78,8 @@ class NsidesApp extends React.Component {
 
                                /* Set variables */
                                var data1 = data;
+			       console.log("DATA1:");
+			       console.log(data1);
                                var title1 = "Proportional Reporting Ratio over time";
                                drawTimeSeriesGraph(data1,title1,dateformat);
                            })

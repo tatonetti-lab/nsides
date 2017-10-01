@@ -73,7 +73,7 @@ def query_db(service, method, query=False, cache=False):
     elif service == 'omop':
         print "Service: ",service
         print "Method: ",method
-        #print "Query: ",query
+        print "Query: ",query
 
         if method == 'reference':
             SQL = '''select *
@@ -88,7 +88,6 @@ def query_db(service, method, query=False, cache=False):
 
 
             for result in results:
-                #json_return.append(result)
                 json_return.append({
                     "drugname": str(result['drugname']),
                     "drugbank_id": str(result['drugbank_id']),
@@ -109,16 +108,13 @@ def query_db(service, method, query=False, cache=False):
             SQL = '''select concept_id, concept_name
                      from concept
                      where concept_id %s %s''' %(query_str, concept_ids)
-            #print SQL
 
             print "RUNNING MYSQL QUERY..."
             cur.execute(SQL)
             results = cur.fetchall()
             print "...QUERY FINISHED."
 
-            #print "MYSQL QUERY RESULTS:"
             for result in results:
-                #print result
                 json_return.append({
                     "concept_id": int(result[u'concept_id']),
                     "concept_name": result[u'concept_name'].encode('ascii','ignore')

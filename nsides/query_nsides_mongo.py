@@ -14,18 +14,11 @@ Ensure that nsides-mongo.cnf file exists
 
 """
 
-# import os
 import sys
 import ipdb
-# import numpy
-# import pickle
-# import shutil
-# import tarfile
 import pymongo
 from operator import itemgetter
-from pprint import pprint
-# from bson.json_util import dumps
-# from bson.code import Code # for some this needs to be pymongo.bson
+import json
 import query_nsides_mysql
 
 EXTRACTED_DIR = './results/extracted'
@@ -53,12 +46,6 @@ def main():
     
     print >> sys.stderr, "Loading password from ./nsides-mongo.cnf..."
     MONGODB_HOST, MONGODB_UN, MONGODB_PW = open('./nsides-mongo.cnf').read().strip().split('\n')
-
-    print 'MongoDB host: ', MONGODB_HOST
-    print 'MongoDB username: ', MONGODB_UN
-    print 'MongoDB password: ', MONGODB_PW
-        
-    print >> sys.stderr, "Reading the 'nsides' mongodb at %s:%s" % (MONGODB_HOST, MONGODB_PORT)
     
     client = pymongo.MongoClient('mongodb://%s:%s@%s:%s/nsides_dev' % (MONGODB_UN, MONGODB_PW, MONGODB_HOST, MONGODB_PORT))
     db = client.nsides_dev
@@ -67,8 +54,6 @@ def main():
     print >> sys.stderr, "%s" % db.collection_names()
     print >> sys.stderr, "%s" % str(estimates.count())
 
-    # record_by_find = estimates.find_one({"rxnorm": "19097016"})
-    # record_by_id = estimates.find_one({"_id": "595fe5316246306dc7d048e2"})
     query_db('nsides', 'estimateForDrug_Outcome', {'drugs': '19097016', 'model': 'dnn', 'outcome': '4294679'})
 
     return True
@@ -83,11 +68,11 @@ def query_db(service, method, query=False, cache=False):
     print >> sys.stderr, "Loading password from ./nsides-mongo.cnf..."
     MONGODB_HOST, MONGODB_UN, MONGODB_PW = open('./nsides-mongo.cnf').read().strip().split('\n')
 
-    print 'MongoDB host: ', MONGODB_HOST
-    print 'MongoDB username: ', MONGODB_UN
-    print 'MongoDB password: ', MONGODB_PW
+    # print 'MongoDB host: ', MONGODB_HOST
+    # print 'MongoDB username: ', MONGODB_UN
+    # print 'MongoDB password: ', MONGODB_PW
     
-    print >> sys.stderr, "Reading the 'nsides' mongodb at %s:%s" % (MONGODB_HOST, MONGODB_PORT)
+    # print >> sys.stderr, "Reading the 'nsides' mongodb at %s:%s" % (MONGODB_HOST, MONGODB_PORT)
     
     client = pymongo.MongoClient('mongodb://%s:%s@%s:%s/nsides_dev' % (MONGODB_UN, MONGODB_PW, MONGODB_HOST, MONGODB_PORT))
     db = client.nsides_dev
@@ -102,7 +87,7 @@ def query_db(service, method, query=False, cache=False):
         if method == 'estimateForDrug_Outcome':
             estimate_record = estimates.find_one(
                                 { '$and':
-                                    [ { 'rxnorm': int(query["drugs"]) },
+                                    [ { 'rxnorm': query["drugs"] },
                                       { 'snomed': int(query["outcome"]) },
                                       { 'model': query["model"] }
                                     ]
@@ -128,7 +113,7 @@ def query_db(service, method, query=False, cache=False):
                 json_return.append({ 
                     # "effect_string" : "estimateForDrug_Outcome",
                     "outcome" : int(estimate_record[u"snomed"]), #query["outcome"],
-                    "drug" : int(estimate_record[u"rxnorm"]), #query["drugs"],
+                    "drug" : estimate_record[u"rxnorm"], #query["drugs"],
                     "estimates": processed_estimates #estimate_record[u"estimates"]
                 }) 
 
@@ -144,13 +129,14 @@ def query_db(service, method, query=False, cache=False):
 
             estimate_record = estimates.find(
                                 { '$and':
-                                    [ { 'rxnorm': int(query["drugs"]) },
+                                    [ { 'rxnorm': query["drugs"] },
                                       { 'model': query["model"] },
                                       { 'snomed': {'$ne':None} }
                                     ]
                                 });
             
             all_outcomes = []
+            ipdb.set_trace()
             for record in estimate_record:
                 #pprint(record)
                 for estimate in record[u'estimates']:
@@ -163,23 +149,19 @@ def query_db(service, method, query=False, cache=False):
             print "  ", len(all_outcomes), "total outcomes"
 
             # sorted(all_outcomes,key=itemgetter(1), reverse=True)[:num_results]
-            # Check if we should show all or just a limited number of sorted results 
+            # Check if we should show all or just a limited number of sorted results
+            ipdb.set_trace()
             if num_results == 'all':
                 top_results = sorted(all_outcomes)
             else:
                 top_results = sorted(all_outcomes)[:num_results]
-            # print top_results
             top_outcome_ids = [str(r) for r in top_results]
-            #print "  ", top_outcome_ids
 
             if len(top_outcome_ids) == 0:
                 return []
 
-            print "CALLING MYSQL DATABASE QUERY"
             concept_mappings = query_nsides_mysql.query_db(service='omop', method='conceptsToName',
                                                            query= ",".join(top_outcome_ids) )
-            # print len(concept_mappings)
-            # print concept_mappings
 
             concept_id2name = dict()
             for m in concept_mappings:
@@ -189,14 +171,14 @@ def query_db(service, method, query=False, cache=False):
             for position, concept_id in enumerate(top_outcome_ids): # Added enumeration to list
                 if concept_id in concept_id2name:
                     outcome_options.append( { 'value': concept_id, 'label': str(position + 1) + " - " + concept_id2name[concept_id].replace("'", "") } )
-                    # print position
-            print outcome_options
+            #print("OUTCOME OPTIONS:")
+            #print outcome_options
 
             
-            json_return.append({ 
+            json_return.append({
                     # "effect_string" : "estimateForDrug_Outcome",
                     "topOutcomes" : outcome_options, #top_outcome_ids,
-                    "drug" : int(query["drugs"]),
+                    "drug" : query["drugs"],
                 }) 
 
             ## Use aggregate to count number of instances of unique drugs
@@ -247,8 +229,8 @@ def query_db(service, method, query=False, cache=False):
             #     "effect_rank" : "10",
             #     "effect_snomed" : "435459",
             #     "effect_rxnorm" : "19097016"
-            # }) 
-        return json_return
+            # })
+        return json.dumps(json_return)
 
 if __name__ == '__main__':
     main()
