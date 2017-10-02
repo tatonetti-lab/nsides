@@ -115,18 +115,64 @@ def query_db(service, method, query=False, cache=False):
                     "outcome" : int(estimate_record[u"snomed"]), #query["outcome"],
                     "drug" : estimate_record[u"rxnorm"], #query["drugs"],
                     "estimates": processed_estimates #estimate_record[u"estimates"]
+                })
+
+        elif method == 'topOutcomesForDrug':
+            # rewritten version of the next code block, that takes advantage of
+            # mongo's aggregation pipeline
+            if query["numResults"] == 'all':
+                #num_results = 'all'
+                num_results = 10
+            else:
+                num_results = int(query["numResults"])
+            
+            estimate_record = estimates.aggregate
+
+            pipeline = [
+                {"$match": {"rxnorm": "40226579", "model": "dnn"}},
+                {"$unwind": "$nreports"},
+                {"$group": {"_id": "$snomed", "totalnreports": { "$sum": "$nreports.nreports" }} },
+                {"$sort": {"totalnreports": -1} },
+                {"$limit": 10}
+            ]
+
+            estimate_records = estimates.aggregate(pipeline)
+
+            outcomes = []
+            for record in estimate_records:
+                outcomes.append(str(record['_id']))
+
+            if len(outcomes) == 0:
+                return []
+
+            concept_mappings = query_nsides_mysql.query_db(service='omop', method='conceptsToName',
+                                                           query= ",".join(outcomes) )
+
+            concept_id2name = dict()
+            for m in concept_mappings:
+                concept_id2name[ str(m['concept_id']) ] = m['concept_name']
+
+            outcome_options = []
+            for position, concept_id in enumerate(outcomes): # Added enumeration to list
+                if concept_id in concept_id2name:
+                    outcome_options.append( { 'value': concept_id, 'label': str(position + 1) + " - " + concept_id2name[concept_id].replace("'", "") } )
+            
+            json_return.append({
+                    "topOutcomes" : outcome_options,
+                    "drug" : query["drugs"],
                 }) 
 
-        elif method == 'topOutcomesForDrug': #'get_top_10_effects':
+
+        elif method == 'topOutcomesForDrug_old': #'get_top_10_effects':
             # Given drug and model, return top 10 outcomes ordered by 2016 CI
             # For now, fetch all documents and process in Python
             # Also check if we are looking for a subset or ALL results
             if query["numResults"] == 'all':
-                num_results = 'all';
+                num_results = 'all'
             else:
                 num_results = int(query["numResults"])
             # print num_results, "number of results"
-
+            
             estimate_record = estimates.find(
                                 { '$and':
                                     [ { 'rxnorm': query["drugs"] },
@@ -136,7 +182,7 @@ def query_db(service, method, query=False, cache=False):
                                 });
             
             all_outcomes = []
-            ipdb.set_trace()
+            #ipdb.set_trace()
             for record in estimate_record:
                 #pprint(record)
                 for estimate in record[u'estimates']:
@@ -150,7 +196,7 @@ def query_db(service, method, query=False, cache=False):
 
             # sorted(all_outcomes,key=itemgetter(1), reverse=True)[:num_results]
             # Check if we should show all or just a limited number of sorted results
-            ipdb.set_trace()
+            #ipdb.set_trace()
             if num_results == 'all':
                 top_results = sorted(all_outcomes)
             else:
@@ -159,6 +205,8 @@ def query_db(service, method, query=False, cache=False):
 
             if len(top_outcome_ids) == 0:
                 return []
+
+            ipdb.set_trace()
 
             concept_mappings = query_nsides_mysql.query_db(service='omop', method='conceptsToName',
                                                            query= ",".join(top_outcome_ids) )
