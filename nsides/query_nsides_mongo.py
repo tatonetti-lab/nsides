@@ -129,7 +129,7 @@ def query_db(service, method, query=False, cache=False):
             estimate_record = estimates.aggregate
 
             pipeline = [
-                {"$match": {"rxnorm": "40226579", "model": "dnn"}},
+                {"$match": {"rxnorm": query["drugs"], "model": query["model"]}},
                 {"$unwind": "$nreports"},
                 {"$group": {"_id": "$snomed", "totalnreports": { "$sum": "$nreports.nreports" }} },
                 {"$sort": {"totalnreports": -1} },
