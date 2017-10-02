@@ -15,32 +15,31 @@
 
 var request = null;
 class DrugSelectBox extends React.Component {
-	displayName: 'DrugSelectBox';
-	constructor (props) {
+    displayName: 'DrugSelectBox';
+    constructor (props) {
         super(props);
         this.handleSelectChange = this.handleSelectChange.bind(this);
         this.apiTopOutcomes = this.apiTopOutcomes.bind(this);
-		this.state = {
-			options: drugs,
-			value: '', //[],
+	this.state = {
+	    options: drugs,
+	    value: '', //[],
             // numOutcomeResults: this.props.numOutcomeResults
-            // loadingIconStyle: {float:"right", display:"none"},
-		};
-	}
+	};
+    }
 
-	handleSelectChange (value) {
-		// debug('You\'ve selected:', value);    
+    handleSelectChange (value) {
+	debug('You\'ve selected:', value);    
         
-		this.setState({ value
-        }, () => { this.apiTopOutcomes(); } );              
-	}
+	this.setState({value}, () => {
+	    this.apiTopOutcomes();
+	});              
+    }
 
     apiTopOutcomes () {
-        // this.setState( {loadingIconStyle: {float:"right", display:"", "margin-right": "25px"}} );
-
         var selectedDrug; // = this.state.value['value'];
         try {
-            selectedDrug = this.state.value['value'];
+            //selectedDrug = this.state.value['value'];
+	    selectedDrug = this.state.value;
         } catch(err) {
             selectedDrug = '';
         }
@@ -51,7 +50,6 @@ class DrugSelectBox extends React.Component {
         if (selectedDrug == '') {
             debug('No selectedDrug; no API call necessary');
             if (request) {
-                // debug("Resolving any ongoing fetch calls to prevent plotting when no drugs selected");
                 debug("Pre-resolve:",request);
                 Promise.resolve(request)
                     .then(function() {
@@ -69,8 +67,6 @@ class DrugSelectBox extends React.Component {
             
             request = fetch(api_call) // http://stackoverflow.com/a/41059178
                 .then(function(response) {
-                    // Convert to JSON
-                    // debug("response", response)
                     return response.json();
                 })
                 .then(function(j) {
@@ -81,7 +77,6 @@ class DrugSelectBox extends React.Component {
                 .catch(function(ex) {
                     debug('No outcomes found', ex);
                     request = null;
-                    // outcomeOptions = [];
                     this.props.onDrugChange('', [])
                 }.bind(this))
 
@@ -90,22 +85,17 @@ class DrugSelectBox extends React.Component {
         
     }
 
-//	toggleDisabled (e) {
-//		this.setState({ disabled: e.target.checked });
-//	}
-    
-	render () {        
+    render () {        
         return (
-			<div className="section select_container">
+		<div className="section select_container">
                 <div className="drug_title">Drug</div>
-				<Select name="selected-drugs" // joinValues multi simpleValue
-                 value={this.state.value}
-                 placeholder="Select drug..."
-                 // placeholder="Select drug(s)..."
-                 noResultsText="Drug not found" 
-                 options={this.state.options}
-                 onChange={this.handleSelectChange} />
-			</div>
-		);
-	}
+		<Select name="selected-drugs" joinValues multi simpleValue
+            value={this.state.value}
+            placeholder="Select drug(s)..."
+            noResultsText="Drug not found" 
+            options={this.state.options}
+            onChange={this.handleSelectChange} />
+		</div>
+	);
+    }
 }
