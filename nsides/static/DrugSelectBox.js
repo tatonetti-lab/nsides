@@ -28,7 +28,7 @@ class DrugSelectBox extends React.Component {
     }
 
     handleSelectChange (value) {
-	debug('You\'ve selected:', value);    
+	//debug('You\'ve selected:', value);    
         
 	this.setState({value}, () => {
 	    this.apiTopOutcomes();
@@ -39,7 +39,7 @@ class DrugSelectBox extends React.Component {
         var selectedDrug; // = this.state.value['value'];
         try {
             //selectedDrug = this.state.value['value'];
-	    selectedDrug = this.state.value;
+	        selectedDrug = this.state.value;
         } catch(err) {
             selectedDrug = '';
         }
@@ -53,11 +53,11 @@ class DrugSelectBox extends React.Component {
                 debug("Pre-resolve:",request);
                 Promise.resolve(request)
                     .then(function() {
-                        this.props.onDrugChange('', []);
+                        this.props.onDrugChange('', [], '');
                         debug("Post-resolve:",request);
                     }.bind(this));
             } else {
-                this.props.onDrugChange('', []);
+                this.props.onDrugChange('', [], '');
             }
         }
         
@@ -72,20 +72,21 @@ class DrugSelectBox extends React.Component {
                 .then(function(j) {
                     outcomeOptions = j["results"][0]["topOutcomes"];
                     debug("outcomeOptions", outcomeOptions);
-                    this.props.onDrugChange(selectedDrug, outcomeOptions)
+                    this.props.onDrugChange(selectedDrug, outcomeOptions, '')
                 }.bind(this))
                 .catch(function(ex) {
                     debug('No outcomes found', ex);
                     request = null;
-                    this.props.onDrugChange('', [])
+                    console.log("INFO: selectedDrug:");
+                    console.log(selectedDrug);
+                    this.props.onDrugChange('', [], selectedDrug);
                 }.bind(this))
-
-
+            
         }
-        
+    
     }
 
-    render () {        
+    render () {
         return (
 		<div className="section select_container">
                 <div className="drug_title">Drug</div>

@@ -438,6 +438,14 @@ path {
     padding-right: 15px;
 }
 
+.notificationSpacer {
+    height: 50px;
+}
+
+.newModelNotification {
+    margin-top: 50px;
+}
+
 
 
 @media only screen and (max-width: 600px) {
