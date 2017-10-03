@@ -1,3 +1,5 @@
+#!/bin/bash
+
 tar xvfz nsides_scripts.tgz
 
 touch prepare_data.log
