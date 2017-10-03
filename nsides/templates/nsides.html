@@ -33,11 +33,6 @@
 	<div id="header-content">
 
 	  <div id="login-link">
-	    <!-- {% if not session.logged_in %} -->
-	    <!-- <a href="{{ url_for('login') }}">log in</a> -->
-	    <!-- {% else %} -->
-	    <!-- <a href="{{ url_for('logout') }}">log out</a> -->
-	    <!-- {% endif %} -->
 	    {% if current_user.is_authenticated %}
 	    <a href="{{ url_for('logout') }}">log out</a>
 	    <br>
@@ -97,6 +92,8 @@
 
     <script src="http://d3js.org/d3.v4.min.js"></script>
 
+    <!-- INCLUDE REACT COMPONENTS WITH CORRECT LOAD ORDER -->
+    <script type="text/babel" src="{{ url_for('static', filename='SubmitModelButton.js') }}"></script>
     <script type="text/babel" src="{{ url_for('static', filename='DrugSelectBox.js') }}"></script>
     <script type="text/babel" src="{{ url_for('static', filename='EffectSelectBox.js') }}"></script>
     <script type="text/babel" src="{{ url_for('static', filename='NsidesApp.js') }}"></script>  
@@ -112,7 +109,7 @@
     </script>
     
     <script>
-var title1 = "Proportional Reporting Ratio over time";
+//var title1 = "Proportional Reporting Ratio over time";
 var data1;
 var dateformat = "%Y"
 // Initialize plot
