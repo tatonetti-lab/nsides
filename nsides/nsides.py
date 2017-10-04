@@ -22,6 +22,9 @@ from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
 from functools import wraps
 import requests
+import click
+import json
+from datetime import datetime
 
 from flask_wtf import FlaskForm
 from wtforms import Form, StringField, PasswordField, BooleanField
@@ -54,6 +57,9 @@ app = Flask(__name__)
 app.secret_key = 'changeme'
 #app.config.from_envvar('NSIDES_FRONTEND_SETTINGS', silent=True)
 app.config.from_pyfile('nsides_flask.conf')
+
+with open(app.config['JOB_TEMPLATE']) as f:
+    jobtemplate = json.load(f)
 
 login_manager = flask_login.LoginManager()
 login_manager.session_protection = "strong"
@@ -194,6 +200,32 @@ def handle_permission(username):
         resp = post_result(app.config['APP_URL_BASE'], path, nsides_token, 'data', perm)
         print 'Result:', resp[1]
 
+def get_job(model_type, model_index):
+    j_tokens = json.loads(session['tokens'])
+    jobtemplate['name'] = datetime.now().strftime("%Y-%m%d %H:%M:%S.%f")[:-3]
+    jobtemplate['appId'] = app.config['APP_ID']
+    jobtemplate['archiveSystem'] = app.config['SYSTEM_STOR_ID']
+    archival_path = app.config['SYSTEM_STOR_PATH']
+    archival_path = archival_path.replace("<username>",session['primary_identity'])
+    jobtemplate['archivePath'] = archival_path
+    jobtemplate['parameters']['model_type'] = model_type
+    jobtemplate['parameters']['model_indexes'] = model_index
+    jobtemplate['notifications'][1]['url'] = session['email']
+    jobtemplate['notifications'][2]['url'] = session['email']
+
+    print jobtemplate
+    resp = post_result(app.config['JOB_URL_BASE'], None, j_tokens['access_token'], 'json', jobtemplate)
+
+    return resp
+
+def job_permission(job_id):
+    '''Update user permissions for a particular job'''
+    j_tokens = json.loads(session['tokens'])
+    path = '{}/{}/{}'.format(job_id, 'pems', app.config['ADMIN_USER'])
+    perm = 'permission=ALL'
+    resp = post_result(app.config['JOB_URL_BASE'], path, j_tokens['access_token'], 'data', perm)
+    print 'Result: ', resp[1]
+    return resp
 
 ##############
 # USER CLASS #
@@ -398,6 +430,13 @@ def signupagave():
 @app.route('/api')
 def api():
     return render_template('nsides_api.html')
+
+@app.route('/joblist', methods=['GET'])
+@authenticated
+def job_list():
+    j_tokens = json.loads(session['tokens'])
+    job_list = get_result(app.config['JOB_URL_BASE'], '', j_tokens['access_token'])
+    return render_template('job_list.html', joblist=job_list)
 
 
 # BEACON STUFF
