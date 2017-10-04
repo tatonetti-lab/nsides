@@ -12,12 +12,9 @@ The nSides web front-end, (re)implemented in Flask
 """
 
 import os
-import ipdb
-from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash, make_response
+from flask import Flask, request, session, redirect, url_for, render_template, flash
 import query_nsides_mongo
 import query_nsides_mysql
-from werkzeug.security import check_password_hash, generate_password_hash
-import flask_login
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
 from functools import wraps
@@ -25,18 +22,8 @@ import requests
 import click
 import json
 from datetime import datetime
-
-from flask_wtf import FlaskForm
-from wtforms import Form, StringField, PasswordField, BooleanField
-from wtforms.validators import DataRequired
-
 from oauth2client.client import flow_from_clientsecrets
 
-
-class LoginForm(Form):
-    email = StringField('email', validators=[DataRequired()])
-    password = PasswordField('password', validators=[DataRequired()])
-    rememberme = BooleanField('remember')
 
 def authenticated(fn):
     """Decorator for requiring authentication on a route."""
@@ -60,10 +47,6 @@ app.config.from_pyfile('nsides_flask.conf')
 
 with open(app.config['JOB_TEMPLATE']) as f:
     jobtemplate = json.load(f)
-
-login_manager = flask_login.LoginManager()
-login_manager.session_protection = "strong"
-login_manager.init_app(app)
 
 MONGODB_HOST, MONGODB_UN, MONGODB_PW = open('./nsides-mongo.cnf').read().strip().split('\n')
 MONGODB_PORT = 27017
@@ -227,57 +210,6 @@ def job_permission(job_id):
     print 'Result: ', resp[1]
     return resp
 
-##############
-# USER CLASS #
-##############
-
-class User(flask_login.UserMixin):
-    def __init__(self, email):
-        self.email = email
-
-    def is_authenticated(self):
-        return True
-
-    def is_active(self):
-        return True
-
-    def get_id(self):
-        return self.email
-
-    @staticmethod
-    def validate_login(password_hash, password):
-        return check_password_hash(password_hash, password)
-
-# Some testing data
-users = {'foo@bar.tld': {'pw': 'secret'}}
-
-@login_manager.user_loader
-def user_loader(email):
-    u = udb.users.find_one({"_id": email})
-    if not u:
-        return None
-    return User(u['_id'])
-
-
-@login_manager.request_loader
-def request_loader(request):
-    email = request.form.get('email')
-    if email not in users:
-        return
-
-    user = User()
-    user.id = email
-
-    # CHANGE THIS!
-    user.is_authenticated = request.form['pw'] == users[email]['pw']
-
-    return user
-
-@login_manager.unauthorized_handler
-def unauthorized_handler():
-    flash("Error: You have to log in to access this page")
-    return redirect(url_for('nsides_main'))
-
 ##########
 # ROUTES #
 ##########
@@ -285,21 +217,6 @@ def unauthorized_handler():
 @app.route('/')
 def nsides_main():
     return render_template('nsides_main.html')
-
-@app.route('/loginold', methods=['GET', 'POST'])
-def login_old():
-    form = LoginForm(request.form)
-    if request.method == 'POST' and form.validate():
-        print "got here"
-        user = udb.users.find_one({"_id": form.email.data})
-        print(user)
-        if user and User.validate_login(user['pw_hash'], form.password.data):
-            user_obj = User(user['_id'])
-            flask_login.login_user(user_obj)
-            flash("Logged in successfully", category="success")
-            return redirect(url_for('nsides_main'))
-        flash("Wrong email or password", category='error')
-    return render_template('nsides_login.html', form=form)
 
 @app.route('/login', methods=['GET'])
 def login():
@@ -390,19 +307,7 @@ def submit_job():
 
         return redirect(url_for('job_list'))
 
-@app.route('/protected')
-@flask_login.login_required
-def protected():
-    flash('This is a secret message', category="success")
-    flash('Logged in as: ' + flask_login.current_user.email, category="succes")
-
-@app.route('/logout')
-@flask_login.login_required
-def logout():
-    flask_login.logout_user()
-    flash("Logged out successfully", category="success")
-    return redirect(url_for('nsides_main'))
-
+'''
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
@@ -421,9 +326,10 @@ def signup():
             return redirect(url_for('login'))
         return redirect(url_for('signup'))
     return render_template('nsides_signup.html')
+'''
 
-@app.route('/signupagave', methods=['GET'])
-def signupagave():
+@app.route('/signup', methods=['GET'])
+def signup():
     """Send the user to Agave Auth"""
     return redirect(app.config['SIGNUP'])
 
@@ -437,61 +343,6 @@ def job_list():
     j_tokens = json.loads(session['tokens'])
     job_list = get_result(app.config['JOB_URL_BASE'], '', j_tokens['access_token'])
     return render_template('job_list.html', joblist=job_list)
-
-
-# BEACON STUFF
-# are these still necessary?
-
-@app.route('/beacon/<service>/concepts')
-def getConcepts(service):
-    keywords = request.params.get('keywords')
-    semgroup = request.params.get('semgroup')
-    pageNumber = request.params.get('pageNumber')
-    pageSize = request.params.get('pageSize')
-    meta = 'getConcepts'
-    beacon_result = query_nsides_mysql.query_db(service, str(meta), 'cancer')
-    json = '''%s''' %(str(beacon_result))
-    json = json.replace("'", '"')
-    response.content_type = 'application/json'
-    return json
-
-@app.route('/beacon/<service>/concepts/<conceptId>')
-def getConceptDetails(service, conceptId):
-    keywords = request.params.get('keywords')
-    semgroup = request.params.get('semgroup')
-    pageNumber = request.params.get('pageNumber')
-    pageSize = request.params.get('pageSize')
-    meta = 'getConceptDetails'
-    beacon_result = query_nsides_mysql.query_db(service, str(meta), conceptId)
-    json = '''%s''' %(str(beacon_result))
-    json = json.replace("'", '"')
-    response.content_type = 'application/json'
-    return json
-
-@app.route('/beacon/<service>/evidence/<statementId>')
-def getEvidence(service, statementId):
-    json = []
-    response.content_type = 'application/json'
-    return '[]'
-
-@app.route('/beacon/<service>/exactmatches')
-def getExactMatchesToConceptList(service):
-    json = []
-    response.content_type = 'application/json'
-    return '[]'
-
-@app.route('/beacon/<service>/exactmatches/<conceptId>')
-def getExactMatchesToConcept(service, conceptId):
-    json = []
-    response.content_type = 'application/json'
-    return '[]'
-
-@app.route('/beacon/<service>/statements')
-def getStatemetns(service):
-    json = []
-    response.content_type = 'application/json'
-    return '[]'
-
 
 
 # API STUFF
@@ -512,7 +363,6 @@ def api_call():
         return 'No service selected'
     elif len(service) == 1:
         json = '''{"results": "result"}'''
-
 
     # MongoDB (nSides)
     elif service == 'nsides':
@@ -562,7 +412,6 @@ def api_call():
 
             service_result = query_nsides_mongo.query_db(service, meta, query)
             json = '''{"results": %s}''' %(str(service_result))
-
 
     # MySQL
     elif service == 'lab':
@@ -628,9 +477,6 @@ def api_call():
         json = '''{"": ""}'''
 
     json = json.replace("'", '"')
-
-    #ipdb.set_trace()
-    #response.content_type = 'application/json'
 
     return json
 

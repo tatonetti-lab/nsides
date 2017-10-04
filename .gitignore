@@ -1,38 +1,22 @@
 nsides.cnf
 nsides-mongo.cnf
-
-index/demos/
+*client_secrets.json
 
 *.log
-
 *.mtx
-
 *.out
-
 *.err
-
 *.tgz
-
-results_*
-
-condor/AEOLUS_all_reports_alloutcomes.mtx
-
-nsides-mongo-config.txt
-
-packages/*
-
+*.crt
+*.key
 *~
-
 *.pyc
-
 *.ipynb_checkpoints
 
+results_*
+condor/AEOLUS_all_reports_alloutcomes.mtx
+nsides-mongo-config.txt
+packages/*
 
-# Elastic Beanstalk Files
-.elasticbeanstalk/*
-!.elasticbeanstalk/*.cfg.yml
-!.elasticbeanstalk/*.global.yml
-# .ebignore
-
-
-*client_secrets.json
+data/
+job_api/example/venv/

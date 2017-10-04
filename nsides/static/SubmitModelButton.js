@@ -22,7 +22,9 @@ class SubmitModelButton extends React.Component {
                     value='submit'
                     onClick={this.handleSubmitClick}
                 >
+                <a href="https://localhost:5000/jobsubmission">
                     Submit model
+                </a>
                 </button>
             </div>
         );

@@ -1,1 +1,0 @@
-from .nsides import app
