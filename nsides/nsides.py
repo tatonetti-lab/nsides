@@ -1,10 +1,11 @@
 """
 NSIDES
 
-The nSides web front-end, implemented in Flask
+The nSides web front-end, (re)implemented in Flask
 
 @author: Joseph D. Romano
 @author: Rami Vanguri
+@author: Choonhan Youn
 
 (c) 2017 Tatonetti Lab
 
@@ -19,10 +20,14 @@ from werkzeug.security import check_password_hash, generate_password_hash
 import flask_login
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
+from functools import wraps
+import requests
 
 from flask_wtf import FlaskForm
 from wtforms import Form, StringField, PasswordField, BooleanField
 from wtforms.validators import DataRequired
+
+from oauth2client.client import flow_from_clientsecrets
 
 
 class LoginForm(Form):
@@ -30,6 +35,16 @@ class LoginForm(Form):
     password = PasswordField('password', validators=[DataRequired()])
     rememberme = BooleanField('remember')
 
+def authenticated(fn):
+    """Decorator for requiring authentication on a route."""
+    @wraps(fn)
+    def decorated_function(*args, **kwargs):
+        if not session.get('is_authenticated'):
+            return redirect(url_for('login', next=request.url))
+        if request.path == '/logout':
+            return fn(*args, **kwargs)
+        return fn(*args, **kwargs)
+    return decorated_function
 
 #########
 # INITS #
@@ -37,7 +52,8 @@ class LoginForm(Form):
 
 app = Flask(__name__)
 app.secret_key = 'changeme'
-app.config.from_envvar('NSIDES_FRONTEND_SETTINGS', silent=True)
+#app.config.from_envvar('NSIDES_FRONTEND_SETTINGS', silent=True)
+app.config.from_pyfile('nsides_flask.conf')
 
 login_manager = flask_login.LoginManager()
 login_manager.session_protection = "strong"
@@ -62,8 +78,122 @@ class UserDb(object):
             print("Error creating user - email already exists")
             return None
 
+    def save_profile(self, identity_id=None, name=None, email=None, institution=None):
+        try:
+            self.users.insert_one({"_id": identity_id,
+                                   "name": name,
+                                   "email": email,
+                                   "institution": institution})
+            return email
+        except DuplicateKeyError:
+            print("Error creating user - already exists")
+            return None
+
+    def load_profile(self, identity_id=None):
+        try:
+            user = self.users.find_one({"_id": identity_id})
+            return (user['name'], user['email'], user['institution'])
+        except TypeError:
+            return None
+
 udb = UserDb()
-        
+
+
+###########
+# HELPERS #
+###########
+
+def load_portal_client(redirect_uri):
+    """Create an AuthClient for the portal"""
+    flow = flow_from_clientsecrets(app.config['CLIENT_SECRET'],
+                                   scope='PRODUCTION',
+                                   redirect_uri=redirect_uri)
+    return flow
+
+def get_result(base_url, path, access_token):
+    req_url = '{}/{}{}'.format(base_url, path, '?pretty=true')
+    print 'GET request url:',req_url
+    req_headers = dict(Authorization='Bearer {}'.format(access_token))
+    resp = requests.get(req_url,
+                        headers=req_headers,
+                        verify=False)
+    # resp.raise_for_status()
+    print 'Status code:', resp.status_code
+    resp_result = resp.json()
+    print 'Response:', resp_result
+
+    if 'status' in resp_result:
+        if resp_result['status'] == 'error':
+            print 'error message:', resp_result['message']
+            return False, resp_result['message']
+    elif 'fault' in resp_result:
+        return False, resp_result['fault']['message']
+    else:
+        return False, resp_result
+
+    # resp.raise_for_status()
+    return True, resp_result['result']
+
+def post_result(base_url, path, access_token, data_type, post_data):
+    if path is None:
+        req_url = '{}{}'.format(base_url, '?pretty=true')
+    else:
+        req_url = '{}/{}{}'.format(base_url, path, '?pretty=true')
+    print 'POST request url:', req_url
+    req_headers = dict(Authorization='Bearer {}'.format(access_token))
+    if data_type == 'json':
+        resp = requests.post(req_url, headers=req_headers, json=post_data, verify=False)
+    elif data_type == 'data':
+        resp = requests.post(req_url, headers=req_headers, data=post_data, verify=False)
+    else:
+        resp = 'Please choose the data type: "json" or "data"'
+        print resp
+        return False, resp
+
+    print 'Status code:', resp.status_code
+    resp_result = resp.json()
+    print 'Response:', resp_result
+    
+    if 'status' in resp_result:
+        if resp_result['status'] == 'error':
+            print 'error message:', resp_result['message']
+            return False, resp_result['message']
+    elif 'fault' in resp_result:
+        return False, resp_result['fault']['message']
+    else:
+        return False, resp_result
+
+    return True, resp_result['result']
+
+def handle_permission(username):
+    # Note: this is specific to the 'nsidescommunity' account that
+    # has been registered with Agave - don't check the token into version control!
+    nsides_token = app.config['NSIDESCOMMUNITY_ACCESS_TOKEN']
+
+    # set permission for execution host to submit the job
+    path = '{}/{}/{}'.format(app.config['SYSTEM_EXEC_ID'], 'roles', username)
+    resp = get_result(app.config['SYSTEM_URL_BASE'],path,nsides_token)
+    if not resp[0]:
+        role = {"role": "USER"}
+        resp = post_result(app.config['SYSTEM_URL_BASE'], path, nsides_token, 'json', role)
+        print 'Result:', resp[1]
+    
+    # set permission for storage service
+    path = '{}/{}/{}'.format(app.config['SYSTEM_STOR_ID'], 'roles', username)
+    resp = get_result(app.config['SYSTEM_URL_BASE'], path, nsides_token)
+    if not resp[0]:
+        role = {"role": "USER"}
+        resp = post_result(app.config['SYSTEM_URL_BASE'], path, nsides_token, 'json', role)
+        print 'Result:', resp[1]
+    
+    # set permissions for application service
+    path = '{}/{}/{}'.format(app.config['APP_ID'], 'pems', username)
+    resp = get_result(app.config['APP_URL_BASE'], path, nsides_token)
+    if not resp[0]:
+        perm = 'permission=READ_EXECUTE'
+        resp = post_result(app.config['APP_URL_BASE'], path, nsides_token, 'data', perm)
+        print 'Result:', resp[1]
+
 
 ##############
 # USER CLASS #
@@ -116,7 +246,6 @@ def unauthorized_handler():
     flash("Error: You have to log in to access this page")
     return redirect(url_for('nsides_main'))
 
-
 ##########
 # ROUTES #
 ##########
@@ -125,8 +254,8 @@ def unauthorized_handler():
 def nsides_main():
     return render_template('nsides_main.html')
 
-@app.route('/login', methods=['GET', 'POST'])
-def login():
+@app.route('/loginold', methods=['GET', 'POST'])
+def login_old():
     form = LoginForm(request.form)
     if request.method == 'POST' and form.validate():
         print "got here"
@@ -139,6 +268,95 @@ def login():
             return redirect(url_for('nsides_main'))
         flash("Wrong email or password", category='error')
     return render_template('nsides_login.html', form=form)
+
+@app.route('/login', methods=['GET'])
+def login():
+    """Send the user to Agave Auth."""
+    return redirect(url_for('authcallback'))
+
+@app.route('/authcallback', methods=['GET'])
+def authcallback():
+    """Handles interaction with Agave Auth service."""
+    if 'error' in request.args:
+        flash("We couldn't log you into the portal: " + request.args.get('error_description', request.args['error']))
+        return redirect(url_for('nsides_main'))
+
+    redirect_uri = url_for('authcallback', _external=True)
+    client = load_portal_client(redirect_uri)
+    auth_uri = client.step1_get_authorize_url()
+    print 'auth uri', auth_uri
+    
+    if 'code' not in request.args:
+        # if no 'code' query string parameter, start Agave Auth login flow
+        auth_uri = client.step1_get_authorize_url()
+        return redirect(auth_uri)
+    else:
+        # otherwise, we're coming back from Agave Auth; start to exchange auth code for token
+        code = request.args.get('code')
+        print 'code', code
+        tokens = client.step2_exchange(code)
+        tokens.revoke_uri = app.config['REVOKE_URL']
+        token_json = tokens.to_json()
+        print 'token json',token_json
+        
+        user_profile = get_result(app.config['PROFILE_URL_BASE'],
+                                    'me',
+                                    tokens.access_token)
+        if user_profile[0]:
+            print 'username',user_profile[1]['username']
+        else:
+            flash("User profile was not retrieved. Error:" + user_profile[1])
+
+        session.update(
+            tokens=tokens.to_json(),
+            is_authenticated=True,
+            name=user_profile[1]['full_name'],
+            email=user_profile[1]['email'],
+            institution='',
+            primary_identity=user_profile[1]['username']
+        )
+
+        profile = udb.load_profile(session['primary_identity'])
+        if profile:
+            name, email, institution = profile
+            session['name'] = name
+            session['email'] = email
+            session['institution'] = institution
+        else:
+            udb.save_profile(identity_id=session['primary_identity'],
+                                  name=session['name'],
+                                  email=session['email'],
+                                  institution=session['institution'])
+            handle_permission(session['primary_identity'])
+
+            return redirect(url_for('profile', next=url_for('submit_job')))
+        
+        return redirect(url_for('submit_job'))
+
+@app.route('/jobsubmission', methods=['GET', 'POST'])
+@authenticated
+def submit_job():
+    if request.method == 'GET':
+        return render_template('jobsubmission.html')
+
+    if request.method == 'POST':
+        if not request.form.get('mtype'):
+            flash('Please select a model type.')
+            return redirect(url_for('submit_job'))
+        if not request.form.get('model_index'):
+            flash('Please enter a drug index.')
+            return redirect(url_for('submit_job'))
+
+        job = get_job(request.form.get('mtype'), request.form.get('model_index'))
+        if job[0]:
+            result = job_permission(job[1]['id'])
+            if not result[0]:
+                flash('Job permission error: '+result[1])
+            flash('Job request submitted successfully. Job ID: ' + job[1]['id'])
+        else:
+            flash('Job request was not submitted. Error: ' + job[1])
+
+        return redirect(url_for('job_list'))
 
 @app.route('/protected')
 @flask_login.login_required
@@ -171,6 +389,11 @@ def signup():
             return redirect(url_for('login'))
         return redirect(url_for('signup'))
     return render_template('nsides_signup.html')
+
+@app.route('/signupagave', methods=['GET'])
+def signupagave():
+    """Send the user to Agave Auth"""
+    return redirect(app.config['SIGNUP'])
 
 @app.route('/api')
 def api():
@@ -371,3 +594,7 @@ def api_call():
     #response.content_type = 'application/json'
 
     return json
+
+if __name__ == "__main__":
+    app.run(host='localhost',
+    ssl_context=('static/nsides.crt', 'static/nsides.key'))
