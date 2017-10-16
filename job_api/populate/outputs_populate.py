@@ -9,9 +9,9 @@ EXTRACTED_DIR = './extracted'
 REFERNCE_DIR = './reference'
 RESULT_DIR = './result_data'
 
-MONGODB_HOST = '34.197.121.158'
-MONGODB_UN = 'cyoun'
-MONGODB_PW = 'test123'
+MONGODB_HOST = 'localhost'
+MONGODB_UN = 'test'
+MONGODB_PW = 'test'
 MONGODB_PORT = 27017
 
 client = pymongo.MongoClient('mongodb://%s:%s@%s:%s/nsides?authSource=admin'
