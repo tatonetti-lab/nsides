@@ -210,6 +210,31 @@ def job_permission(job_id):
     print 'Result: ', resp[1]
     return resp
 
+def is_safe_redirect_url(target):
+    host_url = urlparse(request.host_url)
+    redirect_url = urlparse(urljoin(request.host_url, target))
+    return redirect_url.scheme in ('http', 'https') and host_url.netloc == redirect_url.netloc
+
+def get_safe_redirect():
+    """see https://security.openstack.org/guidelines/dg_avoid-unvalidated-redirects.html"""
+    url = request.args.get('next')
+    if url and is_safe_redirect_url(url):
+        return url
+    url = request.referrer
+    if url and is_safe_redirect_url(url):
+        return url
+    return '/'
+
+def get_revoke():
+    j_tokens = json.loads(session['tokens'])
+    a_token = dict(token='{}'.format(j_tokens['access_token']))
+    resp = requests.post(j_tokens['revoke_uri'],
+                         auth=(j_tokens['client_id'], j_tokens['client_secret']),
+                         data=a_token,
+                         verify=False)
+    resp.raise_for_status()
+    print 'status code for the revoke: ', resp.status_code
+
 ##########
 # ROUTES #
 ##########
@@ -222,6 +247,19 @@ def nsides_main():
 def login():
     """Send the user to Agave Auth."""
     return redirect(url_for('authcallback'))
+
+@app.route('/logout', methods=['GET'])
+@authenticated
+def logout():
+    """
+    - Revoke tokens with Agave Auth
+    - Destroy session state
+    - Redirect user to the Agave Auth logout page
+    """
+    get_revoke()
+    session.clear()
+    redirect_uri = url_for('nsides_main', _external=True)
+    return redirect(redirect_uri)
 
 @app.route('/authcallback', methods=['GET'])
 def authcallback():
@@ -328,6 +366,49 @@ def signup():
     return render_template('nsides_signup.html')
 '''
 
+@app.route('/profile', methods=['GET', 'POST'])
+@authenticated
+def profile():
+    """Show user profile information"""
+    if request.method == 'GET':
+        identity_id = session.get('primary_identity')
+        profile = udb.load_profile(identity_id)
+
+        if profile:
+            name, email, institution = profile
+
+            session['name'] = name
+            session['email'] = email
+            session['institution'] = institution
+        
+        else:
+            flash('Please complete any missing profile fields and press "save".')
+
+        if request.args.get('next'):
+            session['next'] = get_safe_redirect()
+
+        return render_template('profile.html')
+
+    elif request.method == 'POST':
+        name = session['name'] = request.form['name']
+        email = session['email'] = request.form['email']
+        institution = session['institution'] = request.form['institution']
+
+        udb.save_profile(identity_id=session['primary_identity'],
+                         name=name,
+                         email=email,
+                         institution=institution)
+        
+        flash('Thank you! Your profile has been successfully updated.')
+
+        if 'next' in session:
+            redirect_to = session['next']
+            session.pop('next')
+        else:
+            redirect_to = url_for('profile')
+
+        return redirect(redirect_to)
+
 @app.route('/signup', methods=['GET'])
 def signup():
     """Send the user to Agave Auth"""
@@ -410,6 +491,17 @@ def api_call():
             query = {'drugs': drugs, 'numResults': num_results, 'model': model_type}
             print "Parsed query:", query
 
+            service_result = query_nsides_mongo.query_db(service, meta, query)
+            json = '''{"results": %s}''' %(str(service_result))
+
+    elif service == 'druginfo':
+        # e.g. /api/v1/query?service=druginfo&meta=jobIndexes&drugs=19097016
+        if meta == 'jobIndexes':
+            drugs = request.args.get('drugs')
+            if drugs == [''] or drugs is None:
+                response.status = 400
+                return 'No drug(s) selected'
+            query = {'drugs': drugs}
             service_result = query_nsides_mongo.query_db(service, meta, query)
             json = '''{"results": %s}''' %(str(service_result))
 

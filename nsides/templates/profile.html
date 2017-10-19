@@ -1,0 +1,29 @@
+{% extends "nsides.html" %} {% block body %}
+<div class="container" style="margin-top: 50px;">
+    <h2>
+        User Profile information
+    </h2>
+
+    <form role="form" action="{{url_for('profile')}}" method="POST">
+        <div class="form-group">
+            <label for="name">Name</label>
+            <input type="text" class="form-control" id="name" name="name" placeholder="full name" required="required" tabindex="1" value="{{session['name']}}">
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" class="form-control" placeholder="me@example.com" required="required" tabindex="2"
+                value="{{session['email']}}">
+        </div>
+
+        <div class="form-group">
+            <label for="institution">Institution/Department</label>
+            <input type="text" id="institution" name="institution" class="form-control" required="required" tabindex="3" value="{{session['institution']}}">
+        </div>
+
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">Save/Update</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -50,6 +50,7 @@ class NsidesApp extends React.Component {
                     <SubmitModelButton
                         drugName={this.state.submitNewModelOption}
                     />
+                    <p><i>Note: this will redirect you to an external page for authentication if you are not already logged in.</i></p>
                 </div>
             }
         </div>;

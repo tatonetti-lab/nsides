@@ -446,6 +446,20 @@ path {
     margin-top: 50px;
 }
 
+#job_submit_container {
+    width: 500px;
+    margin: 0 auto;
+}
+
+.form-submitjob {
+    margin-top: 0px;
+    margin-bottom: 0px;
+    max-width: 500px;
+}
+
+.submit-select-container {
+    width: 100% !important;
+}
 
 
 @media only screen and (max-width: 600px) {
