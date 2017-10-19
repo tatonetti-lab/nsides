@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 
-  <head>
+<head>
     <meta charset="utf-8" />
     <title>nSides</title>
 
@@ -12,10 +12,14 @@
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" />
 
     <!-- We use bootstrap for login/logout pages -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M"
+        crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4"
+        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1"
+        crossorigin="anonymous"></script>
 
     <link rel=stylesheet type=text/css href="{{ url_for('static', filename='login.css') }}" />
     <link rel=stylesheet type=text/css href="{{ url_for('static', filename='fonts.css') }}" />
@@ -25,306 +29,309 @@
     <link rel=stylesheet type=text/css href="{{ url_for('static', filename='react-select.css') }}" />
 
     <meta name="apple-mobile-web-app-capable" content="yes" />
-  </head>
+</head>
 
-  <body>
+<body>
     <div id="content">
-      <div id="header">
-	<div id="header-content">
+        <div id="header">
+            <div id="header-content">
 
-	  <div id="login-link">
-	    {% if current_user.is_authenticated %}
-	    <a href="{{ url_for('logout') }}">log out</a>
-	    <br>
-	    Current user: {{ current_user.email }}
-	    {% else %}
-	    <a href="{{ url_for('login') }}">log in</a>
-	    {% endif %}
-	  </div>
-	  
-	  <div>
-	    <h1 class="logo-h1"><a href="/" style="text-decoration:none; color:inherit;"><img src="{{ url_for('static', filename='nsides-logo.svg') }}" style="height:50px;vertical-align:middle;" />nSides</a></h1>
-	    <h3>A comprehensive database of drug-drug(s)-effect relationships</h3>
-	  </div>
+                <div id="login-link">
+                    {% if session.get('is_authenticated') %}
+                        <a href="{{url_for('logout')}}">log out</a>
+                        <br>
+                        Current user: <a href="{{url_for('profile')}}">{{ session["primary_identity"] }}</a>
+                        <br>
+                        <a href="{{ url_for('job_list') }}">View submitted jobs</a>
+                    {% else %}
+                        <a href="{{ url_for('login') }}">log in</a>
+                    {% endif %}
+                </div>
 
-	</div> <!-- header-content -->
-	<div id="bar"></div>
-      </div>
+                <div>
+                    <h1 class="logo-h1"><a href="/" style="text-decoration:none; color:inherit;"><img src="{{ url_for('static', filename='nsides-logo.svg') }}" style="height:50px;vertical-align:middle;" />nSides</a></h1>
+                    <h3>A comprehensive database of drug-drug(s)-effect relationships</h3>
+                </div>
 
-      {% with messages = get_flashed_messages(category_filter=["error"]) %}
-      {% if messages %}
-      <ul class=flashes style="border-color: red;">
-	{% for message in messages %}
-	<li>{{ message }}</li>
-	{% endfor %}
-      </ul>
-      {% endif %}
-      {% endwith %}
+            </div>
+            <!-- header-content -->
+            <div id="bar"></div>
+        </div>
 
-      {% with messages = get_flashed_messages(category_filter=["success"]) %}
-      {% if messages %}
-      <ul class=flashes style="border-color: green;">
-	{% for message in messages %}
-	<li>{{ message }}</li>
-	{% endfor %}
-      </ul>
-      {% endif %}
-      {% endwith %}
+        {% with messages = get_flashed_messages(category_filter=["error"]) %}
+        {% if messages %}
+        <ul class=flashes style="border-color: red;">
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %} 
+        {% endwith %} 
+        
+        {% with messages = get_flashed_messages(category_filter=["success"]) %} 
+        {% if messages %}
+        <ul class=flashes style="border-color: green;">
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %} 
+        {% endwith %} 
+        
+        {% block body %}
+        {% endblock %}
 
-      {% block body %}{% endblock %}
+        <footer>
+            <div id="footer">
+                <img class="footer-img" src="{{ url_for('static', filename='cumc.png') }}" />
+            </div>
+        </footer>
 
-      <footer>
-	<div id="footer">
-	  <img class="footer-img" src="{{ url_for('static', filename='cumc.png') }}"/>
-	</div>
-      </footer>
-
-    </div> <!-- end content -->
+    </div>
+    <!-- end content -->
 
     <script src="{{ url_for('static', filename='babel.js') }}"></script>
-    <script src="{{ url_for('static', filename='react.min.js') }}"></script> 
+    <script src="{{ url_for('static', filename='react.min.js') }}"></script>
     <script src="{{ url_for('static', filename='react-dom.min.js') }}"></script>
     <script src="{{ url_for('static', filename='three.min.js') }}"></script>
     <script src="{{ url_for('static', filename='index.js') }}"></script>
     <script src="{{ url_for('static', filename='react-input-autosize.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='react-select-mod.js') }}"></script> <!-- Updated to close menu after hitting Enter -->
+    <script src="{{ url_for('static', filename='react-select-mod.js') }}"></script>
+    <!-- Updated to close menu after hitting Enter -->
     <script src="{{ url_for('static', filename='drugs-top-200.js') }}"></script>
 
-    <script src="http://d3js.org/d3.v4.min.js"></script>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
 
     <!-- INCLUDE REACT COMPONENTS WITH CORRECT LOAD ORDER -->
     <script type="text/babel" src="{{ url_for('static', filename='SubmitModelButton.js') }}"></script>
     <script type="text/babel" src="{{ url_for('static', filename='DrugSelectBox.js') }}"></script>
     <script type="text/babel" src="{{ url_for('static', filename='EffectSelectBox.js') }}"></script>
-    <script type="text/babel" src="{{ url_for('static', filename='NsidesApp.js') }}"></script>  
+    <script type="text/babel" src="{{ url_for('static', filename='NsidesApp.js') }}"></script>
+    <script type="text/babel" src="{{ url_for('static', filename='SubmitJobForm.js') }}"></script>
 
     <script type="text/babel">
-      var PRINT_DEBUG = true; //true;
-      function debug(...args) {
-      if (PRINT_DEBUG == false) {
-      return;
-      }
-      console.log(...args);
-      }
+        var PRINT_DEBUG = true; //true; function debug(...args) { if (PRINT_DEBUG == false) { return; } console.log(...args); } function
+        function debug(...args) { if (PRINT_DEBUG == false) { return; } console.log(...args); }
     </script>
-    
+
     <script>
-//var title1 = "Proportional Reporting Ratio over time";
-var data1;
-var dateformat = "%Y"
-// Initialize plot
-drawTimeSeriesGraph([],"Select a drug and effect",dateformat,blank=true);
-/* 
-Tooltip from: http://bl.ocks.org/d3noob/6eb506b129f585ce5c8a
-*/
-//function drawTimeSeriesGraph(data,title,dateformat) {
-function drawTimeSeriesGraph(data,title,dateformat,blank=false) {
-    document.getElementById("viz_container").innerHTML = "";
-    //Set bounds for red dots
-    var lbound = 0.045,
-        ubound = 0.075;
-        
-    // Set the dimensions of the canvas / graph
-    var margin = {top: 50, right: 150, bottom: 50, left: 50},
-        width = 800 - margin.left - margin.right,
-        height = 270 - margin.top - margin.bottom;
-    // Parse the date / time
-    var parseDate = d3.timeParse(dateformat),
-        formatDate = d3.timeFormat(dateformat),
-        bisectDate = d3.bisector(function(d) { return d.year; }).left;
-    // Set the ranges
-    var x = d3.scaleTime().range([0, width]);
-    var y = d3.scaleLinear().range([height, 0]);
-    var xAxis = d3.axisBottom()
-        .scale(x)
-        .ticks(d3.timeYear.every(1)) // display 1 year intervals
-        .tickSizeInner(-height)
-        .tickSizeOuter(0)
-        .tickPadding(10);
-    var yAxis = d3.axisLeft()
-        .scale(y)
-        .tickSizeInner(-width)
-        .tickSizeOuter(0)
-        .tickPadding(5);
-    // Define the line
-    var prrline = d3.line()
-        .x(function(d) { return x(d.year); })
-        .y(function(d) { return y(d.prr); });
-        
-    // Adds the svg canvas
-    var svg = d3.select("#viz_container")
-        .append("div")
-            .classed("svg-container", true) //container class to make it responsive
-        .append("svg")
-            //responsive SVG needs these 2 attributes and no width and height attr
-           .attr("preserveAspectRatio", "xMinYMin meet")
-           .attr("viewBox", "0 0 700 270")
-           .classed("svg-content-responsive", true)
-        .append("g")
-            .attr("transform", 
-                  "translate(" + margin.left + "," + margin.top + ")");
-    if (!blank) {
-        // Get the data
-        data.forEach(function(d) {
-            d.year = parseDate(d.year);
-            d.prr = +d.prr;
-            d.ci = +d.ci;
-        });
-        // Scale the range of the data
-        x.domain(d3.extent(data, function(d) { return d.year; }));
-        y.domain([0, d3.max(data, function(d) { return d.prr; }) > 2 ? 0.5 + d3.max(data, function(d) { return d.prr; }) : 2.5]);
-    
-        // Threshold line
-        var prrThreshold = 2;
-        svg.append("line")
-            .attr("class", "divider")
-            .attr("x1", x.range()[0])
-            .attr("x2", x.range()[1])
-            .attr("y1", y(prrThreshold))
-            .attr("y2", y(prrThreshold));
-        // Add the prrline path.
-        var lineSvg = svg.append("g"); 
-        lineSvg.append("path")
-            .attr("class", "line")
-            .attr("d", prrline(data));
-        // Add the Y Axis
-        svg.append("g")
-            .attr("class", "y axis")
-            .call(yAxis);
-        // Only show every other y-axis tick
-        // From https://stackoverflow.com/a/38921326
-        var ticks = d3.selectAll(".tick text");
-        ticks.attr("class", function(d,i){
-            if(i%2 != 0) d3.select(this).remove();
-        });
-        // Add the X Axis
-        svg.append("g")
-            .attr("class", "x axis")
-            .attr("transform", "translate(0," + height + ")")
-            .call(xAxis);
-    
-        // Y axis title
-        padding = 70;
-        svg.append("text")
-           .attr("class", "ylabel")
-           .attr("text-anchor", "middle")  // this makes it easy to center the text as the transform is applied to the anchor
-           .attr("transform", "translate(-"+ (padding/2) +","+(height/2)+")rotate(-90)")  // text is drawn off the screen top left, move down and out and rotate
-           .attr("font-size", "13px")
-           .text("PRR");
-        // Confidence area
-        var confidenceArea = d3.area()
-                .curve(d3.curveLinear)
-                .x( function(d) { return x(d.year); })
-                .y0(function(d) { return d.prr - d.ci >= 0 ? y(d.prr - d.ci): y(0); })
-                .y1(function(d) { return d.prr + d.ci <= y.domain()[1] ? y(d.prr + d.ci): y(y.domain()[1]); });
-        svg.append("path")
-            .datum(data)
-            .attr("class", "area confidence")
-    //        .attr("fill", "red") //estimateOneColor,
-            .attr("d", confidenceArea);
-    
-    
-        var focus = svg.append("g") 
-            .style("display", "none");
-        // append the x line
-        focus.append("line")
-            .attr("class", "x")
-            .style("stroke", "black")
-            .style("stroke-dasharray", "3,3")
-            .style("opacity", 0.5)
-            .attr("y1", 0)
-            .attr("y2", height);
-        // append the y line
-        focus.append("line")
-            .attr("class", "y")
-            .style("stroke", "black")
-            .style("stroke-dasharray", "3,3")
-            .style("opacity", 0.5)
-            .attr("x1", width)
-            .attr("x2", width);
-        // append the circle at the intersection
-        focus.append("circle")
-            .attr("class", "y")
-            .style("fill", "none")
-            .style("stroke", "steelblue")
-            .style("stroke-width", 1.5)
-            .attr("r", 4);
-        // place the prr at the intersection
-        focus.append("text")
-            .attr("class", "y1")
-            .style("stroke", "white")
-            .style("stroke-width", "3.5px")
-            .style("opacity", 0.8)
-            .attr("dx", 8)
-            .attr("dy", "-.3em");
-        focus.append("text")
-            .attr("class", "y2")
-            .attr("dx", 8)
-            .attr("dy", "-.3em");
-        // place the date at the intersection
-        focus.append("text")
-            .attr("class", "y3")
-            .style("stroke", "white")
-            .style("stroke-width", "3.5px")
-            .style("opacity", 0.8)
-            .attr("dx", 8)
-            .attr("dy", "1em");
-        focus.append("text")
-            .attr("class", "y4")
-            .attr("dx", 8)
-            .attr("dy", "1em");
-        // append the rectangle to capture mouse
-        svg.append("rect")
-            .attr("width", width)
-            .attr("height", height)
-            .style("fill", "none")
-            .style("pointer-events", "all")
-            .on("mouseover", function() { focus.style("display", null); })
-            .on("mouseout", function() { focus.style("display", "none"); })
-            .on("mousemove", mousemove);
-        function mousemove() {
-            var x0 = x.invert(d3.mouse(this)[0]),
-                i = bisectDate(data, x0, 1),
-                d0 = data[i - 1],
-                d1 = data[i],
-                d = x0 - d0.year > d1.year - x0 ? d1 : d0;
-            focus.select("circle.y")
+        //var title1 = "Proportional Reporting Ratio over time";
+        var data1;
+        var dateformat = "%Y"
+        // Initialize plot
+        drawTimeSeriesGraph([], "Select a drug and effect", dateformat, blank = true);
+        /* 
+        Tooltip from: http://bl.ocks.org/d3noob/6eb506b129f585ce5c8a
+        */
+        //function drawTimeSeriesGraph(data,title,dateformat) {
+        function drawTimeSeriesGraph(data, title, dateformat, blank = false) {
+            document.getElementById("viz_container").innerHTML = "";
+            //Set bounds for red dots
+            var lbound = 0.045,
+                ubound = 0.075;
+
+            // Set the dimensions of the canvas / graph
+            var margin = { top: 50, right: 150, bottom: 50, left: 50 },
+                width = 800 - margin.left - margin.right,
+                height = 270 - margin.top - margin.bottom;
+            // Parse the date / time
+            var parseDate = d3.timeParse(dateformat),
+                formatDate = d3.timeFormat(dateformat),
+                bisectDate = d3.bisector(function (d) { return d.year; }).left;
+            // Set the ranges
+            var x = d3.scaleTime().range([0, width]);
+            var y = d3.scaleLinear().range([height, 0]);
+            var xAxis = d3.axisBottom()
+                .scale(x)
+                .ticks(d3.timeYear.every(1)) // display 1 year intervals
+                .tickSizeInner(-height)
+                .tickSizeOuter(0)
+                .tickPadding(10);
+            var yAxis = d3.axisLeft()
+                .scale(y)
+                .tickSizeInner(-width)
+                .tickSizeOuter(0)
+                .tickPadding(5);
+            // Define the line
+            var prrline = d3.line()
+                .x(function (d) { return x(d.year); })
+                .y(function (d) { return y(d.prr); });
+
+            // Adds the svg canvas
+            var svg = d3.select("#viz_container")
+                .append("div")
+                .classed("svg-container", true) //container class to make it responsive
+                .append("svg")
+                //responsive SVG needs these 2 attributes and no width and height attr
+                .attr("preserveAspectRatio", "xMinYMin meet")
+                .attr("viewBox", "0 0 700 270")
+                .classed("svg-content-responsive", true)
+                .append("g")
                 .attr("transform",
-                      "translate(" + x(d.year) + "," +
-                                     y(d.prr) + ")");
-            focus.select("text.y2")
-                .attr("transform",
-                      "translate(" + x(d.year) + "," +
-                                     y(d.prr) + ")")
-                .attr("font-size", "12px")
-                .text(d.prr.toFixed(2));
-            focus.select("text.y4")
-                .attr("transform",
-                      "translate(" + x(d.year) + "," +
-                                     y(d.prr) + ")")
-                .attr("font-size", "12px")
-                .text(formatDate(d.year));
-            focus.select(".x")
-                .attr("transform",
-                      "translate(" + x(d.year) + "," +
-                                     y(d.prr) + ")")
-                .attr("y2", height - y(d.prr));
-            focus.select(".y")
-                .attr("transform",
-                      "translate(" + width * -1 + "," +
-                                     y(d.prr) + ")")
-                .attr("x2", width + width);
+                "translate(" + margin.left + "," + margin.top + ")");
+            if (!blank) {
+                // Get the data
+                data.forEach(function (d) {
+                    d.year = parseDate(d.year);
+                    d.prr = +d.prr;
+                    d.ci = +d.ci;
+                });
+                // Scale the range of the data
+                x.domain(d3.extent(data, function (d) { return d.year; }));
+                y.domain([0, d3.max(data, function (d) { return d.prr; }) > 2 ? 0.5 + d3.max(data, function (d) { return d.prr; }) : 2.5]);
+
+                // Threshold line
+                var prrThreshold = 2;
+                svg.append("line")
+                    .attr("class", "divider")
+                    .attr("x1", x.range()[0])
+                    .attr("x2", x.range()[1])
+                    .attr("y1", y(prrThreshold))
+                    .attr("y2", y(prrThreshold));
+                // Add the prrline path.
+                var lineSvg = svg.append("g");
+                lineSvg.append("path")
+                    .attr("class", "line")
+                    .attr("d", prrline(data));
+                // Add the Y Axis
+                svg.append("g")
+                    .attr("class", "y axis")
+                    .call(yAxis);
+                // Only show every other y-axis tick
+                // From https://stackoverflow.com/a/38921326
+                var ticks = d3.selectAll(".tick text");
+                ticks.attr("class", function (d, i) {
+                    if (i % 2 != 0) d3.select(this).remove();
+                });
+                // Add the X Axis
+                svg.append("g")
+                    .attr("class", "x axis")
+                    .attr("transform", "translate(0," + height + ")")
+                    .call(xAxis);
+
+                // Y axis title
+                padding = 70;
+                svg.append("text")
+                    .attr("class", "ylabel")
+                    .attr("text-anchor", "middle")  // this makes it easy to center the text as the transform is applied to the anchor
+                    .attr("transform", "translate(-" + (padding / 2) + "," + (height / 2) + ")rotate(-90)")  // text is drawn off the screen top left, move down and out and rotate
+                    .attr("font-size", "13px")
+                    .text("PRR");
+                // Confidence area
+                var confidenceArea = d3.area()
+                    .curve(d3.curveLinear)
+                    .x(function (d) { return x(d.year); })
+                    .y0(function (d) { return d.prr - d.ci >= 0 ? y(d.prr - d.ci) : y(0); })
+                    .y1(function (d) { return d.prr + d.ci <= y.domain()[1] ? y(d.prr + d.ci) : y(y.domain()[1]); });
+                svg.append("path")
+                    .datum(data)
+                    .attr("class", "area confidence")
+                    //        .attr("fill", "red") //estimateOneColor,
+                    .attr("d", confidenceArea);
+
+
+                var focus = svg.append("g")
+                    .style("display", "none");
+                // append the x line
+                focus.append("line")
+                    .attr("class", "x")
+                    .style("stroke", "black")
+                    .style("stroke-dasharray", "3,3")
+                    .style("opacity", 0.5)
+                    .attr("y1", 0)
+                    .attr("y2", height);
+                // append the y line
+                focus.append("line")
+                    .attr("class", "y")
+                    .style("stroke", "black")
+                    .style("stroke-dasharray", "3,3")
+                    .style("opacity", 0.5)
+                    .attr("x1", width)
+                    .attr("x2", width);
+                // append the circle at the intersection
+                focus.append("circle")
+                    .attr("class", "y")
+                    .style("fill", "none")
+                    .style("stroke", "steelblue")
+                    .style("stroke-width", 1.5)
+                    .attr("r", 4);
+                // place the prr at the intersection
+                focus.append("text")
+                    .attr("class", "y1")
+                    .style("stroke", "white")
+                    .style("stroke-width", "3.5px")
+                    .style("opacity", 0.8)
+                    .attr("dx", 8)
+                    .attr("dy", "-.3em");
+                focus.append("text")
+                    .attr("class", "y2")
+                    .attr("dx", 8)
+                    .attr("dy", "-.3em");
+                // place the date at the intersection
+                focus.append("text")
+                    .attr("class", "y3")
+                    .style("stroke", "white")
+                    .style("stroke-width", "3.5px")
+                    .style("opacity", 0.8)
+                    .attr("dx", 8)
+                    .attr("dy", "1em");
+                focus.append("text")
+                    .attr("class", "y4")
+                    .attr("dx", 8)
+                    .attr("dy", "1em");
+                // append the rectangle to capture mouse
+                svg.append("rect")
+                    .attr("width", width)
+                    .attr("height", height)
+                    .style("fill", "none")
+                    .style("pointer-events", "all")
+                    .on("mouseover", function () { focus.style("display", null); })
+                    .on("mouseout", function () { focus.style("display", "none"); })
+                    .on("mousemove", mousemove);
+                function mousemove() {
+                    var x0 = x.invert(d3.mouse(this)[0]),
+                        i = bisectDate(data, x0, 1),
+                        d0 = data[i - 1],
+                        d1 = data[i],
+                        d = x0 - d0.year > d1.year - x0 ? d1 : d0;
+                    focus.select("circle.y")
+                        .attr("transform",
+                        "translate(" + x(d.year) + "," +
+                        y(d.prr) + ")");
+                    focus.select("text.y2")
+                        .attr("transform",
+                        "translate(" + x(d.year) + "," +
+                        y(d.prr) + ")")
+                        .attr("font-size", "12px")
+                        .text(d.prr.toFixed(2));
+                    focus.select("text.y4")
+                        .attr("transform",
+                        "translate(" + x(d.year) + "," +
+                        y(d.prr) + ")")
+                        .attr("font-size", "12px")
+                        .text(formatDate(d.year));
+                    focus.select(".x")
+                        .attr("transform",
+                        "translate(" + x(d.year) + "," +
+                        y(d.prr) + ")")
+                        .attr("y2", height - y(d.prr));
+                    focus.select(".y")
+                        .attr("transform",
+                        "translate(" + width * -1 + "," +
+                        y(d.prr) + ")")
+                        .attr("x2", width + width);
+                };
+            }
+
+            svg.append("text")
+                .attr("x", (width / 2))
+                .attr("y", 0 - (margin.top / 2))
+                .attr("text-anchor", "middle")
+                .style("font-size", "16px")
+                .text(title);
         };
-    }
-    
-    svg.append("text")
-        .attr("x", (width / 2))             
-        .attr("y", 0 - (margin.top / 2))
-        .attr("text-anchor", "middle")  
-        .style("font-size", "16px")
-        .text(title);
-};
     </script>
-    
-  </body>
+
+</body>
+
 </html>

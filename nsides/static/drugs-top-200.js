@@ -198,5 +198,6 @@ var drugs = [
 { value: "1836430", label: "Sulfamethoxazole" },
 { value: "1353766", label: "Propranolol" },
 { value: "1103640", label: "Methadone" },
-{ value: "40226579", label: "fingolimod" }
+    { value: "40226579", label: "fingolimod" },
+    { value: "19135832", label: "Multivitamin preparation" }
 ];

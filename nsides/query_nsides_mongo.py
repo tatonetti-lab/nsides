@@ -15,11 +15,12 @@ Ensure that nsides-mongo.cnf file exists
 """
 
 import sys
-import ipdb
 import pymongo
 from operator import itemgetter
 import json
 import query_nsides_mysql
+
+import ipdb
 
 EXTRACTED_DIR = './results/extracted'
 REFERNCE_DIR = './reference'
@@ -73,10 +74,15 @@ def query_db(service, method, query=False, cache=False):
     # print 'MongoDB password: ', MONGODB_PW
     
     # print >> sys.stderr, "Reading the 'nsides' mongodb at %s:%s" % (MONGODB_HOST, MONGODB_PORT)
-    
-    client = pymongo.MongoClient('mongodb://%s:%s@%s:%s/nsides_dev' % (MONGODB_UN, MONGODB_PW, MONGODB_HOST, MONGODB_PORT))
+
+    client = pymongo.MongoClient('mongodb://jdr2160:fffan77@34.197.121.158:27017/nsides?authSource=admin')
+    #client = pymongo.MongoClient('mongodb://%s:%s@%s:%s/nsides_dev' % (MONGODB_UN, MONGODB_PW, MONGODB_HOST, MONGODB_PORT))
     db = client.nsides_dev
     estimates = db.estimates
+    
+    
+    druginfo_db = client.nsides
+    druginfo = druginfo_db.druginfo
 
     json_return = []
     if service == 'nsides':
@@ -279,6 +285,21 @@ def query_db(service, method, query=False, cache=False):
             #     "effect_rxnorm" : "19097016"
             # })
         return json.dumps(json_return)
+
+    elif service == 'druginfo':
+        if method == 'jobIndexes':
+            # query e.g.,: {'drugs': u'19097016'}
+            drugs = [int(x)for x in query['drugs'].split(',')]
+            drugs.sort()
+            job_indexes = list()
+            for d in drugs:
+                single_drug = druginfo.find_one({'rxnorm': d})
+                job_indexes.append(str(single_drug['run_index']))
+            job_indexes.sort()
+            job_index_string = '_'.join(job_indexes)
+            json_return = {'job_indexes': job_indexes,
+                           'job_index_string': job_index_string}
+            return json.dumps(json_return)
 
 if __name__ == '__main__':
     main()

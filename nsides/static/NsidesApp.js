@@ -45,11 +45,12 @@ class NsidesApp extends React.Component {
             </div>
             {this.state.submitNewModelOption !== '' &&
                 <div className="newModelNotification">
-                    <p>We have not yet generated a model for this drug.</p>
+                    <p>We have not yet generated a model for this drug / drug combination.</p>
                     <p>If you would like to submit this drug for computation, click on the following button:</p>
                     <SubmitModelButton
                         drugName={this.state.submitNewModelOption}
                     />
+                    <p><i>Note: this will redirect you to an external page for authentication if you are not already logged in.</i></p>
                 </div>
             }
         </div>;
