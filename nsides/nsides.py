@@ -345,27 +345,6 @@ def submit_job():
 
         return redirect(url_for('job_list'))
 
-'''
-@app.route('/signup', methods=['GET', 'POST'])
-def signup():
-    if request.method == 'POST':
-        # TODO: Validate user agrees
-        print request.form
-        name = request.form['name']
-        institution = request.form['institution']
-        email = request.form['email']
-        pw1 = request.form['password1']
-        pw2 = request.form['password2']
-        if pw1 != pw2:
-            flash('Passwords don\'t match')
-            return redirect(url_for('signup'))
-        if udb.submit_new_user(name, institution, email, pw1):
-            flash('Signup success! Please log in.')
-            return redirect(url_for('login'))
-        return redirect(url_for('signup'))
-    return render_template('nsides_signup.html')
-'''
-
 @app.route('/profile', methods=['GET', 'POST'])
 @authenticated
 def profile():

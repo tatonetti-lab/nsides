@@ -412,7 +412,7 @@ path {
     /*padding-bottom: 100%;*/ /* aspect ratio */
     /*vertical-align: top;
     overflow: hidden;*/
-    min-height: 50vh;
+    min-height: 40vh;
 }
 .svg-content-responsive {
     display: inline-block;

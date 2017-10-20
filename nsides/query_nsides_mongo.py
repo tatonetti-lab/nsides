@@ -105,6 +105,7 @@ def query_db(service, method, query=False, cache=False):
             else:
                 # Sort estimates by year and remove unicode from estimate keys
                 sorted_estimates = sorted(estimate_record[u"estimates"], key=lambda k: k[u'year'])
+                sorted_nreports = sorted(estimate_record[u"nreports"], key=lambda k: k[u'year'])
 
                 processed_estimates = []
                 for s in sorted_estimates:
@@ -114,13 +115,27 @@ def query_db(service, method, query=False, cache=False):
                     processed_estimates.append( processed_year_estimate )
                 # print s.keys()
                 # print estimate_record[u"estimates"], '\n'
+
+                processed_nreports = []
+                for r in sorted_nreports:
+                    nreport_for_year = dict()
+                    for k in r.keys():
+                        nreport_for_year[k.encode('ascii', 'ignore')] = r[k]
+                    processed_nreports.append(nreport_for_year)
+
                 print "  ", processed_estimates
+                print "  ", sorted_nreports
+
+                #processed_nreports = []
+                #for r in sorted_nreports:
+                #    processed_
 
                 json_return.append({ 
                     # "effect_string" : "estimateForDrug_Outcome",
                     "outcome" : int(estimate_record[u"snomed"]), #query["outcome"],
                     "drug" : estimate_record[u"rxnorm"], #query["drugs"],
-                    "estimates": processed_estimates #estimate_record[u"estimates"]
+                    "estimates": processed_estimates, #estimate_record[u"estimates"]
+                    "nreports": processed_nreports
                 })
 
         elif method == 'topOutcomesForDrug':
@@ -143,6 +158,7 @@ def query_db(service, method, query=False, cache=False):
             ]
 
             estimate_records = estimates.aggregate(pipeline)
+            #ipdb.set_trace()
 
             outcomes = []
             for record in estimate_records:

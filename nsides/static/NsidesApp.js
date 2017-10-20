@@ -65,10 +65,13 @@ class NsidesApp extends React.Component {
         }, () => {
             if (this.state.submitNewModelOption !== '') {
                 var title1 = '';
+                var title2 = '';
             } else {
                 var title1 = "Select a drug and effect";
+                var title2 = '';
             }
-            drawTimeSeriesGraph([], title1, dateformat, blank = true);
+            drawTimeSeriesGraph([], [], title1, title2, dateformat, blank = true);
+            console.log("Render plots: changed drug.");
         });
     }
 
@@ -81,10 +84,13 @@ class NsidesApp extends React.Component {
             if ((newDrug == "") || (newOutcome == "")) {
                 if (this.state.submitNewModelOption !== '') {
                     title1 = "";
+                    title2 = '';
                 } else {
                     title1 = "Select a drug and effect";
+                    title2 = '';
                 }
-                drawTimeSeriesGraph([], title1, dateformat, blank = true);
+                drawTimeSeriesGraph([], [], title1, title2, dateformat, blank = true);
+                console.log("Render plots: changed outcome, no drug or outcome.");
             }
 
             else {
@@ -98,20 +104,25 @@ class NsidesApp extends React.Component {
                     })
                     .then(function (j) {
                         var data = j["results"][0]["estimates"];
+                        var data2 = j["results"][0]["nreports"];
                         debug("drug-effect data", data);
+                        debug("number of reports by year", data2);
 
                         /* Set variables */
                         var data1 = data;
                         console.log("DATA1:");
                         console.log(data1);
                         var title1 = "Proportional Reporting Ratio over time";
-                        drawTimeSeriesGraph(data1, title1, dateformat);
+                        var title2 = "Number of reports by year";
+                        drawTimeSeriesGraph(data1, data2, title1, title2, dateformat, blank = false);
                     })
                     .catch(function (ex) {
                         debug('Parsing failed', ex);
                         request = null;
                         var title1 = "Select a drug and effect"; //"No results found";
-                        drawTimeSeriesGraph([], title1, dateformat, blank = true);
+                        var title2 = '';
+                        drawTimeSeriesGraph([], [], title1, title2, dateformat, blank = true);
+                        console.log("Render plots: API fetch returned nothing.");
                     })
 
             }
