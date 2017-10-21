@@ -48,7 +48,7 @@ def main():
     print >> sys.stderr, "Loading password from ./nsides-mongo.cnf..."
     MONGODB_HOST, MONGODB_UN, MONGODB_PW = open('./nsides-mongo.cnf').read().strip().split('\n')
     
-    client = pymongo.MongoClient('mongodb://%s:%s@%s:%s/nsides_dev' % (MONGODB_UN, MONGODB_PW, MONGODB_HOST, MONGODB_PORT))
+    client = pymongo.MongoClient('mongodb://%s:%s@%s:%s/nsides_dev?authSource=admin' % (MONGODB_UN, MONGODB_PW, MONGODB_HOST, MONGODB_PORT))
     db = client.nsides_dev
     estimates = db.estimates
 
@@ -73,10 +73,7 @@ def query_db(service, method, query=False, cache=False):
     # print 'MongoDB username: ', MONGODB_UN
     # print 'MongoDB password: ', MONGODB_PW
     
-    # print >> sys.stderr, "Reading the 'nsides' mongodb at %s:%s" % (MONGODB_HOST, MONGODB_PORT)
-
-    client = pymongo.MongoClient('mongodb://jdr2160:fffan77@34.197.121.158:27017/nsides?authSource=admin')
-    #client = pymongo.MongoClient('mongodb://%s:%s@%s:%s/nsides_dev' % (MONGODB_UN, MONGODB_PW, MONGODB_HOST, MONGODB_PORT))
+    client = pymongo.MongoClient('mongodb://%s:%s@%s:%s/nsides_dev?authSource=admin' % (MONGODB_UN, MONGODB_PW, MONGODB_HOST, MONGODB_PORT))
     db = client.nsides_dev
     estimates = db.estimates
     

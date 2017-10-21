@@ -13,6 +13,10 @@
 // https://github.com/tatonetti-lab/nsides or go to:
 // http://creativecommons.org/licenses/by-nc-sa/4.0/
 
+function sortNumber(a, b) {
+    return a - b;
+}
+
 var request = null;
 class DrugSelectBox extends React.Component {
     displayName: 'DrugSelectBox';
@@ -23,7 +27,6 @@ class DrugSelectBox extends React.Component {
         this.state = {
             options: drugs,
             value: '', //[],
-            // numOutcomeResults: this.props.numOutcomeResults
         };
     }
 
@@ -34,15 +37,24 @@ class DrugSelectBox extends React.Component {
     }
 
     apiTopOutcomes() {
-        var selectedDrug; // = this.state.value['value'];
+        var selectedDrug;
         try {
-            //selectedDrug = this.state.value['value'];
-            selectedDrug = this.state.value;
+            // react-select doesn't sort values. Here, we sort them numerically.
+            var selectedDrugArray = this.state.value.split(',').map(function(item) {
+                return parseInt(item, 10);
+            });
+            selectedDrugArray.sort(sortNumber);
+            selectedDrug = selectedDrugArray.join(',');
+            if (selectedDrug === 'NaN') {
+                selectedDrug = '';
+            }
         } catch (err) {
+            console.log("Error! ", err);
             selectedDrug = '';
         }
         var numResults = this.props.numOutcomeResults;
         var outcomeOptions;
+
         debug("selectedDrug", selectedDrug, "numResults", numResults)
 
         if (selectedDrug == '') {
@@ -63,23 +75,19 @@ class DrugSelectBox extends React.Component {
             var api_call = '/api/v1/query?service=nsides&meta=topOutcomesForDrug&numResults=' + numResults + '&drugs=' + selectedDrug;
             debug(api_call);
 
-            request = fetch(api_call) // http://stackoverflow.com/a/41059178
-                .then(function (response) {
+            request = fetch(api_call).then(function (response) {
                     return response.json();
-                })
-                .then(function (j) {
+                }).then(function (j) {
                     outcomeOptions = j["results"][0]["topOutcomes"];
                     debug("outcomeOptions", outcomeOptions);
                     this.props.onDrugChange(selectedDrug, outcomeOptions, '')
-                }.bind(this))
-                .catch(function (ex) {
+                }.bind(this)).catch(function (ex) {
                     debug('No outcomes found', ex);
                     request = null;
                     console.log("INFO: selectedDrug:");
                     console.log(selectedDrug);
                     this.props.onDrugChange('', [], selectedDrug);
                 }.bind(this))
-
         }
 
     }

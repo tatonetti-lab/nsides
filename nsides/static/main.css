@@ -323,6 +323,9 @@ header, section, footer {
     width: 100%;
     margin: 0 auto;
 }
+footer {
+    max-height: 150px;
+}
 .select_bar {
     text-align: center;
 }
@@ -412,7 +415,7 @@ path {
     /*padding-bottom: 100%;*/ /* aspect ratio */
     /*vertical-align: top;
     overflow: hidden;*/
-    min-height: 40vh;
+    min-height: 350px;
 }
 .svg-content-responsive {
     display: inline-block;
@@ -489,9 +492,6 @@ path {
         max-width: none !important;
         min-width: inherit !important;
         margin-top:20px;
-    }
-    .svg-container {
-        min-height: 30vh;
     }
 
     .footer-img {
