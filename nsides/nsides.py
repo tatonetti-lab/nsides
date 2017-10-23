@@ -53,7 +53,8 @@ MONGODB_PORT = 27017
 
 class UserDb(object):
     def __init__(self):
-        self.client = MongoClient('mongodb://%s:%s@%s:%s/nsides_dev' % (MONGODB_UN, MONGODB_PW, MONGODB_HOST, MONGODB_PORT))
+        #self.client = MongoClient('mongodb://%s:%s@%s:%s/nsides_dev' % (MONGODB_UN, MONGODB_PW, MONGODB_HOST, MONGODB_PORT))
+        self.client = MongoClient('mongodb://%s:%s@%s:%s/nsides_dev?authSource=admin' % (MONGODB_UN, MONGODB_PW, MONGODB_HOST, MONGODB_PORT))
         self.users = self.client.nsides_dev.users
 
     def submit_new_user(self, name, institution,
