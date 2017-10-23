@@ -324,10 +324,13 @@ def authcallback():
 @app.route('/jobsubmission', methods=['GET', 'POST'])
 @authenticated
 def submit_job():
+    print request.method
+
     if request.method == 'GET':
         return render_template('jobsubmission.html')
 
     if request.method == 'POST':
+        print "REQUEST: ", json.dumps(request.form, indent=2)
         if not request.form.get('mtype'):
             flash('Please select a model type.')
             return redirect(url_for('submit_job'))

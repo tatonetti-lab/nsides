@@ -6,7 +6,7 @@ class SubmitJobForm extends React.Component {
             value: []
         };
 
-        this.handleSubmit = this.handleSubmit.bind(this);
+        // this.handleSubmit = this.handleSubmit.bind(this);
         this.handleSelectChange = this.handleSelectChange.bind(this);
         this.fetchDrugIndices = this.fetchDrugIndices.bind(this);
     }
@@ -30,7 +30,7 @@ class SubmitJobForm extends React.Component {
         if (selectedDrugs = []) {
             debug('No drug(s) selected; no API call necessary');
             if (request) {
-                debug("Pre-resolve: ", request);
+                // debug("Pre-resolve: ", request);
                 Promise.resolve(request).then(
                     function() {
                         debug("Post-resolve: ", request);
@@ -41,24 +41,38 @@ class SubmitJobForm extends React.Component {
         }
     }
 
-    handleSubmit(e) {
+    /* handleSubmit(e) {
         console.log("The form was submitted: " + this.state.value);
+        
         e.preventDefault();
+        // Make request using SuperAgent
+        //request.post('/jobsubmission')
+        //    .type('form')
+        //    .send({mtype: "LRC", model_index: this.state.value})
+        //    .end(function(err, res) {
+        //        if (err || !res.ok) {
+        //            alert('Oh no! error');
+        //        }
+        //    });
     }
+
+    onChangeModelType(e) {
+        console.log("Model type: ", e);
+    } */
 
     render() {
         return (
-            <form onSubmit={this.handleSubmit} className="form-signin form-submitjob">
+            <form className="form-signin form-submitjob" method="POST">
                 <div className="form-group">
                     <div className="drug_title">Model type</div>
-                    <select className="form-control">
+                    <select className="form-control" name="mtype">
                         <option value="dnn">DNN</option>
                         <option value="lrc">LRC</option>
                     </select>
                 </div>
                 <div className="form-group submit-select-container">
                     <div className="drug_title">Drug(s)</div>
-                    <Select name="selected-drugs" joinValues multi simpleValue
+                    <Select name="model_index" joinValues multi simpleValue
                         value={this.state.value}
                         placeholder="Select drug(s)..."
                         noResultsText="Drug(s) not found"
