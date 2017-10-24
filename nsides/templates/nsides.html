@@ -29,6 +29,17 @@
     <link rel=stylesheet type=text/css href="{{ url_for('static', filename='react-select.css') }}" />
 
     <meta name="apple-mobile-web-app-capable" content="yes" />
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-108555248-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-108555248-1');
+    </script>
+
 </head>
 
 <body>
@@ -453,6 +464,11 @@
                         y2(d.nreports) + ")")
                         .attr("x2", width + width);
                 };
+                svg.append("text")
+                    .attr("x", width)
+                    .attr("y", 0 - (margin.top / 2) + 12)
+                    .attr("text-anchor", "end")
+                    .text("Model type: DNN");
             }
 
             svg.append("text")

@@ -23,6 +23,7 @@ import click
 import json
 from datetime import datetime
 from oauth2client.client import flow_from_clientsecrets
+from pprint import pprint
 
 
 def authenticated(fn):
@@ -129,8 +130,16 @@ def post_result(base_url, path, access_token, data_type, post_data):
         req_url = '{}{}'.format(base_url, '?pretty=true')
     else:
         req_url = '{}/{}{}'.format(base_url, path, '?pretty=true')
-    print 'POST request url:', req_url
+    # print 'POST request url:', req_url
     req_headers = dict(Authorization='Bearer {}'.format(access_token))
+    print ""
+    print "POST URL:"
+    print req_url
+    print "HEADERS:"
+    print pprint(req_headers)
+    print "JSON:"
+    print pprint(post_data)
+    print ""
     if data_type == 'json':
         resp = requests.post(req_url, headers=req_headers, json=post_data, verify=False)
     elif data_type == 'data':
@@ -197,7 +206,9 @@ def get_job(model_type, model_index):
     jobtemplate['notifications'][1]['url'] = session['email']
     jobtemplate['notifications'][2]['url'] = session['email']
 
-    print jobtemplate
+    print ""
+    print "GET_JOB:"
+    print pprint(jobtemplate)
     resp = post_result(app.config['JOB_URL_BASE'], None, j_tokens['access_token'], 'json', jobtemplate)
 
     return resp
