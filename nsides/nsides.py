@@ -507,6 +507,7 @@ def api_call():
                 return 'No Uniprot ID provided'
             query = {'uniprot': uniprot_id}
             service_result = query_nsides_mongo.query_db(service, meta, query)
+            #json = service_result
             json = '''{"results": %s}''' %(str(service_result))
 
     # MySQL
