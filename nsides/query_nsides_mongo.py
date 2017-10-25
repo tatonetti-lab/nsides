@@ -76,6 +76,7 @@ def query_db(service, method, query=False, cache=False):
     client = pymongo.MongoClient('mongodb://%s:%s@%s:%s/nsides_dev?authSource=admin' % (MONGODB_UN, MONGODB_PW, MONGODB_HOST, MONGODB_PORT))
     db = client.nsides_dev
     estimates = db.estimates
+    gpcr = db.gpcr
     
     
     druginfo_db = client.nsides
@@ -313,6 +314,12 @@ def query_db(service, method, query=False, cache=False):
             json_return = {'job_indexes': job_indexes,
                            'job_index_string': job_index_string}
             return json.dumps(json_return)
+
+    elif service == 'gpcr':
+        if method == 'gpcrFromUniprot':
+            # query e.g.,: {'uniprot': }
+            all_gpcrs = gpcr.find({'GPCR_uniprot_': query['uniprot']})
+            return json.dumps(all_gpcrs)
 
 if __name__ == '__main__':
     main()

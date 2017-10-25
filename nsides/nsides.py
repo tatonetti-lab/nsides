@@ -498,6 +498,16 @@ def api_call():
             query = {'drugs': drugs}
             service_result = query_nsides_mongo.query_db(service, meta, query)
             json = '''{"results": %s}''' %(str(service_result))
+        
+    elif service == 'gpcr':
+        if meta == 'gpcrFromUniprot':
+            uniprot_id = request.args.get('uniprot')
+            if uniprot_id == [''] or uniprot_id is None:
+                response.status = 400
+                return 'No Uniprot ID provided'
+            query = {'uniprot': uniprot_id}
+            service_result = query_nsides_mongo.query_db(service, meta, query)
+            json = '''{"results": %s}''' %(str(service_result))
 
     # MySQL
     elif service == 'lab':
