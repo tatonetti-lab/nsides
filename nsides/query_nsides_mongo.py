@@ -318,7 +318,7 @@ def query_db(service, method, query=False, cache=False):
     elif service == 'gpcr':
         if method == 'gpcrFromUniprot':
             # query e.g.,: {'uniprot': }
-            all_gpcrs = gpcr.find({'GPCR_uniprot_': query['uniprot']})
+            all_gpcrs = list(gpcr.find({'GPCR_uniprot_': query['uniprot']}, {'_id': 0}))
             return json.dumps(all_gpcrs)
 
 if __name__ == '__main__':
