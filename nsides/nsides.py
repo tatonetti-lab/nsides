@@ -537,7 +537,7 @@ def api_call(service = None, meta = None, query = None):
 
             model_type = request.args.get('model')
             if model_type == [''] or model_type is None:
-                model_type = 'dnn'
+                model_type = 'all'
 
             query = {'drugs': drugs, 'outcome': outcome, 'model': model_type}
             print "Parsed query:", query
@@ -560,7 +560,7 @@ def api_call(service = None, meta = None, query = None):
 
             model_type = request.args.get('model')
             if model_type == [''] or model_type is None:
-                model_type = 'dnn'
+                model_type = 'all'
 
             query = {'drugs': drugs, 'numResults': num_results, 'model': model_type}
             print "Parsed query:", query
