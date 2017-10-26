@@ -99,7 +99,7 @@ def query_db(service, method, query=False, cache=False):
         # e.g. /api/v1/query?service=omop&meta=conceptsToName&q=4196636,437643
         elif method == 'conceptsToName':
             if len(query.split(',')) > 1:
-                concept_ids = str(tuple([int(c) for c in query.split(',')]))
+                concept_ids = str(tuple([int(c) for c in query.split(',') if c != 'None']))
                 query_str = "in"
             else:
                 concept_ids = query

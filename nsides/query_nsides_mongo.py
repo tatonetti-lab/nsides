@@ -193,7 +193,7 @@ def query_db(service, method, query=False, cache=False):
             # mongo's aggregation pipeline
             if query["numResults"] == 'all':
                 #num_results = 'all'
-                num_results = 10
+                num_results = 10000
             else:
                 num_results = int(query["numResults"])
             
@@ -207,7 +207,7 @@ def query_db(service, method, query=False, cache=False):
                     {"$unwind": "$nreports"},
                     {"$group": {"_id": "$snomed", "totalnreports": { "$sum": "$nreports.nreports" }} },
                     {"$sort": {"totalnreports": -1} },
-                    {"$limit": 10}
+                    {"$limit": num_results}
                 ]
             else:
                 pipeline = [
@@ -215,7 +215,7 @@ def query_db(service, method, query=False, cache=False):
                     {"$unwind": "$nreports"},
                     {"$group": {"_id": "$snomed", "totalnreports": { "$sum": "$nreports.nreports" }} },
                     {"$sort": {"totalnreports": -1} },
-                    {"$limit": 10}
+                    {"$limit": num_results}
                 ]
 
             estimate_records = estimates.aggregate(pipeline)
