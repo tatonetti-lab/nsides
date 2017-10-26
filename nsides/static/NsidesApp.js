@@ -105,6 +105,8 @@ class NsidesApp extends React.Component {
                         console.log(j);
                         var data = j["results"][0]["estimates"];
                         var data2 = j["results"][0]["nreports"];
+                        var modelType = j["results"][0]["model"]
+                        debug("modelType: ", modelType);
                         // debug("drug-effect data", data);
                         // debug("number of reports by year", data2);
 
@@ -112,7 +114,7 @@ class NsidesApp extends React.Component {
                         var data1 = data;
                         var title1 = "Proportional Reporting Ratio over time";
                         var title2 = "Number of reports by year";
-                        drawTimeSeriesGraph(data1, data2, title1, title2, dateformat, blank = false);
+                        drawTimeSeriesGraph(data1, data2, title1, title2, dateformat, blank = false, modelType = modelType);
                     })
                     .catch(function (ex) {
                         debug('Parsing failed', ex);
