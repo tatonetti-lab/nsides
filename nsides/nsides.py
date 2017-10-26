@@ -13,6 +13,7 @@ The nSides web front-end, (re)implemented in Flask
 
 import os
 from flask import Flask, request, session, redirect, url_for, render_template, flash
+from flask_cors import CORS
 import query_nsides_mongo
 import query_nsides_mysql
 from pymongo import MongoClient
@@ -42,6 +43,7 @@ def authenticated(fn):
 #########
 
 app = Flask(__name__)
+CORS(app)
 app.secret_key = 'changeme'
 #app.config.from_envvar('NSIDES_FRONTEND_SETTINGS', silent=True)
 app.config.from_pyfile('nsides_flask.conf')
