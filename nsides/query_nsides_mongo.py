@@ -89,52 +89,104 @@ def query_db(service, method, query=False, cache=False):
         print "  Query : ", query
 
         if method == 'estimateForDrug_Outcome':
-            estimate_record = estimates.find_one(
-                                { '$and':
-                                    [ { 'rxnorm': query["drugs"] },
-                                      { 'snomed': int(query["outcome"]) },
-                                      { 'model': query["model"] }
-                                    ]
-                                });
-            
-            if estimate_record is None:
-                print "  No record found"
+            if query["model"] == 'all':
+                estimate_records = estimates.find(
+                                    { '$and':
+                                        [ { 'rxnorm': query["drugs"] },
+                                        { 'snomed': int(query["outcome"]) }
+                                        ]
+                                    });
+                
+                if estimate_records is None:
+                    print "  No record found"
 
+                else:
+                    for estimate_record in estimate_records:
+                        # Sort estimates by year and remove unicode from estimate keys
+                        sorted_estimates = sorted(estimate_record[u"estimates"], key=lambda k: k[u'year'])
+                        sorted_nreports = sorted(estimate_record[u"nreports"], key=lambda k: k[u'year'])
+
+                        model_type = estimate_record[u"model"]
+
+                        processed_estimates = []
+                        for s in sorted_estimates:
+                            processed_year_estimate = dict()
+                            for k in s.keys():
+                                processed_year_estimate[k.encode('ascii','ignore')] = s[k]
+                            processed_estimates.append( processed_year_estimate )
+                        # print s.keys()
+                        # print estimate_record[u"estimates"], '\n'
+
+                        processed_nreports = []
+                        for r in sorted_nreports:
+                            nreport_for_year = dict()
+                            for k in r.keys():
+                                nreport_for_year[k.encode('ascii', 'ignore')] = r[k]
+                            processed_nreports.append(nreport_for_year)
+
+                        #print "  ", processed_estimates
+                        #print "  ", sorted_nreports
+
+                        #processed_nreports = []
+                        #for r in sorted_nreports:
+                        #    processed_
+
+                        json_return.append({ 
+                            # "effect_string" : "estimateForDrug_Outcome",
+                            "outcome" : int(estimate_record[u"snomed"]), #query["outcome"],
+                            "drug" : estimate_record[u"rxnorm"], #query["drugs"],
+                            "estimates": processed_estimates, #estimate_record[u"estimates"]
+                            "nreports": processed_nreports,
+                            "model": model_type
+                        })
             else:
-                # Sort estimates by year and remove unicode from estimate keys
-                sorted_estimates = sorted(estimate_record[u"estimates"], key=lambda k: k[u'year'])
-                sorted_nreports = sorted(estimate_record[u"nreports"], key=lambda k: k[u'year'])
+                estimate_record = estimates.find_one(
+                                    { '$and':
+                                        [ { 'rxnorm': query["drugs"] },
+                                        { 'snomed': int(query["outcome"]) },
+                                        { 'model': query["model"] }
+                                        ]
+                                    });
+            
+                if estimate_record is None:
+                    print "  No record found"
 
-                processed_estimates = []
-                for s in sorted_estimates:
-                    processed_year_estimate = dict()
-                    for k in s.keys():
-                        processed_year_estimate[k.encode('ascii','ignore')] = s[k]
-                    processed_estimates.append( processed_year_estimate )
-                # print s.keys()
-                # print estimate_record[u"estimates"], '\n'
+                else:
+                    # Sort estimates by year and remove unicode from estimate keys
+                    sorted_estimates = sorted(estimate_record[u"estimates"], key=lambda k: k[u'year'])
+                    sorted_nreports = sorted(estimate_record[u"nreports"], key=lambda k: k[u'year'])
 
-                processed_nreports = []
-                for r in sorted_nreports:
-                    nreport_for_year = dict()
-                    for k in r.keys():
-                        nreport_for_year[k.encode('ascii', 'ignore')] = r[k]
-                    processed_nreports.append(nreport_for_year)
+                    processed_estimates = []
+                    for s in sorted_estimates:
+                        processed_year_estimate = dict()
+                        for k in s.keys():
+                            processed_year_estimate[k.encode('ascii','ignore')] = s[k]
+                        processed_estimates.append( processed_year_estimate )
+                    # print s.keys()
+                    # print estimate_record[u"estimates"], '\n'
 
-                print "  ", processed_estimates
-                print "  ", sorted_nreports
+                    processed_nreports = []
+                    for r in sorted_nreports:
+                        nreport_for_year = dict()
+                        for k in r.keys():
+                            nreport_for_year[k.encode('ascii', 'ignore')] = r[k]
+                        processed_nreports.append(nreport_for_year)
 
-                #processed_nreports = []
-                #for r in sorted_nreports:
-                #    processed_
+                    #print "  ", processed_estimates
+                    #print "  ", sorted_nreports
 
-                json_return.append({ 
-                    # "effect_string" : "estimateForDrug_Outcome",
-                    "outcome" : int(estimate_record[u"snomed"]), #query["outcome"],
-                    "drug" : estimate_record[u"rxnorm"], #query["drugs"],
-                    "estimates": processed_estimates, #estimate_record[u"estimates"]
-                    "nreports": processed_nreports
-                })
+                    #processed_nreports = []
+                    #for r in sorted_nreports:
+                    #    processed_
+
+                    json_return.append({ 
+                        # "effect_string" : "estimateForDrug_Outcome",
+                        "outcome" : int(estimate_record[u"snomed"]), #query["outcome"],
+                        "drug" : estimate_record[u"rxnorm"], #query["drugs"],
+                        "estimates": processed_estimates, #estimate_record[u"estimates"]
+                        "nreports": processed_nreports,
+                        "model": query["model"]
+                    })
 
         elif method == 'topOutcomesForDrug':
             # rewritten version of the next code block, that takes advantage of
@@ -147,13 +199,24 @@ def query_db(service, method, query=False, cache=False):
             
             estimate_record = estimates.aggregate
 
-            pipeline = [
-                {"$match": {"rxnorm": query["drugs"], "model": query["model"]}},
-                {"$unwind": "$nreports"},
-                {"$group": {"_id": "$snomed", "totalnreports": { "$sum": "$nreports.nreports" }} },
-                {"$sort": {"totalnreports": -1} },
-                {"$limit": 10}
-            ]
+            pipeline = None
+            
+            if query["model"] == 'all':
+                pipeline = [
+                    {"$match": {"rxnorm": query["drugs"]}},
+                    {"$unwind": "$nreports"},
+                    {"$group": {"_id": "$snomed", "totalnreports": { "$sum": "$nreports.nreports" }} },
+                    {"$sort": {"totalnreports": -1} },
+                    {"$limit": 10}
+                ]
+            else:
+                pipeline = [
+                    {"$match": {"rxnorm": query["drugs"], "model": query["model"]}},
+                    {"$unwind": "$nreports"},
+                    {"$group": {"_id": "$snomed", "totalnreports": { "$sum": "$nreports.nreports" }} },
+                    {"$sort": {"totalnreports": -1} },
+                    {"$limit": 10}
+                ]
 
             estimate_records = estimates.aggregate(pipeline)
             #ipdb.set_trace()
@@ -202,7 +265,7 @@ def query_db(service, method, query=False, cache=False):
                                 });
             
             all_outcomes = []
-            #ipdb.set_trace()
+            
             for record in estimate_record:
                 #pprint(record)
                 for estimate in record[u'estimates']:
@@ -298,6 +361,7 @@ def query_db(service, method, query=False, cache=False):
             #     "effect_snomed" : "435459",
             #     "effect_rxnorm" : "19097016"
             # })
+        print(json.dumps(json_return, indent=2))
         return json.dumps(json_return)
 
     elif service == 'druginfo':

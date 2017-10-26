@@ -137,7 +137,7 @@
         Tooltip from: http://bl.ocks.org/d3noob/6eb506b129f585ce5c8a
         */
         //function drawTimeSeriesGraph(data,title,dateformat) {
-        function drawTimeSeriesGraph(data, data2, title, title2, dateformat, blank = false) {
+        function drawTimeSeriesGraph(data, data2, title, title2, dateformat, blank = false, modelName = 'DNN') {
             document.getElementById("viz_container").innerHTML = "";
             //Set bounds for red dots
             var lbound = 0.045,
@@ -468,7 +468,7 @@
                     .attr("x", width)
                     .attr("y", 0 - (margin.top / 2) + 12)
                     .attr("text-anchor", "end")
-                    .text("Model type: DNN");
+                    .text("Model type: " + modelName);
             }
 
             svg.append("text")

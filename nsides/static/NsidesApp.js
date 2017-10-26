@@ -94,12 +94,15 @@ class NsidesApp extends React.Component {
 
             else {
                 var api_call = "/api/v1/query?service=nsides&meta=estimateForDrug_Outcome&drugs=" + newDrug + "&outcome=" + newOutcome;
+                console.log(api_call);
 
                 request = fetch(api_call) // http://stackoverflow.com/a/41059178
                     .then(function (response) {
                         return response.json();
                     })
                     .then(function (j) {
+                        console.log("data:");
+                        console.log(j);
                         var data = j["results"][0]["estimates"];
                         var data2 = j["results"][0]["nreports"];
                         // debug("drug-effect data", data);
