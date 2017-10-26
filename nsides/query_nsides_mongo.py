@@ -94,7 +94,6 @@ def query_db(service, method, query=False, cache=False):
                                     { '$and':
                                         [ { 'rxnorm': query["drugs"] },
                                         { 'snomed': int(query["outcome"]) }
-
                                         ]
                                     });
                 
@@ -106,6 +105,8 @@ def query_db(service, method, query=False, cache=False):
                         # Sort estimates by year and remove unicode from estimate keys
                         sorted_estimates = sorted(estimate_record[u"estimates"], key=lambda k: k[u'year'])
                         sorted_nreports = sorted(estimate_record[u"nreports"], key=lambda k: k[u'year'])
+
+                        model_type = estimate_record[u"model"]
 
                         processed_estimates = []
                         for s in sorted_estimates:
@@ -123,8 +124,8 @@ def query_db(service, method, query=False, cache=False):
                                 nreport_for_year[k.encode('ascii', 'ignore')] = r[k]
                             processed_nreports.append(nreport_for_year)
 
-                        print "  ", processed_estimates
-                        print "  ", sorted_nreports
+                        #print "  ", processed_estimates
+                        #print "  ", sorted_nreports
 
                         #processed_nreports = []
                         #for r in sorted_nreports:
@@ -135,7 +136,8 @@ def query_db(service, method, query=False, cache=False):
                             "outcome" : int(estimate_record[u"snomed"]), #query["outcome"],
                             "drug" : estimate_record[u"rxnorm"], #query["drugs"],
                             "estimates": processed_estimates, #estimate_record[u"estimates"]
-                            "nreports": processed_nreports
+                            "nreports": processed_nreports,
+                            "model": model_type
                         })
             else:
                 estimate_record = estimates.find_one(
@@ -170,8 +172,8 @@ def query_db(service, method, query=False, cache=False):
                             nreport_for_year[k.encode('ascii', 'ignore')] = r[k]
                         processed_nreports.append(nreport_for_year)
 
-                    print "  ", processed_estimates
-                    print "  ", sorted_nreports
+                    #print "  ", processed_estimates
+                    #print "  ", sorted_nreports
 
                     #processed_nreports = []
                     #for r in sorted_nreports:
@@ -182,7 +184,8 @@ def query_db(service, method, query=False, cache=False):
                         "outcome" : int(estimate_record[u"snomed"]), #query["outcome"],
                         "drug" : estimate_record[u"rxnorm"], #query["drugs"],
                         "estimates": processed_estimates, #estimate_record[u"estimates"]
-                        "nreports": processed_nreports
+                        "nreports": processed_nreports,
+                        "model": query["model"]
                     })
 
         elif method == 'topOutcomesForDrug':
@@ -358,6 +361,7 @@ def query_db(service, method, query=False, cache=False):
             #     "effect_snomed" : "435459",
             #     "effect_rxnorm" : "19097016"
             # })
+        print(json.dumps(json_return, indent=2))
         return json.dumps(json_return)
 
     elif service == 'druginfo':
