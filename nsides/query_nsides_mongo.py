@@ -207,6 +207,7 @@ def query_db(service, method, query=False, cache=False):
                     {"$unwind": "$nreports"},
                     {"$group": {"_id": "$snomed", "totalnreports": { "$sum": "$nreports.nreports" }} },
                     {"$sort": {"totalnreports": -1} },
+                    {"$match": {"totalnreports": {"$gte": 1} } },
                     {"$limit": num_results}
                 ]
             else:
@@ -215,6 +216,7 @@ def query_db(service, method, query=False, cache=False):
                     {"$unwind": "$nreports"},
                     {"$group": {"_id": "$snomed", "totalnreports": { "$sum": "$nreports.nreports" }} },
                     {"$sort": {"totalnreports": -1} },
+                    {"$match": {"totalnreports": {"$gte": 1} } },
                     {"$limit": num_results}
                 ]
 
