@@ -422,12 +422,92 @@ def job_list():
 
 # API STUFF
 
+@app.route('/api/v1/nsides/estimateForDrug_Outcome')
+def api_nsides_estimateForDrug_Outcome():
+    return api_call('nsides', 'estimateForDrug_Outcome')
+
+@app.route('/api/v1/nsides/topOutcomesForDrug')
+def api_nsides_topOutcomesForDrug():
+    return api_call('nsides', 'topOutcomesForDrug')
+
+@app.route('/api/v1/druginfo/jobIndexes')
+def api_druginfo_jobIndexes():
+    return api_call('druginfo', 'jobIndexes')
+
+@app.route('/api/v1/gote/gpcrFromUniprot')
+def api_gote_gpcrFromUniprot():
+    return api_call('gpcr', 'gpcrFromUniprot')
+
+@app.route('/api/v1/lab/ae_to_lab')
+def api_lab_ae_to_lab():
+    return api_call('lab', 'ae_to_lab')
+
+@app.route('/api/v1/omop/reference')
+def api_omop_reference():
+    return api_call('omop', 'reference')
+
+@app.route('/api/v1/omop/conceptsToName')
+def api_omop_conceptsToName():
+    return api_call('omop', 'conceptsToName')
+
+@app.route('/api/v1/sider/drugForEffect')
+def api_sider_drugForEffect():
+    return api_call('sider', 'drugForEffect')
+
+@app.route('/api/v1/sider/drugForEffectFreq')
+def api_sider_drugForEffectFreq():
+    return api_call('sider', 'drugForEffectFreq')
+
+@app.route('/api/v1/sider/search_term')
+def api_sider_search_term():
+    return api_call('sider', 'search_term')
+
+@app.route('/api/v1/va/get_ddi_alerts')
+def api_va_get_ddi_alerts():
+    return api_call('va', 'get_ddi_alerts')
+
+@app.route('/api/v1/snomed/getOutcomeFromSnomedId')
+def api_snomed_getOutcomeFromSnomedId():
+    return api_call('snomed', 'getOutcomeFromSnomedId')
+
+@app.route('/api/v1/aeolus/ingredientList')
+def api_aeolus_ingredientList():
+    return api_call('aeolus', 'ingredientList')
+
+@app.route('/api/v1/aeolus/drugReactionCounts')
+def api_aeolus_drugReactionCounts():
+    return api_call('aeolus', 'drugReactionCounts')
+
+@app.route('/api/v1/aeolus/drugpairReactionCounts')
+def api_aeolus_drugpairReactionCounts():
+    return api_call('aeolus', 'drugpairReactionCounts')
+
+@app.route('/api/v1/aeolus/reactionListSNOMED')
+def api_aeolus_reactionListSNOMED():
+    return api_call('aeolus', 'reactionListSNOMED')
+
+@app.route('/api/v1/aeolus/reactionListMedDRA')
+def api_aeolus_reactionListMedDRA():
+    return api_call('aeolus', 'reactionListMedDRA')
+
+@app.route('/api/v1/aeolus/drugpairList')
+def api_aeolus_drugpairList():
+    return api_call('aeolus', 'drugpairList')
+
+@app.route('/api/v1/aeolus/drugpairReactionListMedDRA')
+def api_aeolus_drugpairReactionListMedDRA():
+    return api_call('aeolus', 'drugpairReactionListMedDRA')
+
+
 @app.route('/api/v1/query')
-def api_call():
+def api_call(service = None, meta = None, query = None):
     #ipdb.set_trace()
-    service = request.args.get('service')
-    meta = request.args.get('meta')
-    query = request.args.get('q')
+    if service is None:
+        service = request.args.get('service')
+    if meta is None:
+        meta = request.args.get('meta')
+    if query is None:
+        query = request.args.get('q')
 
     print "Service: ",service
     print "Meta/Method: ",meta
@@ -565,11 +645,6 @@ def api_call():
         elif meta == 'drugpairReactionListMedDRA':
             service_result  = query_nsides_mysql.query_db(service, meta)
             json = '''{"results": %s}''' %(str(service_result))
-    elif service == 'omop':
-        if meta == 'reference':
-            service_result = query_nsides_mysql.query_db(service, meta, query)
-            json = '''{"results": %s}''' %(str(service_result))
-
     else:
         json = '''{"": ""}'''
 
