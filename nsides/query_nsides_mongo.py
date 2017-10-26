@@ -206,8 +206,8 @@ def query_db(service, method, query=False, cache=False):
                     {"$match": {"rxnorm": query["drugs"]}},
                     {"$unwind": "$nreports"},
                     {"$group": {"_id": "$snomed", "totalnreports": { "$sum": "$nreports.nreports" }} },
-                    {"$sort": {"totalnreports": -1} },
                     {"$match": {"totalnreports": {"$gte": 1} } },
+                    {"$sort": {"totalnreports": -1} },
                     {"$limit": num_results}
                 ]
             else:
@@ -215,8 +215,8 @@ def query_db(service, method, query=False, cache=False):
                     {"$match": {"rxnorm": query["drugs"], "model": query["model"]}},
                     {"$unwind": "$nreports"},
                     {"$group": {"_id": "$snomed", "totalnreports": { "$sum": "$nreports.nreports" }} },
-                    {"$sort": {"totalnreports": -1} },
                     {"$match": {"totalnreports": {"$gte": 1} } },
+                    {"$sort": {"totalnreports": -1} },
                     {"$limit": num_results}
                 ]
 
