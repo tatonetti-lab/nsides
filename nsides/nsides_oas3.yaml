@@ -1,0 +1,290 @@
+openapi: 3.0.0
+servers:
+  - url: 'http://nsides.io/api/v1'
+info:
+  description: 'The NSIDES API makes available FDA adverse event reporting data and derivative analyses using high-dimensional propensity score matching. '
+  version: 1.0.0
+  title: NSIDES
+  termsOfService: 'http://nsides.io/terms/'
+  contact:
+    email: nick.tatonetti@columbia.edu
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+tags: []
+paths:
+  /nsides/estimateForDrug_Outcome:
+    get:
+      summary: ''
+      description: ''
+      parameters:
+        - name: drugs
+          in: query
+          required: true
+          schema:
+            type: string
+          description: One or more drug identifiers to pull the outcome disproportionality estimates.
+        - name: outcome
+          in: query
+          required: true
+          schema:
+            type: string
+          description: The outcome identifier (snomed) to get the disproportionality estimate for.
+        - name: model
+          in: query
+          required: false
+          schema:
+            type: string
+            default: "dnn"
+            enum: 
+              - "dnn"
+              - "lrc"
+              - "nopsm"
+          description: 'The model type used to estimate the statistics. Can be dnn (default), lrc, or nopsm.'
+      operationId: estimateForDrug_Outcome
+      responses:
+        default:
+          description: Default response
+  /nsides/topOutcomesForDrug:
+    get:
+      summary: ''
+      description: ''
+      parameters:
+        - name: drugs
+          in: query
+          required: true
+          schema:
+            type: string
+          description: One or more drugs to pull the top estimates for.
+        - name: numResults
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Number of top outcomes to pull.
+        - name: model
+          in: query
+          required: false
+          schema:
+            type: string
+            default: "dnn"
+            enum: 
+              - "dnn"
+              - "lrc"
+              - "nopsm"
+          description: 'The model type used to estimate the statistics. Can be dnn (default), lrc, or nopsm.'
+      operationId: topOutcomesForDrug
+      responses:
+        default:
+          description: Default response
+  /druginfo/jobIndexes:
+    get:
+      summary: ''
+      description: ''
+      parameters:
+        - name: drugs
+          in: query
+          required: true
+          schema:
+            type: string
+      operationId: jobIndexes
+      responses:
+        default:
+          description: Default response
+  /gote/gpcrFromUniprot:
+    get:
+      summary: ''
+      description: ''
+      parameters:
+        - name: uniprot
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Uniprot id for the GPCR
+      operationId: gpcrFromUniprot
+      responses:
+        default:
+          description: Default response
+  /lab/ae_to_lab:
+    get:
+      summary: ''
+      description: ''
+      parameters: []
+      operationId: ae_to_lab
+      responses:
+        default:
+          description: Default response
+  /omop/reference:
+    get:
+      summary: ''
+      description: ''
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+          description: 'The adverse event to pull reference (e.g. case and control) data. '
+      operationId: reference
+      responses:
+        default:
+          description: Default response
+  /omop/conceptsToName:
+    get:
+      summary: ''
+      description: ''
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+          description: A comma separated list of omop concept ids.
+      operationId: conceptsToName
+      responses:
+        default:
+          description: Default response
+  /aeolus/ingredientList:
+    get:
+      summary: ''
+      description: ''
+      parameters: []
+      operationId: ingredientList
+      responses:
+        default:
+          description: Default response
+  /aeolus/drugReactionCounts:
+    get:
+      summary: ''
+      description: ''
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+          description: The starting position (for pagination) of results to pull
+      operationId: drugReactionCounts
+      responses:
+        default:
+          description: Default response
+  /aeolus/drugpairReactionCounts:
+    get:
+      summary: ''
+      description: ''
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+          description: The starting position (for pagination) of results to pull
+      operationId: drugpairReactionCounts
+      responses:
+        default:
+          description: Default response
+  /aeolus/reactionListSNOMED:
+    get:
+      summary: ''
+      description: ''
+      parameters: []
+      operationId: reactionListSNOMED
+      responses:
+        default:
+          description: Default response
+  /aeolus/reactionListMedDRA:
+    get:
+      summary: ''
+      description: ''
+      parameters: []
+      operationId: reactionListMedDRA
+      responses:
+        default:
+          description: Default response
+  /aeolus/drugpairList:
+    get:
+      summary: ''
+      description: ''
+      parameters: []
+      operationId: drugpairList
+      responses:
+        default:
+          description: Default response
+  /aeolus/drugpairReactionListMedDRA:
+    get:
+      summary: ''
+      description: ''
+      parameters: []
+      operationId: drugpairReactionListMedDRA
+      responses:
+        default:
+          description: Default response
+  /snomed/getOutcomeFromSnomedId:
+    get:
+      summary: ''
+      description: ''
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Snomed outcome concept id.
+      operationId: getOutcomeFromSnomedId
+      responses:
+        default:
+          description: Default response
+  /va/get_ddi_alerts:
+    get:
+      summary: ''
+      description: ''
+      parameters: []
+      operationId: get_ddi_alerts
+      responses:
+        default:
+          description: Default response
+  /sider/drugForEffect:
+    get:
+      summary: ''
+      description: ''
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+          description: The umls id for the effect
+      operationId: drugForEffect
+      responses:
+        default:
+          description: Default response
+  /sider/drugForEffectFreq:
+    get:
+      summary: ''
+      description: ''
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+          description: The umls id for the effect
+      operationId: drugForEffectFreq
+      responses:
+        default:
+          description: Default response
+externalDocs:
+  description: ''
+  url: 'http://nsides.io'
+components:
+  schemas: {}
+  responses: {}
+  parameters: {}
+  examples: {}
+  requestBodies: {}
+  securitySchemes: {}
+  headers: {}
+  links: {}
+  callbacks: {}
+security: []
