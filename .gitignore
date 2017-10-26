@@ -20,3 +20,5 @@ packages/*
 
 data/
 job_api/example/venv/
+
+*#*#

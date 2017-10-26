@@ -257,6 +257,12 @@ def get_revoke():
 def nsides_main():
     return render_template('nsides_main.html')
 
+@app.route('/r/<drugs>')
+@app.route('/r/<drugs>/<outcomes>')
+@app.route('/r/<drugs>/<outcomes>/<models>')
+def nsides_main_purl(drugs=None, outcomes=None, models=None):
+    return render_template('nsides_main.html')
+
 @app.route('/login', methods=['GET'])
 def login():
     """Send the user to Agave Auth."""
