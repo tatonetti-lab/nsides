@@ -1,8 +1,35 @@
 openapi: 3.0.0
 servers:
-  - url: 'http://nsides.io/api/v1'
+  - url: 'https://www.nsides.io/api/v1'
 info:
-  description: 'The NSIDES API makes available FDA adverse event reporting data and derivative analyses using high-dimensional propensity score matching. '
+  description: >
+    The NSIDES API makes several data resources available that are useful for
+    studying adverse drug reactions and drug-drug interactions. Unless otherwise
+    noted, drugs are coded in RxNorm identifiers and outcomes are coded as
+    SNOMED identifiers.
+
+
+    The following resources are available through this API: 
+
+
+    1. AEOLUS, a cleaned up version of the FDA Adverse Event Reporting System
+
+    1. nSides,,confounding-corrected disproportionality statistics using
+    multiple machine learning models
+
+    1. SIDER, side effect data from the drug product labels
+
+    1. GOTE, a resource of GPCRs and their targeted downstream pathways
+
+    1. VA, a list of known and critical drug-drug interactions
+
+    1. OMOP, access to the common vocabulary for name and concept identifier
+    mapping
+
+    1. SNOMED, vocabulary for mapping names and concept identifiers
+
+    1. LAB, a knowledge resource that maps adverse events to common clinical
+    pathology reports
   version: 1.0.0
   title: NSIDES
   termsOfService: 'http://nsides.io/terms/'
@@ -13,9 +40,9 @@ info:
     url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
 tags:
   - name: translator
-    x-id: http://ncats.nih.gov/translator/
+    x-id: 'http://ncats.nih.gov/translator/'
   - name: Adverse Drug Reaction Reporting Systems
-    x-id: http://purl.bioontology.org/ontology/MESH/D016907
+    x-id: 'http://purl.bioontology.org/ontology/MESH/D016907'
   - name: drug
   - name: protein
   - name: pathway
@@ -30,24 +57,30 @@ paths:
           required: true
           schema:
             type: string
-          description: One or more drug identifiers to pull the outcome disproportionality estimates.
+          description: >-
+            One or more drugs to pull the top estimates for. For example use
+            1309944 for amiodarone.
         - name: outcome
           in: query
           required: true
           schema:
             type: string
-          description: The outcome identifier (snomed) to get the disproportionality estimate for.
+          description: >-
+            The outcome identifier (snomed) to get the disproportionality
+            estimate for. For example use 313217 for atrial fibrilation.
         - name: model
           in: query
           required: false
           schema:
             type: string
-            default: "dnn"
-            enum: 
-              - "dnn"
-              - "lrc"
-              - "nopsm"
-          description: 'The model type used to estimate the statistics. Can be dnn (default), lrc, or nopsm.'
+            default: dnn
+            enum:
+              - dnn
+              - lrc
+              - nopsm
+          description: >-
+            The model type used to estimate the statistics. Can be dnn
+            (default), lrc, or nopsm.
       operationId: estimateForDrug_Outcome
       responses:
         default:
@@ -62,24 +95,28 @@ paths:
           required: true
           schema:
             type: string
-          description: One or more drugs to pull the top estimates for.
+          description: >-
+            One or more drugs to pull the top estimates for. For example use
+            1309944 for amiodarone.
         - name: numResults
           in: query
           required: true
           schema:
             type: string
-          description: Number of top outcomes to pull.
+          description: Number of top outcomes to pull (e.g. 10)
         - name: model
           in: query
           required: false
           schema:
             type: string
-            default: "dnn"
-            enum: 
-              - "dnn"
-              - "lrc"
-              - "nopsm"
-          description: 'The model type used to estimate the statistics. Can be dnn (default), lrc, or nopsm.'
+            default: dnn
+            enum:
+              - dnn
+              - lrc
+              - nopsm
+          description: >-
+            The model type used to estimate the statistics. Can be dnn
+            (default), lrc, or nopsm.
       operationId: topOutcomesForDrug
       responses:
         default:
