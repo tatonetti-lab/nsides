@@ -35,4 +35,6 @@ request_memory = REDEFINE_MEMORY
 stream_output = true
 stream_error = true
 
+periodic_release = (NumJobStarts < 3) && ((CurrentTime - EnteredCurrentStatus) > 30*60)
+
 Queue 1
