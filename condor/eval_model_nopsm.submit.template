@@ -33,4 +33,7 @@ request_memory = 4000
 
 #request_gpus = 1
 
+periodic_release = (NumJobStarts < 4) && ((CurrentTime - EnteredCurrentStatus) > 30*60)
+periodic_remove =  (NumJobStarts > 3) 
+
 Queue 1
