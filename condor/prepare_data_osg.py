@@ -33,6 +33,7 @@ def main():
     reportBlock0 = 0
     
     if args.ingredient_level == True:
+        print "Running job at INGREDIENT level"
         reportBlock0 = np.load("data/AEOLUS_all_reports_IN_0.npy").item()
     else:
         reportBlock0 = np.load("data/AEOLUS_all_reports_0.npy").item()
