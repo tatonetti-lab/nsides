@@ -1,0 +1,129 @@
+JOB B0 dnn_2000_0.submit
+SCRIPT PRE B0 dnn_prescript_IN.sh 0 $RETRY 2000
+SCRIPT POST B0 dnn_postscript_IN.sh 0 2000
+RETRY B0 5
+
+JOB B1 dnn_2000_1.submit
+SCRIPT PRE B1 dnn_prescript_IN.sh 1 $RETRY 2000
+SCRIPT POST B1 dnn_postscript_IN.sh 1 2000
+RETRY B1 5
+
+JOB B2 dnn_2000_2.submit
+SCRIPT PRE B2 dnn_prescript_IN.sh 2 $RETRY 2000
+SCRIPT POST B2 dnn_postscript_IN.sh 2 2000
+RETRY B2 5
+
+JOB B3 dnn_2000_3.submit
+SCRIPT PRE B3 dnn_prescript_IN.sh 3 $RETRY 2000
+SCRIPT POST B3 dnn_postscript_IN.sh 3 2000
+RETRY B3 5
+
+JOB B4 dnn_2000_4.submit
+SCRIPT PRE B4 dnn_prescript_IN.sh 4 $RETRY 2000
+SCRIPT POST B4 dnn_postscript_IN.sh 4 2000
+RETRY B4 5
+
+JOB B5 dnn_2000_5.submit
+SCRIPT PRE B5 dnn_prescript_IN.sh 5 $RETRY 2000
+SCRIPT POST B5 dnn_postscript_IN.sh 5 2000
+RETRY B5 5
+
+JOB B6 dnn_2000_6.submit
+SCRIPT PRE B6 dnn_prescript_IN.sh 6 $RETRY 2000
+SCRIPT POST B6 dnn_postscript_IN.sh 6 2000
+RETRY B6 5
+
+JOB B7 dnn_2000_7.submit
+SCRIPT PRE B7 dnn_prescript_IN.sh 7 $RETRY 2000
+SCRIPT POST B7 dnn_postscript_IN.sh 7 2000
+RETRY B7 5
+
+JOB B8 dnn_2000_8.submit
+SCRIPT PRE B8 dnn_prescript_IN.sh 8 $RETRY 2000
+SCRIPT POST B8 dnn_postscript_IN.sh 8 2000
+RETRY B8 5
+
+JOB B9 dnn_2000_9.submit
+SCRIPT PRE B9 dnn_prescript_IN.sh 9 $RETRY 2000
+SCRIPT POST B9 dnn_postscript_IN.sh 9 2000
+RETRY B9 5
+
+JOB B10 dnn_2000_10.submit
+SCRIPT PRE B10 dnn_prescript_IN.sh 10 $RETRY 2000
+SCRIPT POST B10 dnn_postscript_IN.sh 10 2000
+RETRY B10 5
+
+JOB B11 dnn_2000_11.submit
+SCRIPT PRE B11 dnn_prescript_IN.sh 11 $RETRY 2000
+SCRIPT POST B11 dnn_postscript_IN.sh 11 2000
+RETRY B11 5
+
+JOB B12 dnn_2000_12.submit
+SCRIPT PRE B12 dnn_prescript_IN.sh 12 $RETRY 2000
+SCRIPT POST B12 dnn_postscript_IN.sh 12 2000
+RETRY B12 5
+
+JOB B13 dnn_2000_13.submit
+SCRIPT PRE B13 dnn_prescript_IN.sh 13 $RETRY 2000
+SCRIPT POST B13 dnn_postscript_IN.sh 13 2000
+RETRY B13 5
+
+JOB B14 dnn_2000_14.submit
+SCRIPT PRE B14 dnn_prescript_IN.sh 14 $RETRY 2000
+SCRIPT POST B14 dnn_postscript_IN.sh 14 2000
+RETRY B14 5
+
+JOB B15 dnn_2000_15.submit
+SCRIPT PRE B15 dnn_prescript_IN.sh 15 $RETRY 2000
+SCRIPT POST B15 dnn_postscript_IN.sh 15 2000
+RETRY B15 5
+
+JOB B16 dnn_2000_16.submit
+SCRIPT PRE B16 dnn_prescript_IN.sh 16 $RETRY 2000
+SCRIPT POST B16 dnn_postscript_IN.sh 16 2000
+RETRY B16 5
+
+JOB B17 dnn_2000_17.submit
+SCRIPT PRE B17 dnn_prescript_IN.sh 17 $RETRY 2000
+SCRIPT POST B17 dnn_postscript_IN.sh 17 2000
+RETRY B17 5
+
+JOB B18 dnn_2000_18.submit
+SCRIPT PRE B18 dnn_prescript_IN.sh 18 $RETRY 2000
+SCRIPT POST B18 dnn_postscript_IN.sh 18 2000
+RETRY B18 5
+
+JOB B19 dnn_2000_19.submit
+SCRIPT PRE B19 dnn_prescript_IN.sh 19 $RETRY 2000
+SCRIPT POST B19 dnn_postscript_IN.sh 19 2000
+RETRY B19 5
+
+JOB C eval_model_dnn_2000.submit
+SCRIPT PRE C eval_dnn_prescript_IN.sh 2000 $RETRY
+SCRIPT POST C eval_dnn_postscript_IN.sh 2000 dnn IN
+RETRY C 5 
+
+PARENT B0 B1 B2 B3 B4 B5 B6 B7 B8 B9 B10 B11 B12 B13 B14 B15 B16 B17 B18 B19 CHILD C
+
+VARS B0 modelidx="2000" input_int="0"
+VARS B1 modelidx="2000" input_int="1"
+VARS B2 modelidx="2000" input_int="2"
+VARS B3 modelidx="2000" input_int="3"
+VARS B4 modelidx="2000" input_int="4"
+VARS B5 modelidx="2000" input_int="5"
+VARS B6 modelidx="2000" input_int="6"
+VARS B7 modelidx="2000" input_int="7"
+VARS B8 modelidx="2000" input_int="8"
+VARS B9 modelidx="2000" input_int="9"
+VARS B10 modelidx="2000" input_int="10"
+VARS B11 modelidx="2000" input_int="11"
+VARS B12 modelidx="2000" input_int="12"
+VARS B13 modelidx="2000" input_int="13"
+VARS B14 modelidx="2000" input_int="14"
+VARS B15 modelidx="2000" input_int="15"
+VARS B16 modelidx="2000" input_int="16"
+VARS B17 modelidx="2000" input_int="17"
+VARS B18 modelidx="2000" input_int="18"
+VARS B19 modelidx="2000" input_int="19"
+
+VARS C modelidx="2000"
