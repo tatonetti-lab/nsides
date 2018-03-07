@@ -1,0 +1,18 @@
+#!/bin/bash
+
+tar xvfz nsides_scripts.tgz
+
+#touch prepare_data.log
+#touch mlp_dnn_$2.log
+
+python prepare_data_osg.py --model-number $1 --ingredient-level
+
+python mlp_dnn_streaming.py --run-on-cpu --suffix $2
+
+tar cvfz dnn_out_$1_$2.tgz scores*.npy *.py model*.npy
+
+rm scores*.npy
+rm model*.npy
+rm *.mtx
+
+ls -lrth
