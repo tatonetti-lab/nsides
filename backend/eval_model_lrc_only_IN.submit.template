@@ -5,7 +5,7 @@ Universe = vanilla
 Executable = eval_model_shallow_only.sh
 Arguments = $(modelidx) lrc IN
 Requirements = HAS_SINGULARITY == TRUE
-+SingularityImage = "/cvmfs/singularity.opensciencegrid.org/tensorflow/tensorflow:latest/"
++SingularityImage = "/cvmfs/singularity.opensciencegrid.org/opensciencegrid/tensorflow:latest"
 +SingularityBindCVMFS = True
 
 should_transfer_files = IF_NEEDED
