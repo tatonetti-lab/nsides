@@ -12,7 +12,7 @@ python prepare_data_osg.py --model-number $1 --ingredient-level
 
 python mlp_shallow_osg_lrc.py --suffix $2
 
-tar cvfz ../shallow_out_$1_$2.tgz scores*.npy *.log *.py model*.npy
+tar cvfz ../shallow_out_$1_$2.tgz scores*.npy *.py model*.npy
 
 #gfal-copy -v ./shallow_out_$1_$2.tgz gsiftp://gftp.t2.ucsd.edu/hadoop/osg/ColumbiaTBI/ramiv/nsides_output_IN/shallow_out_$1_$2_IN.tgz
 
