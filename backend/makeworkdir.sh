@@ -20,4 +20,6 @@ cp ../workflow_dnn_IN.dag.template .
 
 cp ../eval_model_dnn.sh .
 
+cp ../jobtofolder.py .
+
 cp ../submit_jobs_IN.py .

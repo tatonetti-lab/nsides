@@ -1,6 +1,6 @@
 #!/bin/bash
 
-FOLDER="$(python jobtofolder.py $2)"
+FOLDER="$(python jobtofolder.py $1)"
 
 if [ $3 == 'IN' ]
 then
