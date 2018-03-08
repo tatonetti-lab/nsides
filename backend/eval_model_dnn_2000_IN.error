@@ -1,0 +1,5 @@
+[33mWARNING: Container does not have an exec helper script, calling '/srv/eval_model_dnn.sh' directly
+[0mtar: results*.pkl: Cannot stat: No such file or directory
+tar: Exiting with failure status due to previous errors
+rm: cannot remove 'results*.pkl': No such file or directory
+rm: cannot remove 'score*.npy': No such file or directory
