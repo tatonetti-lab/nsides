@@ -1,0 +1,12 @@
+pymongo==3.6.1
+ipdb==0.11
+requests==2.18.4
+click==6.7
+datetime
+oauth2client==4.1.2
+pprint
+flask==0.12.2
+flask_cors==3.0.3
+numpy==1.14.2
+pymysql==0.8.0
+pandas==0.22.0
