@@ -1,5 +1,5 @@
 pymongo==3.6.1
-ipdb==0.11
+ipdb
 requests==2.18.4
 click==6.7
 datetime
@@ -10,3 +10,4 @@ flask_cors==3.0.3
 numpy==1.14.2
 pymysql==0.8.0
 pandas==0.22.0
+json==2.0.9
