@@ -4,9 +4,10 @@ import App from './App';
 import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
 import { Provider } from 'react-redux';
 import createHistory from 'history/createBrowserHistory';
-import { Route, Switch, Redirect } from 'react-router';
+import { Route, Switch, /*Redirect*/ } from 'react-router';
 import { ConnectedRouter, routerReducer, routerMiddleware } from 'react-router-redux';
 import Reducers from './Redux/Reducers/Reducers';
+import Main from './Page/Main/Main';
 
 
 
@@ -41,7 +42,7 @@ let app = (
         {
           <Switch>
             <Route exact path="/" render={() => {
-              return <div></div>;
+              return <Main/>;
             }}/>
           </Switch>
         }
