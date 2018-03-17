@@ -211,12 +211,12 @@ ul#resources li {
   padding-left: 30px;
 }
 
-#seminar .talk {
+/* #seminar .talk {
   background-image: url('../../dist/images/resource-date.png');
   background-repeat: no-repeat;
   background-size: 20px;
   background-position: 0% 0%;
-}
+} */
 
 
 /*
@@ -510,7 +510,7 @@ path {
   color: inherit;
 }
 
-.logo-h1 img {
+.nsides-logo {
   height: 50px; 
   vertical-align: middle;
 }

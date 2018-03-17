@@ -11,12 +11,13 @@ const Header = (props) => {
       <div>
         <h1 className="logo-h1">
           <a href="/">
-            <img src="../../../dist/images/nsides-logo.svg" alt='loading'>
-              nSides
-            </img>
+            <img className='nsides-logo' src="../../../dist/images/nsides-logo.svg" alt='loading'/>
+            nSides
           </a>
         </h1>
-        <h3>A comprehensive database of drug-drug(s)-effect relationships</h3>
+        <h3>
+          A comprehensive database of drug-drug(s)-effect relationships
+        </h3>
       </div>
     </div>
     <div id="bar"></div>
