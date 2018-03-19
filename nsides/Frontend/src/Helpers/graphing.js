@@ -1,8 +1,9 @@
 import d3 from 'd3';
 let data1;
-let dateformat = "%Y"
+let dateformat = "%Y";
+let blank;
 // Initialize plot
-drawTimeSeriesGraph([], [], "Select a drug and effect", "", dateformat, blank = true);
+// drawTimeSeriesGraph([], [], "Select a drug and effect", "", dateformat, blank = true);
 /* 
 Tooltip from: http://bl.ocks.org/d3noob/6eb506b129f585ce5c8a
 */
@@ -132,7 +133,7 @@ function drawTimeSeriesGraph(data, data2, title, title2, dateformat, blank = fal
         .call(xAxis);
 
     // Y axis title
-    padding = 80;
+    var padding = 80;
     svg.append("text")
         .attr("class", "ylabel")
         .attr("text-anchor", "middle")  // this makes it easy to center the text as the transform is applied to the anchor

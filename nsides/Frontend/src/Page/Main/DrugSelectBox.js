@@ -44,7 +44,7 @@ class DrugSelectBox extends React.Component {
 
     console.log("selectedDrug", selectedDrug, "numResults", numResults);
 
-    if (selectedDrug == '') {
+    if (selectedDrug === '') {
       console.log('No selectedDrug; no API call necessary');
       if (request) {
         console.log("Pre-resolve:", request);
@@ -56,9 +56,7 @@ class DrugSelectBox extends React.Component {
       } else {
         this.props.onDrugChange('', [], '');
       }
-    }
-
-    else {
+    } else {
       var api_call = '/api/v1/query?service=nsides&meta=topOutcomesForDrug&numResults=' + numResults + '&drugs=' + selectedDrug;
       console.log(api_call);
 

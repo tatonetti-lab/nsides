@@ -19,6 +19,7 @@ class SubmitJobForm extends React.Component {
 
     fetchDrugIndices() {
         var selectedDrugs;
+        var { request } = this.props.request;
         try {
             selectedDrugs = this.state.value;
         } catch (err) {
