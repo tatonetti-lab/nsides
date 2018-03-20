@@ -1,0 +1,14 @@
+pymongo
+operator
+json
+ipdb
+request
+click
+datetime
+oauth2client
+pprint
+flask
+flask_cors
+numpy
+pymysql
+pandas

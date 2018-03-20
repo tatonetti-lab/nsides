@@ -1,0 +1,44 @@
+#The UNIVERSE defines an execution environment. You will almost always use VANILLA. 
+Universe = vanilla     
+# EXECUTABLE is the program your job will run It's often useful 
+# to create a shell script to "wrap" your actual work. 
+Executable = eval_model_dnn.sh
+Arguments = $(modelidx) dnn IN
+Requirements = HAS_SINGULARITY == TRUE
++SingularityImage = "/cvmfs/singularity.opensciencegrid.org/opensciencegrid/tensorflow:latest"
++SingularityBindCVMFS = True
+
+should_transfer_files = IF_NEEDED
+when_to_transfer_output = ON_EXIT
+
+transfer_input_files = nsides_scripts.tgz, dnn_out_2000_0.tgz, dnn_out_2000_10.tgz, dnn_out_2000_11.tgz,dnn_out_2000_12.tgz, dnn_out_2000_13.tgz, dnn_out_2000_14.tgz,dnn_out_2000_15.tgz, dnn_out_2000_16.tgz, dnn_out_2000_17.tgz,dnn_out_2000_18.tgz, dnn_out_2000_19.tgz, dnn_out_2000_1.tgz,dnn_out_2000_2.tgz, dnn_out_2000_3.tgz, dnn_out_2000_4.tgz, dnn_out_2000_5.tgz,dnn_out_2000_6.tgz, dnn_out_2000_7.tgz, dnn_out_2000_8.tgz, dnn_out_2000_9.tgz
+transfer_output_files = results_$(modelidx)_dnn.tgz
+
+# The LOG file is where HTCondor places information about your 
+# job's status, success, and resource consumption. 
+log           = eval_model_dnn_$(modelidx)_IN.log
+
+# The standard output and error messages
+output        = eval_model_dnn_$(modelidx)_IN.out
+error         = eval_model_dnn_$(modelidx)_IN.error
+
+# Set the requirement that the OASIS modules are available on the remote worker machine
+
+# QUEUE is the "start button" - it launches any jobs that have been 
+# specified thus far. 
+
+#request_memory = 50000
+
+#request_memory = 4000
+
+request_memory = 2GB
+
+stream_output = true
+stream_error = true
+
+#request_gpus = 1
+
+periodic_release = (NumJobStarts < 4) && ((CurrentTime - EnteredCurrentStatus) > 30*60)
+periodic_remove =  (NumJobStarts > 3) 
+
+Queue 1
