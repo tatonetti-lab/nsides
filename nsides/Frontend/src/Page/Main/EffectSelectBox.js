@@ -23,14 +23,14 @@ class EffectSelectBox extends React.Component {
     this.state = {
 			options: this.props.outcomeOptions,
 			value: this.props.outcome //'', //[],
-            // numOutcomeResults: this.props.numOutcomeResults
-            // loadingIconStyle: {float:"right", display:"none"},
+    // numOutcomeResults: this.props.numOutcomeResults
+    // loadingIconStyle: {float:"right", display:"none"},
     };
     this.handleSelectChange = this.handleSelectChange.bind(this);
 	}
 
 	handleSelectChange (value) {
-//		debug('You\'ve selected:', value);    
+//		console.log('You\'ve selected:', value);    
 		this.setState({ value }, () => {
       var selectedOutcome;
       try {
