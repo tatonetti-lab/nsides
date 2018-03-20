@@ -1,0 +1,46 @@
+{
+  "name": "nsides",
+  "version": "1.0.0",
+  "description": "manage dependencies",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-eslint": "^7.2.3",
+    "babel-loader": "^6.4.1",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-3": "^6.24.1",
+    "css-loader": "^0.28.9",
+    "eslint": "^4.17.0",
+    "eslint-config-react-app": "^2.1.0",
+    "eslint-plugin-flowtype": "^2.42.0",
+    "eslint-plugin-import": "^2.8.0",
+    "eslint-plugin-jsx-a11y": "^5.1.1",
+    "eslint-plugin-react": "^7.6.1",
+    "style-loader": "^0.20.1",
+    "webpack": "^2.2.1"
+  },
+  "dependencies": {
+    "axios": "^0.16.2",
+    "bootstrap": "^4.0.0",
+    "d3": "^4.13.0",
+    "jquery": "^3.3.1",
+    "path": "^0.12.7",
+    "popper": "^1.0.1",
+    "react": "^15.6.1",
+    "react-dom": "^15.6.1",
+    "react-input-autosize": "^2.2.1",
+    "react-redux": "^5.0.6",
+    "react-router-dom": "^4.2.2",
+    "react-router-redux": "^5.0.0-alpha.6",
+    "react-select": "^1.2.1",
+    "react-select-mod": "^1.0.0-beta20",
+    "redux": "^3.7.2",
+    "three": "^0.90.0"
+  },
+  "author": "kai",
+  "license": "ISC"
+}

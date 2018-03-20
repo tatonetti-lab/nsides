@@ -21,4 +21,8 @@ packages/*
 data/
 job_api/example/venv/
 
+.eslintrc
+node_modules
+bundle.js
+.vscode
 *#*#

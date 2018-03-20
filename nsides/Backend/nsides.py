@@ -31,6 +31,7 @@ def authenticated(fn):
     """Decorator for requiring authentication on a route."""
     @wraps(fn)
     def decorated_function(*args, **kwargs):
+        print 'heeeeeeeeeeeeeeeeeeeeeeeeeeeeeey'
         if not session.get('is_authenticated'):
             return redirect(url_for('login', next=request.url))
         if request.path == '/logout':
@@ -42,7 +43,7 @@ def authenticated(fn):
 # INITS #
 #########
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='../Frontend/dist', static_folder='../Frontend/dist')
 CORS(app)
 app.secret_key = 'changeme'
 #app.config.from_envvar('NSIDES_FRONTEND_SETTINGS', silent=True)
@@ -253,179 +254,179 @@ def get_revoke():
 # ROUTES #
 ##########
 
-@app.route('/')
-def nsides_main():
-    return render_template('nsides_main.html')
+# @app.route('/')
+# def nsides_main():
+#     return render_template('nsides_main.html')
 
-@app.route('/r/<drugs>')
-@app.route('/r/<drugs>/<outcomes>')
-@app.route('/r/<drugs>/<outcomes>/<models>')
-def nsides_main_purl(drugs=None, outcomes=None, models=None):
-    return render_template('nsides_main.html')
+# @app.route('/r/<drugs>')
+# @app.route('/r/<drugs>/<outcomes>')
+# @app.route('/r/<drugs>/<outcomes>/<models>')
+# def nsides_main_purl(drugs=None, outcomes=None, models=None):
+#     return render_template('nsides_main.html')
 
-@app.route('/login', methods=['GET'])
-def login():
-    """Send the user to Agave Auth."""
-    return redirect(url_for('authcallback'))
+# @app.route('/login', methods=['GET'])
+# def login():
+#     """Send the user to Agave Auth."""
+#     return redirect(url_for('authcallback'))
 
-@app.route('/logout', methods=['GET'])
-@authenticated
-def logout():
-    """
-    - Revoke tokens with Agave Auth
-    - Destroy session state
-    - Redirect user to the Agave Auth logout page
-    """
-    get_revoke()
-    session.clear()
-    redirect_uri = url_for('nsides_main', _external=True)
-    return redirect(redirect_uri)
+# @app.route('/logout', methods=['GET'])
+# @authenticated
+# def logout():
+#     """
+#     - Revoke tokens with Agave Auth
+#     - Destroy session state
+#     - Redirect user to the Agave Auth logout page
+#     """
+#     get_revoke()
+#     session.clear()
+#     redirect_uri = url_for('nsides_main', _external=True)
+#     return redirect(redirect_uri)
 
-@app.route('/authcallback', methods=['GET'])
-def authcallback():
-    """Handles interaction with Agave Auth service."""
-    if 'error' in request.args:
-        flash("We couldn't log you into the portal: " + request.args.get('error_description', request.args['error']))
-        return redirect(url_for('nsides_main'))
+# @app.route('/authcallback', methods=['GET'])
+# def authcallback():
+#     """Handles interaction with Agave Auth service."""
+#     if 'error' in request.args:
+#         flash("We couldn't log you into the portal: " + request.args.get('error_description', request.args['error']))
+#         return redirect(url_for('nsides_main'))
 
-    redirect_uri = url_for('authcallback', _external=True)
-    client = load_portal_client(redirect_uri)
-    auth_uri = client.step1_get_authorize_url()
-    print 'auth uri', auth_uri
+#     redirect_uri = url_for('authcallback', _external=True)
+#     client = load_portal_client(redirect_uri)
+#     auth_uri = client.step1_get_authorize_url()
+#     print 'auth uri', auth_uri
     
-    if 'code' not in request.args:
-        # if no 'code' query string parameter, start Agave Auth login flow
-        auth_uri = client.step1_get_authorize_url()
-        return redirect(auth_uri)
-    else:
-        # otherwise, we're coming back from Agave Auth; start to exchange auth code for token
-        code = request.args.get('code')
-        print 'code', code
-        tokens = client.step2_exchange(code)
-        tokens.revoke_uri = app.config['REVOKE_URL']
-        token_json = tokens.to_json()
-        print 'token json',token_json
+#     if 'code' not in request.args:
+#         # if no 'code' query string parameter, start Agave Auth login flow
+#         auth_uri = client.step1_get_authorize_url()
+#         return redirect(auth_uri)
+#     else:
+#         # otherwise, we're coming back from Agave Auth; start to exchange auth code for token
+#         code = request.args.get('code')
+#         print 'code', code
+#         tokens = client.step2_exchange(code)
+#         tokens.revoke_uri = app.config['REVOKE_URL']
+#         token_json = tokens.to_json()
+#         print 'token json',token_json
         
-        user_profile = get_result(app.config['PROFILE_URL_BASE'],
-                                    'me',
-                                    tokens.access_token)
-        if user_profile[0]:
-            print 'username',user_profile[1]['username']
-        else:
-            flash("User profile was not retrieved. Error:" + user_profile[1])
+#         user_profile = get_result(app.config['PROFILE_URL_BASE'],
+#                                     'me',
+#                                     tokens.access_token)
+#         if user_profile[0]:
+#             print 'username',user_profile[1]['username']
+#         else:
+#             flash("User profile was not retrieved. Error:" + user_profile[1])
 
-        session.update(
-            tokens=tokens.to_json(),
-            is_authenticated=True,
-            name=user_profile[1]['full_name'],
-            email=user_profile[1]['email'],
-            institution='',
-            primary_identity=user_profile[1]['username']
-        )
+#         session.update(
+#             tokens=tokens.to_json(),
+#             is_authenticated=True,
+#             name=user_profile[1]['full_name'],
+#             email=user_profile[1]['email'],
+#             institution='',
+#             primary_identity=user_profile[1]['username']
+#         )
 
-        profile = udb.load_profile(session['primary_identity'])
-        if profile:
-            name, email, institution = profile
-            session['name'] = name
-            session['email'] = email
-            session['institution'] = institution
-        else:
-            udb.save_profile(identity_id=session['primary_identity'],
-                                  name=session['name'],
-                                  email=session['email'],
-                                  institution=session['institution'])
-            handle_permission(session['primary_identity'])
+#         profile = udb.load_profile(session['primary_identity'])
+#         if profile:
+#             name, email, institution = profile
+#             session['name'] = name
+#             session['email'] = email
+#             session['institution'] = institution
+#         else:
+#             udb.save_profile(identity_id=session['primary_identity'],
+#                                   name=session['name'],
+#                                   email=session['email'],
+#                                   institution=session['institution'])
+#             handle_permission(session['primary_identity'])
 
-            return redirect(url_for('profile', next=url_for('submit_job')))
+#             return redirect(url_for('profile', next=url_for('submit_job')))
         
-        return redirect(url_for('submit_job'))
+#         return redirect(url_for('submit_job'))
 
-@app.route('/jobsubmission', methods=['GET', 'POST'])
-@authenticated
-def submit_job():
-    print request.method
+# @app.route('/jobsubmission', methods=['GET', 'POST'])
+# @authenticated
+# def submit_job():
+#     print request.method
 
-    if request.method == 'GET':
-        return render_template('jobsubmission.html')
+#     if request.method == 'GET':
+#         return render_template('jobsubmission.html')
 
-    if request.method == 'POST':
-        print "REQUEST: ", json.dumps(request.form, indent=2)
-        if not request.form.get('mtype'):
-            flash('Please select a model type.')
-            return redirect(url_for('submit_job'))
-        if not request.form.get('model_index'):
-            flash('Please enter a drug index.')
-            return redirect(url_for('submit_job'))
+#     if request.method == 'POST':
+#         print "REQUEST: ", json.dumps(request.form, indent=2)
+#         if not request.form.get('mtype'):
+#             flash('Please select a model type.')
+#             return redirect(url_for('submit_job'))
+#         if not request.form.get('model_index'):
+#             flash('Please enter a drug index.')
+#             return redirect(url_for('submit_job'))
 
-        job = get_job(request.form.get('mtype'), request.form.get('model_index'))
-        if job[0]:
-            result = job_permission(job[1]['id'])
-            if not result[0]:
-                flash('Job permission error: '+result[1])
-            flash('Job request submitted successfully. Job ID: ' + job[1]['id'])
-        else:
-            flash('Job request was not submitted. Error: ' + job[1])
+#         job = get_job(request.form.get('mtype'), request.form.get('model_index'))
+#         if job[0]:
+#             result = job_permission(job[1]['id'])
+#             if not result[0]:
+#                 flash('Job permission error: '+result[1])
+#             flash('Job request submitted successfully. Job ID: ' + job[1]['id'])
+#         else:
+#             flash('Job request was not submitted. Error: ' + job[1])
 
-        return redirect(url_for('job_list'))
+#         return redirect(url_for('job_list'))
 
-@app.route('/profile', methods=['GET', 'POST'])
-@authenticated
-def profile():
-    """Show user profile information"""
-    if request.method == 'GET':
-        identity_id = session.get('primary_identity')
-        profile = udb.load_profile(identity_id)
+# @app.route('/profile', methods=['GET', 'POST'])
+# @authenticated
+# def profile():
+#     """Show user profile information"""
+#     if request.method == 'GET':
+#         identity_id = session.get('primary_identity')
+#         profile = udb.load_profile(identity_id)
 
-        if profile:
-            name, email, institution = profile
+#         if profile:
+#             name, email, institution = profile
 
-            session['name'] = name
-            session['email'] = email
-            session['institution'] = institution
+#             session['name'] = name
+#             session['email'] = email
+#             session['institution'] = institution
         
-        else:
-            flash('Please complete any missing profile fields and press "save".')
+#         else:
+#             flash('Please complete any missing profile fields and press "save".')
 
-        if request.args.get('next'):
-            session['next'] = get_safe_redirect()
+#         if request.args.get('next'):
+#             session['next'] = get_safe_redirect()
 
-        return render_template('profile.html')
+#         return render_template('profile.html')
 
-    elif request.method == 'POST':
-        name = session['name'] = request.form['name']
-        email = session['email'] = request.form['email']
-        institution = session['institution'] = request.form['institution']
+#     elif request.method == 'POST':
+#         name = session['name'] = request.form['name']
+#         email = session['email'] = request.form['email']
+#         institution = session['institution'] = request.form['institution']
 
-        udb.save_profile(identity_id=session['primary_identity'],
-                         name=name,
-                         email=email,
-                         institution=institution)
+#         udb.save_profile(identity_id=session['primary_identity'],
+#                          name=name,
+#                          email=email,
+#                          institution=institution)
         
-        flash('Thank you! Your profile has been successfully updated.')
+#         flash('Thank you! Your profile has been successfully updated.')
 
-        if 'next' in session:
-            redirect_to = session['next']
-            session.pop('next')
-        else:
-            redirect_to = url_for('profile')
+#         if 'next' in session:
+#             redirect_to = session['next']
+#             session.pop('next')
+#         else:
+#             redirect_to = url_for('profile')
 
-        return redirect(redirect_to)
+#         return redirect(redirect_to)
 
-@app.route('/signup', methods=['GET'])
-def signup():
-    """Send the user to Agave Auth"""
-    return redirect(app.config['SIGNUP'])
+# @app.route('/signup', methods=['GET'])
+# def signup():
+#     """Send the user to Agave Auth"""
+#     return redirect(app.config['SIGNUP'])
 
-@app.route('/api')
-def api():
-    return render_template('nsides_api.html')
+# @app.route('/api')
+# def api():
+#     return render_template('nsides_api.html')
 
-@app.route('/joblist', methods=['GET'])
-@authenticated
-def job_list():
-    j_tokens = json.loads(session['tokens'])
-    job_list = get_result(app.config['JOB_URL_BASE'], '', j_tokens['access_token'])
-    return render_template('job_list.html', joblist=job_list)
+# @app.route('/joblist', methods=['GET'])
+# @authenticated
+# def job_list():
+#     j_tokens = json.loads(session['tokens'])
+#     job_list = get_result(app.config['JOB_URL_BASE'], '', j_tokens['access_token'])
+#     return render_template('job_list.html', joblist=job_list)
 
 
 # API STUFF
@@ -659,6 +660,11 @@ def api_call(service = None, meta = None, query = None):
     json = json.replace("'", '"')
 
     return json
+
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def catch_all(path):
+    return render_template("nsides.html")
 
 if __name__ == "__main__":
     app.run(host='localhost',
