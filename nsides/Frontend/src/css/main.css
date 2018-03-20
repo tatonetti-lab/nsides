@@ -1,0 +1,528 @@
+* {
+  font-family: myriad;
+}
+
+body {
+  background-color: #FFF;
+  padding: 0;
+  margin: 0;
+}
+
+#page {
+  margin: 0;
+  padding: 0;
+}
+
+#header {
+  padding: 0;
+  margin: 0;
+	position:relative;
+}
+
+#links {
+	width: 80%;
+	max-width: 850px;
+	min-width: 600px;
+  margin: auto;
+}
+
+#content {
+  width: 80%;
+  margin: auto;
+}
+
+#header {
+	width: 850px;
+}
+
+#header {
+  padding: 0px;
+  margin-top: 0px;
+  height: 120px;
+}
+
+#header h1 {
+  font-size: 2.0em;
+  margin: 0;
+  padding-top: 0px;
+  margin-bottom: 0.2em;
+  letter-spacing: 0.03em;
+  font-weight: bold;
+}
+#header h3 {
+  font-size: 1.05em;
+  margin-top: 0;
+}
+img.logo {
+  float: right;
+}
+img.venom {
+	position: absolute;
+	right: 0;
+	bottom: 0;
+}
+
+img.profile-photo {
+  float: left;
+  max-width: 150px;
+  width: auto;
+  height: auto;
+}
+.student-profile img.profile-photo {
+  max-width: 100px;
+}
+.former-member img.profile-photo {
+  max-width: 50px;
+  display: none;
+}
+#header img.tlab-logo {
+	float:left; 
+	margin-left:-60px; 
+	margin-top: 4px;
+}
+#header-content {
+  position: absolute;
+	left: 0;
+	bottom: 0;
+}
+
+
+#bar {
+  min-height: 2px;
+  background-color: #0E4074;
+  color: white;
+}
+
+#menu {
+  clear: both;
+}
+
+ul#menu {
+  text-align: right;
+}
+
+ul#menu li {
+  display: inline;
+  list-style-type: none;
+  padding-right: 20px;
+}
+
+ul#menu li a {
+text-decoration:none;
+}
+
+ul#menu li a:hover {
+text-decoration:underline;
+}
+
+#content {
+  background-color: white;
+  min-height: 300px;
+}
+
+.news {
+  font-size: 1.0em;
+  margin-bottom: 20px;
+}
+.news .title {
+  font-style: italic;
+}
+.news .source {
+  font-weight: bold;
+}
+.news .link a {
+  font-size: 0.8em;
+}
+
+ul#resources li {
+  padding: 5px;
+}
+
+#footer {
+  clear: both;
+  /*width: 800px;*/
+  margin: auto;
+  margin-bottom: 30px;
+  margin-top: 100px;
+  text-align: right;
+  padding-right:25px;
+}
+
+#footer span {
+  padding: 15px 0px 20px 20px;
+}
+
+#contact-info {
+  margin-left: 230px;
+}
+
+#profiles {
+  margin-top: 50px;
+}
+
+#profiles .clear {
+  clear:both;
+}
+
+.student-profile {
+  height: 100px;
+  width: 400px;
+  float: left;
+  padding-right: 20px;
+  margin-bottom: 20px;
+}
+
+.student-profile img {
+  float: left;
+  margin-right: 5px;
+}
+
+.former-member {
+  font-size: 0.9em;
+  width: 250px;
+  margin-bottom: 0px;
+  height: 50px;
+}
+
+.recentpub img {
+  float: left;
+}
+
+.recentpub {
+  clear: both;
+  padding: 10px 0 20px 0;
+}
+
+.recentpub p {
+  padding: 0;
+  margin:0;
+  margin-left: 160px;
+}
+
+#pi-bio {
+  margin-left: 170px;
+}
+
+#seminar .talk h3 {
+  margin: 0;
+}
+#seminar .talk {
+  margin-bottom: 50px;
+  padding-left: 30px;
+}
+
+/* #seminar .talk {
+  background-image: url('../../dist/images/resource-date.png');
+  background-repeat: no-repeat;
+  background-size: 20px;
+  background-position: 0% 0%;
+} */
+
+
+/*
+
+MANY of these styles are unnecessary but included for reference. Please remove unused items prior to final publishing.
+
+*/
+html, body
+{
+  width: 100%;
+  height: 100%;
+
+  margin: 0;
+  padding: 0;
+}
+svg {
+  /*margin-left: auto; margin-right: auto;
+  display: block;*/
+}
+line,
+rect {
+  shape-rendering: crispEdges;
+}
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+.x.axis path {
+  /*display: none; Do we wish to show the x-axis? */
+}
+.divider {
+  stroke: #b55554; /* #777; */
+  stroke-dasharray: 5, 5;
+  opacity: 0.7;
+  
+  stroke-width: 2;
+}
+.line {
+  fill: none;
+/*    stroke-width: 1.5px;*/
+}
+circle.dot {
+  fill: #FFF;
+  stroke-width: 1.5px;
+}
+.area.confidence {
+  zoom: 1;
+/*
+  filter: alpha(opacity=10);
+  opacity: 0.1;
+*/
+  filter: alpha(opacity=20);
+  opacity: 0.2;
+  
+  fill: steelblue !important;
+}
+/**
+.area.above {
+  fill: #D7191C !important;
+}
+
+.area.below {
+  fill: #2B83BA !important;
+}
+*/
+#page {
+  height:100%;
+}
+#root {
+  /*height:100%;*/
+  flex: 1;
+}
+#header {
+  flex: 0 1 auto;
+  /* The above is shorthand for:
+  flex-grow: 0,
+  flex-shrink: 1,
+  flex-basis: auto
+  */
+}
+#header-content {
+  position:relative;
+  /*padding-top:40px;*/
+  /*height:120px;*/
+  vertical-align: bottom;
+}
+#content {
+  height:100%;
+  width:100%;
+  display: flex;
+  flex-direction: column;
+
+  justify-content: flex-start; /* align items in Main Axis */
+  align-items: stretch; /* align items in Cross Axis */
+  align-content: stretch; /* Extra space in Cross Axis */
+
+  background: rgba(255, 255, 255, .1);
+  /*flex: 1;*/
+}
+header, section, footer {
+  max-width:850px;
+  width: 100%;
+  margin: 0 auto;
+}
+footer {
+  max-height: 150px;
+}
+.select_bar {
+  text-align: center;
+}
+#bar {
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+}
+.drug_title {
+  font-size: 22px;
+  font-weight:bold;
+  padding-top:25px;
+  padding-bottom:5px;
+  text-align: left;
+}
+.effect_title {
+  font-size: 22px;
+  font-weight:bold;
+  padding-top:15px;
+  padding-bottom:5px;
+  text-align: left;
+}
+.Select {
+  text-align: left;
+}
+#viz_container {
+  font: 10px sans-serif;
+  text-align: center;
+}
+.select_container_effect {
+  padding-left:10px;
+}
+.select_container, .select_container_effect {
+  display: inline-block;
+  width:45%;
+}
+/*.y text { display: none; }*/
+.y text text-anchor { display: visible; }
+.tick line{
+  opacity: 0.2;
+}
+path { 
+  stroke: steelblue;
+  stroke-width: 2;
+  fill: none;
+}
+
+.axis { font: 13px sans-serif; }
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: grey;
+  stroke-width: 1;
+  shape-rendering: crispEdges;
+}
+
+.select-row {
+  display: flex; 
+  flex-direction: row;
+  text-align: center;
+}
+
+.select_container, .select_container_effect {
+  /*width: 50%;*/
+  /*float: left;*/
+  /*background: aqua;*/
+  margin-left: 0%;
+}
+
+.clearfix:after {
+  content: ".";
+  display: block;
+  clear: both;
+  visibility: hidden;
+  height: 0;
+  line-height: 0;
+}
+
+#header {
+  width: 80%;
+  max-width: 850px;
+  min-width: 600px;
+  margin: 0 auto;
+  padding-top:25px;
+  
+}
+
+.svg-container {
+  display: inline-block;
+  position: relative;
+  width: 100%;
+  /*padding-bottom: 100%;*/ /* aspect ratio */
+  /*vertical-align: top;
+  overflow: hidden;*/
+  min-height: 350px;
+}
+.svg-content-responsive {
+  display: inline-block;
+  position: absolute;
+  top: 10px;
+  left: 0;
+}
+
+#login-link {
+  position: absolute;
+  right: 0px;
+  text-align: right;
+}
+
+.flashes {
+  max-width: 200px;
+  list-style-type: none;
+  border: 1px solid #004272;
+  border-radius: 4px;
+  text-align: center;
+  margin: auto;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.notificationSpacer {
+  height: 50px;
+}
+
+.newModelNotification {
+  margin-top: 50px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#job_submit_container {
+  width: 500px;
+  margin: 0 auto;
+}
+
+.form-submitjob {
+  margin-top: 0px;
+  margin-bottom: 0px;
+  max-width: 500px;
+}
+
+.submit-select-container {
+  width: 100% !important;
+}
+
+
+@media only screen and (max-width: 600px) {
+  .wrapper { width: 90%; }
+  .select_container, .select_container_effect { 
+    width: 90%; 
+    display:block;
+    margin-left: auto;
+    margin-right: auto;
+    /*float: none;*/
+    /*margin-left: 0;
+    margin-bottom: 20px;*/
+  }
+  .select_container_effect {
+    padding-left: 0px;
+  }
+  #header-content {
+    padding-top: 0px;
+    padding-left: 20px;
+    padding-right: 10px;
+  }
+  #header h3 {
+    white-space: normal;
+  }
+  #header {
+    width: 100%;
+    max-width: none !important;
+    min-width: inherit !important;
+    margin-top:20px;
+  }
+
+  .footer-img {
+    width:150px;
+  }
+  #footer {
+    text-align:center;
+    padding-right:0px;
+    margin-bottom: 30px;
+    margin-top: 50px;
+  }
+}
+
+a {
+  text-decoration: none;
+}
+
+.logo-h1 a {
+  text-decoration: none,;
+  color: inherit;
+}
+
+.nsides-logo {
+  height: 50px; 
+  vertical-align: middle;
+}
