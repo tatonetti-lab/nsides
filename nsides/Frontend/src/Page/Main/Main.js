@@ -7,6 +7,7 @@ import DrugSelectBox from './DrugSelectBox';
 import EffectSelectBox from './EffectSelectBox';
 import SubmitModelButton from './SubmitModelButton';
 import '../../css/main.css';
+import '../../css/fonts.css';
 // import axios from 'axios';
 // import Actions from '../../Redux/Actions/Actions';
 
@@ -24,9 +25,14 @@ class Main extends React.Component {
     };
   }
 
+  componentDidMount () {
+    let { dateformat } = this.state;
+    drawTimeSeriesGraph([], [], "Select a drug and effect", "", dateformat, true);
+  }
+
   handleDrugChange(newDrug, topOutcomes, drugHasNoModel) {
     let { dateformat } = this.state;
-    console.log('newDrug:', newDrug);
+    // console.log('newDrug:', newDrug);
     this.setState({
       drugs: newDrug,
       outcome: '',
@@ -52,7 +58,7 @@ class Main extends React.Component {
     }, () => {
       let { request, dateformat } = this.state;
       let title1, title2;
-      console.log("newDrug", newDrug, "newOutcome", newOutcome)
+      // console.log("newDrug", newDrug, "newOutcome", newOutcome)
       if ((newDrug == "") || (newOutcome == "")) {
         if (this.state.submitNewModelOption !== '') {
           title1 = "";
@@ -64,18 +70,18 @@ class Main extends React.Component {
         drawTimeSeriesGraph([], [], title1, title2, dateformat, true);
       } else {
         var api_call = "/api/v1/query?service=nsides&meta=estimateForDrug_Outcome&drugs=" + newDrug + "&outcome=" + newOutcome;
-        console.log(api_call);
+        // console.log(api_call);
         request = fetch(api_call) // http://stackoverflow.com/a/41059178
           .then(function (response) {
             return response.json();
           })
           .then(function (j) {
-            console.log("data:");
-            console.log(j);
+            // console.log("data:");
+            // console.log(j);
             var data = j["results"][0]["estimates"];
             var data2 = j["results"][0]["nreports"];
             var modelType = j["results"][0]["model"]
-            console.log("modelType: ", modelType);
+            // console.log("modelType: ", modelType);
             // console.log("drug-effect data", data);
             // console.log("number of reports by year", data2);
 
@@ -86,7 +92,7 @@ class Main extends React.Component {
             drawTimeSeriesGraph(data1, data2, title1, title2, dateformat, false, modelType);
           })
           .catch(function (ex) {
-            console.log('Parsing failed', ex);
+            // console.log('Parsing failed', ex);
             request = null;
             var title1 = "Select a drug and effect"; //"No results found";
             var title2 = '';
@@ -99,7 +105,7 @@ class Main extends React.Component {
   render () {
     return <div id='content'>
       <Header/>
-      <div>
+      <div id='selection'>
         <div className='select-row'>
           <section>
             <DrugSelectBox
@@ -124,7 +130,10 @@ class Main extends React.Component {
             <p><i>Note: this will redirect you to an external page for authentication if you are not already logged in.</i></p>
           </div>
         }
-      </div>;
+      </div>
+      <section className="select_bar">
+        <div id="viz_container"></div>
+      </section>
     </div>;
   }
 }

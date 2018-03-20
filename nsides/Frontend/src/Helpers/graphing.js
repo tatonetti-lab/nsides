@@ -1,14 +1,14 @@
-import d3 from 'd3';
-let data1;
-let dateformat = "%Y";
-let blank;
+import * as d3 from 'd3';
+// let data1;
+// let dateformat = "%Y";
+// let blank;
 // Initialize plot
 // drawTimeSeriesGraph([], [], "Select a drug and effect", "", dateformat, blank = true);
 /* 
 Tooltip from: http://bl.ocks.org/d3noob/6eb506b129f585ce5c8a
 */
 //function drawTimeSeriesGraph(data,title,dateformat) {
-function drawTimeSeriesGraph(data, data2, title, title2, dateformat, blank = false, modelType = 'DNN') {
+const drawTimeSeriesGraph = (data, data2, title, title2, dateformat, blank = false, modelType = 'DNN') => {
   document.getElementById("viz_container").innerHTML = "";
   //Set bounds for red dots
   var lbound = 0.045,
@@ -361,3 +361,6 @@ const all = {
 };
 
 export default all;
+export { 
+  drawTimeSeriesGraph 
+};

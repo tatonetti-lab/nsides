@@ -1,6 +1,7 @@
 import React from 'react';
 import drugs from './drugs-top-200';
 import Select from 'react-select';
+import '../../css/react-select.css';
 
 var request = null;
 class DrugSelectBox extends React.Component {

@@ -10,7 +10,6 @@ import Reducers from './Redux/Reducers/Reducers';
 import Main from './Page/Main/Main';
 
 
-
 // Create a history of your choosing (we're using a browser history in this case)
 const history = createHistory();
 

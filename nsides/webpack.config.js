@@ -25,6 +25,11 @@ module.exports = {
           { loader: "style-loader" },
           { loader: "css-loader" }
         ]
+      },
+      { 
+        test: /\.(png|woff|woff2|eot|ttf|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+        exclude: /node_modules/,
+        loader: 'url-loader'
       }
     ]
   },

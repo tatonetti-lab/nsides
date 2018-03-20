@@ -14,32 +14,32 @@
 // http://creativecommons.org/licenses/by-nc-sa/4.0/
 import React from 'react';
 import Select from 'react-select';
+import '../../css/react-select.css';
 
 class EffectSelectBox extends React.Component {
 	// displayName: 'EffectSelectBox';
 	constructor (props) {
-        super(props);
-        this.handleSelectChange = this.handleSelectChange.bind(this);
-		this.state = {
+    super(props);
+    this.state = {
 			options: this.props.outcomeOptions,
-			value: this.props.outcome, //'', //[],
+			value: this.props.outcome //'', //[],
             // numOutcomeResults: this.props.numOutcomeResults
             // loadingIconStyle: {float:"right", display:"none"},
-		};
+    };
+    this.handleSelectChange = this.handleSelectChange.bind(this);
 	}
 
 	handleSelectChange (value) {
 //		debug('You\'ve selected:', value);    
-        
 		this.setState({ value }, () => {
-            var selectedOutcome;
-            try {
-                selectedOutcome = this.state.value['value'];
-            } catch(err) {
-                selectedOutcome = '';
-            }
-            this.props.onDrugOutcomeChange(this.props.selectedDrug, selectedOutcome); 
-        } );
+      var selectedOutcome;
+      try {
+        selectedOutcome = this.state.value['value'];
+      } catch(err) {
+        selectedOutcome = '';
+      }
+      this.props.onDrugOutcomeChange(this.props.selectedDrug, selectedOutcome); 
+    });
 	}
 
 //	toggleDisabled (e) {
@@ -47,17 +47,17 @@ class EffectSelectBox extends React.Component {
 //	}
     
 	render () {        
-        return (
-			<div className="section select_container_effect">
-                <div className="effect_title">Effect</div>
-				<Select name="selected-effect"
-                 value={this.props.outcome} //{this.state.value}
-                 placeholder="Select effect..."
-                 noResultsText="No effects found" 
-                 options={this.props.outcomeOptions}
-                 onChange={this.handleSelectChange} />
-			</div>
-		);
+    return (
+      <div className="section select_container_effect">
+        <div className="effect_title">Effect</div>
+        <Select name="selected-effect"
+          value={this.props.outcome} //{this.state.value}
+          placeholder="Select effect..."
+          noResultsText="No effects found" 
+          options={this.props.outcomeOptions}
+          onChange={this.handleSelectChange} />
+      </div>
+    );
 	}
 }
 

@@ -352,6 +352,7 @@ footer {
 }
 #viz_container {
   font: 10px sans-serif;
+  text-align: center;
 }
 .select_container_effect {
   padding-left:10px;
@@ -381,7 +382,11 @@ path {
   shape-rendering: crispEdges;
 }
 
-.select-row{display:flex; flex-direction:row;}
+.select-row {
+  display: flex; 
+  flex-direction: row;
+  text-align: center;
+}
 
 .select_container, .select_container_effect {
   /*width: 50%;*/
@@ -447,6 +452,9 @@ path {
 
 .newModelNotification {
   margin-top: 50px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 #job_submit_container {
@@ -503,6 +511,10 @@ path {
     margin-bottom: 30px;
     margin-top: 50px;
   }
+}
+
+a {
+  text-decoration: none;
 }
 
 .logo-h1 a {

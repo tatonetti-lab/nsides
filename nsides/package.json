@@ -25,11 +25,8 @@
   },
   "dependencies": {
     "axios": "^0.16.2",
-    "bootstrap": "^4.0.0",
     "d3": "^4.13.0",
-    "jquery": "^3.3.1",
     "path": "^0.12.7",
-    "popper": "^1.0.1",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
     "react-input-autosize": "^2.2.1",
@@ -39,7 +36,8 @@
     "react-select": "^1.2.1",
     "react-select-mod": "^1.0.0-beta20",
     "redux": "^3.7.2",
-    "three": "^0.90.0"
+    "three": "^0.90.0",
+    "url-loader": "^1.0.1"
   },
   "author": "kai",
   "license": "ISC"
