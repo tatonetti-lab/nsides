@@ -526,3 +526,7 @@ a {
   height: 50px; 
   vertical-align: middle;
 }
+
+.svg-container-text {
+  font-size: 16px;
+}

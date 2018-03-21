@@ -9,22 +9,25 @@ Tooltip from: http://bl.ocks.org/d3noob/6eb506b129f585ce5c8a
 */
 //function drawTimeSeriesGraph(data,title,dateformat) {
 const drawTimeSeriesGraph = (data, data2, title, title2, dateformat, blank = false, modelType = 'DNN') => {
+  console.log(
+    'data', data, '\ndata2', data2, '\ntitle', title, 
+    '\ntitle2', title2, '\ndateformat', dateformat, 
+    '\nblank', blank, '\nmodelType', modelType);
   document.getElementById("viz_container").innerHTML = "";
   //Set bounds for red dots
-  var lbound = 0.045,
-    ubound = 0.075;
-
+  // var lbound = 0.045,
+  //   ubound = 0.075;\
   // Set the dimensions of the canvas / graph
   var margin = { top: 50, right: 150, bottom: 50, left: 50 },
     width = 800 - margin.left - margin.right,
     height = 270 - margin.top - margin.bottom;
   // Parse the date / time
-  var parseDate = d3.timeParse(dateformat),
-    formatDate = d3.timeFormat(dateformat),
-    bisectDate = d3.bisector(function (d) { return d.year; }).left;
+  var parseDate = d3.timeParse(dateformat), // converts year to date    Tue Jan 01 2013 00:00:00 GMT-0500 (EST)
+      formatDate = d3.timeFormat(dateformat), // 
+      bisectDate = d3.bisector(function (d) { return d.year; }).left;
   // Set the ranges
-  var x = d3.scaleTime().range([0, width]);
-  var y = d3.scaleLinear().range([height, 0]);
+  var x = d3.scaleTime().range([0, width]); // scale from 0 - 600. How does this scale work? each x unit is 50 margin apart
+  var y = d3.scaleLinear().range([height, 0]); // scale from 140 - 0. 170 low, 0 high.
   // y2 is used for nreports y axis
   var y2 = d3.scaleLinear().range([height, 0]);
   var xAxis = d3.axisBottom()
@@ -45,14 +48,26 @@ const drawTimeSeriesGraph = (data, data2, title, title2, dateformat, blank = fal
     .tickPadding(5);
   // Define the line
   var prrline = d3.line()
-    .x(function (d) { return x(d.year); })
-    .y(function (d) { return y(d.prr); });
+    .x(function (d) { 
+      // console.log('x', x(d.year)); 
+      return x(d.year); 
+    }) //increments by margin on the x axis
+    .y(function (d) { 
+      // console.log('y', y(d.prr)); 
+      return y(d.prr); 
+    }); //increments by margin on y axis 140 is low 40 is high on the graph
   var nreportsline = d3.line()
-    .x(function (d) { return x(d.year); })
-    .y(function (d) { return y2(d.nreports); });
+    .x(function (d) {
+      // console.log('x', x(d.year)); 
+      return x(d.year); 
+    })
+    .y(function (d) { 
+      // console.log('y', y(d.prr));
+      return y2(d.nreports); 
+    });
 
   // Adds the svg canvas
-  var svg = d3.select("#viz_container")
+  var svg = d3.select("#viz_container") // graph number 1
     .append("div")
     .classed("svg-container", true) //container class to make it responsive
     .append("svg")
@@ -65,7 +80,7 @@ const drawTimeSeriesGraph = (data, data2, title, title2, dateformat, blank = fal
     "translate(" + margin.left + "," + margin.top + ")");
       
   // Adds the second svg canvas
-  var svg2 = d3.select("#viz_container")
+  var svg2 = d3.select("#viz_container") // graph number 2
     .append("div")
     .classed("svg-container", true)
     .append("svg")
@@ -76,15 +91,19 @@ const drawTimeSeriesGraph = (data, data2, title, title2, dateformat, blank = fal
     .attr("transform",
     "translate(" + margin.left + "," + margin.top + ")");
 
+    // console.log(svg._groups[0][0], svg2._groups[0][0]);
+
   if (!blank) {
       // Get the data
     data.forEach(function (d) {
         d.year = parseDate(d.year);
+        // console.log('after parseDate', d.year);
         d.prr = +d.prr;
         d.ci = +d.ci;
     });
     data2.forEach(function (d2) {
         d2.year = parseDate(d2.year);
+        // console.log('after parseDate for d2', d2.year);
         d2.nreports = +d2.nreports;
     });
     // Scale the range of the data
@@ -269,91 +288,93 @@ const drawTimeSeriesGraph = (data, data2, title, title2, dateformat, blank = fal
         .on("mouseover", function () { focus2.style("display", null); })
         .on("mouseout", function () { focus2.style("display", "none"); })
         .on("mousemove", mousemove2);
+    console.log(focus, focus2, focus._groups[0][0]);
     function mousemove() {
-        var x0 = x.invert(d3.mouse(this)[0]),
-            i = bisectDate(data, x0, 1),
-            d0 = data[i - 1],
-            d1 = data[i],
-            d = x0 - d0.year > d1.year - x0 ? d1 : d0;
-        focus.select("circle.y")
-            .attr("transform",
-            "translate(" + x(d.year) + "," +
-            y(d.prr) + ")");
-        focus.select("text.y2")
-            .attr("transform",
-            "translate(" + x(d.year) + "," +
-            y(d.prr) + ")")
-            .attr("font-size", "12px")
-            .text(d.prr.toFixed(2));
-        focus.select("text.y4")
-            .attr("transform",
-            "translate(" + x(d.year) + "," +
-            y(d.prr) + ")")
-            .attr("font-size", "12px")
-            .text(formatDate(d.year));
-        focus.select(".x")
-            .attr("transform",
-            "translate(" + x(d.year) + "," +
-            y(d.prr) + ")")
-            .attr("y2", height - y(d.prr));
-        focus.select(".y")
-            .attr("transform",
-            "translate(" + width * -1 + "," +
-            y(d.prr) + ")")
-            .attr("x2", width + width);
+      var x0 = x.invert(d3.mouse(this)[0]), // get the array of x,y coordinate then select x and invert it back into a date
+        i = bisectDate(data, x0, 1),
+        d0 = data[i - 1],
+        d1 = data[i],
+        d = x0 - d0.year > d1.year - x0 ? d1 : d0;
+        console.log(x0, '\ni', i, '\nd0', d0, '\nd1', d1, '\nd', d, data);
+      focus.select("circle.y")
+        .attr("transform",
+        "translate(" + x(d.year) + "," +
+        y(d.prr) + ")");
+      focus.select("text.y2")
+        .attr("transform",
+        "translate(" + x(d.year) + "," +
+        y(d.prr) + ")")
+        .attr("font-size", "12px")
+        .text(d.prr.toFixed(2));
+      focus.select("text.y4")
+        .attr("transform",
+        "translate(" + x(d.year) + "," +
+        y(d.prr) + ")")
+        .attr("font-size", "12px")
+        .text(formatDate(d.year));
+      focus.select(".x")
+        .attr("transform",
+        "translate(" + x(d.year) + "," +
+        y(d.prr) + ")")
+        .attr("y2", height - y(d.prr));
+      focus.select(".y")
+        .attr("transform",
+        "translate(" + width * -1 + "," +
+        y(d.prr) + ")")
+        .attr("x2", width + width);
     };
     function mousemove2() {
-        var x0 = x.invert(d3.mouse(this)[0]),
-            i = bisectDate(data2, x0, 1),
-            d0 = data2[i - 1],
-            d1 = data2[i],
-            d = x0 - d0.year > d1.year - x0 ? d1 : d0;
-        focus2.select("circle.y")
-            .attr("transform",
-            "translate(" + x(d.year) + "," +
-            y2(d.nreports) + ")");
-        focus2.select("text.y2")
-            .attr("transform",
-            "translate(" + x(d.year) + "," +
-            y2(d.nreports) + ")")
-            .attr("font-size", "12px")
-            .text(d.nreports);
-        focus2.select("text.y4")
-            .attr("transform",
-            "translate(" + x(d.year) + "," +
-            y2(d.nreports) + ")")
-            .attr("font-size", "12px")
-            .text(formatDate(d.year));
-        focus2.select(".x")
-            .attr("transform",
-            "translate(" + x(d.year) + "," +
-            y2(d.nreports) + ")")
-            .attr("y2", height - y2(d.nreports));
-        focus2.select(".y")
-            .attr("transform",
-            "translate(" + width * -1 + "," +
-            y2(d.nreports) + ")")
-            .attr("x2", width + width);
+      var x0 = x.invert(d3.mouse(this)[0]),
+        i = bisectDate(data2, x0, 1),
+        d0 = data2[i - 1],
+        d1 = data2[i],
+        d = x0 - d0.year > d1.year - x0 ? d1 : d0;
+      focus2.select("circle.y")
+        .attr("transform",
+        "translate(" + x(d.year) + "," +
+        y2(d.nreports) + ")");
+      focus2.select("text.y2")
+        .attr("transform",
+        "translate(" + x(d.year) + "," +
+        y2(d.nreports) + ")")
+        .attr("font-size", "12px")
+        .text(d.nreports);
+      focus2.select("text.y4")
+        .attr("transform",
+        "translate(" + x(d.year) + "," +
+        y2(d.nreports) + ")")
+        .attr("font-size", "12px")
+        .text(formatDate(d.year));
+      focus2.select(".x")
+        .attr("transform",
+        "translate(" + x(d.year) + "," +
+        y2(d.nreports) + ")")
+        .attr("y2", height - y2(d.nreports));
+      focus2.select(".y")
+        .attr("transform",
+        "translate(" + width * -1 + "," +
+        y2(d.nreports) + ")")
+        .attr("x2", width + width);
     };
     svg.append("text")
-        .attr("x", width)
-        .attr("y", 0 - (margin.top / 2) + 12)
-        .attr("text-anchor", "end")
-        .text("Model type: " + modelType);
+      .attr("x", width)
+      .attr("y", 0 - (margin.top / 2) + 12)
+      .attr("text-anchor", "end")
+      .text("Model type: " + modelType);
   }
 
   svg.append("text")
-      .attr("x", (width / 2))
-      .attr("y", 0 - (margin.top / 2))
-      .attr("text-anchor", "middle")
-      .style("font-size", "16px")
-      .text(title);
+    .attr("x", (width / 2))
+    .attr("y", 0 - (margin.top / 2))
+    .attr("text-anchor", "middle")
+    .style("font-size", "16px")
+    .text(title);
   svg2.append("text")
-      .attr("x", (width / 2))
-      .attr("y", 0 - (margin.top / 2))
-      .attr("text-anchor", "middle")
-      .style("font-size", "16px")
-      .text(title2);
+    .attr("x", (width / 2))
+    .attr("y", 0 - (margin.top / 2))
+    .attr("text-anchor", "middle")
+    .style("font-size", "16px")
+    .text(title2);
 };
 
 const all = {

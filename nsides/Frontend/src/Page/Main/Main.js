@@ -77,10 +77,11 @@ class Main extends React.Component {
           })
           .then(function (j) {
             // console.log("data:");
-            // console.log(j);
+            console.log('received', j);
             var data = j["results"][0]["estimates"];
             var data2 = j["results"][0]["nreports"];
             var modelType = j["results"][0]["model"]
+            // console.log('data', data, 'data2', data2);
             // console.log("modelType: ", modelType);
             // console.log("drug-effect data", data);
             // console.log("number of reports by year", data2);
@@ -132,7 +133,8 @@ class Main extends React.Component {
         }
       </div>
       <section className="select_bar">
-        <div id="viz_container"></div>
+        <div id="viz_container">
+        </div>
       </section>
     </div>;
   }
