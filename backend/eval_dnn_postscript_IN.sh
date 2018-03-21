@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 FOLDER="$(python jobtofolder.py $1)"
 
 if [ $3 == 'IN' ]
