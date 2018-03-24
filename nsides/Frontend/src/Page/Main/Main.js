@@ -1,11 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
-import Header from './Header';
+import { setDrugEffectData } from '../../Redux/Actions/HomeAction';
 import { drawTimeSeriesGraph } from '../../Helpers/graphing';
 import DrugSelectBox from './DrugSelectBox';
 import EffectSelectBox from './EffectSelectBox';
 import SubmitModelButton from './SubmitModelButton';
+import Header from './Header';
 import ModelType from './ModelType';
 import '../../css/main.css';
 import '../../css/fonts.css';
@@ -22,8 +23,7 @@ class Main extends React.Component {
       outcome: '',
       numOutcomeResults: 'all',
       outcomeOptions: [],
-      submitNewModelOption: '',
-      drugEffectData: []
+      submitNewModelOption: ''
     };
     this.handleDrugChange = this.handleDrugChange.bind(this);
     this.handleDrugOutcomeChange = this.handleDrugOutcomeChange.bind(this);
@@ -96,11 +96,8 @@ class Main extends React.Component {
             var title1 = "Proportional Reporting Ratio over time";
             var title2 = "Number of reports by year";
             console.log('yo')
-            this.setState({
-              drugEffectData: j.results
-            }, () => {
-              drawTimeSeriesGraph(data1, data2, title1, title2, dateformat, false, modelType);
-            });
+            this.props.setDrugEffectData(j.results);
+            drawTimeSeriesGraph(data1, data2, title1, title2, dateformat, false, modelType);
           }.bind(this))
           .catch(function (ex) {
             // console.log('Parsing failed', ex);
@@ -117,6 +114,7 @@ class Main extends React.Component {
   }
 
   render () {
+    // console.log('rendering', this.state);
     return <div id='content'>
       <Header/>
       <div id='selection'>
@@ -135,7 +133,7 @@ class Main extends React.Component {
           </div>
           <div>
             <ModelType 
-              drugEffectData={this.state.drugEffectData}/>
+              drugEffectData={this.props.drugEffectData}/>
           </div>
         </div>
         {this.state.submitNewModelOption !== '' &&
@@ -158,11 +156,19 @@ class Main extends React.Component {
 }
 
 const mapStateToProps = (state) => {
-  return {};
+  let drugEffectData = state.HomeReducer.drugEffectData;
+  console.log(drugEffectData,'yooooo')
+  return {
+    drugEffectData
+  };
 };
   
-const mapDispatchToProps = (dispatch) => {
-  return {};
+const mapDispatchToProps = (dispatch) => { 
+  return {
+    setDrugEffectData: (data) => {
+      dispatch(setDrugEffectData(data));
+    }
+  };
 };
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Main));

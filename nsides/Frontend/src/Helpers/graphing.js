@@ -68,22 +68,28 @@ const appendModelTypeToCanvas = function (svg, width, margin, modelType) {
     .text("Model type: " + modelType);
 }
 
-const modifyDataYearToDate = function (data, data2, parseDate) {
-  // year number becomes date object
-  data.forEach(function (d) {
-    // console.log('before', d.year, d.prr, d.ci);
+const modifyDataYearToDate = function (data, parseDate) {
+  // console.log('before', d.year, d.prr, d.ci);
+  return data.map(d => {
+    console.log('before',d);
+    d = Object.assign({}, d);
     d.year = parseDate(d.year);
+    console.log(d);
     d.prr = +d.prr;
     d.ci = +d.ci;
-    // console.log('after parseDate', d.year, d.prr, d.ci);
-  });
-  data2.forEach(function (d2) {
-    // console.log('before', d2.year, d2.nreports);
-    d2.year = parseDate(d2.year);
-    d2.nreports = +d2.nreports;
-    // console.log('after parseDate for d2', d2.year, d2.nreports);
+    return d;
   });
 };
+
+const modifyData2YearToDate = function (data2, parseDate) {
+  // console.log('before', d2.year, d2.nreports);
+  return data2.map(d2 => {
+    d2 = Object.assign({}, d2);
+    d2.year = parseDate(d2.year);
+    d2.nreports = +d2.nreports;
+    return d2;
+  });
+}
 
 
 
@@ -95,6 +101,8 @@ const drawTimeSeriesGraph = function (data, data2, title, title2, dateformat, bl
     '\nblank', blank, '\nmodelType', modelType
   );
   document.getElementById("viz_container").innerHTML = ""; // resets the viz_container
+  data = data.slice();
+  data2 = data2.slice();
   // Set the dimensions of the canvas / graph
   let margin = { top: 50, right: 150, bottom: 50, left: 50 },
     width = 800 - margin.left - margin.right,  // 600
@@ -120,7 +128,9 @@ const drawTimeSeriesGraph = function (data, data2, title, title2, dateformat, bl
   // console.log(svg._groups[0][0], svg2._groups[0][0]);
   if (!blank) {
       // Get the data
-    modifyDataYearToDate(data, data2, parseDate);
+    data = modifyDataYearToDate(data, parseDate);
+    data2 = modifyData2YearToDate(data2, parseDate);
+    console.log('look here', 'data', data, 'data2', data2);
     // Scale the range of the data
     x.domain(d3.extent(data, function (d) { return d.year; }));
     y.domain([0, d3.max(data, function (d) { return d.prr; }) > 2 ? 0.5 + d3.max(data, function (d) { return d.prr; }) : 2.5]);
@@ -305,7 +315,7 @@ const drawTimeSeriesGraph = function (data, data2, title, title2, dateformat, bl
       .on("mouseout", function () { focus2.style("display", "none"); })
       .on("mousemove", mousemove2);
     // console.log(focus, focus2, focus._groups[0][0]);
-    const mousemove = function () {
+    function mousemove () {
       var x0 = x.invert(d3.mouse(this)[0]), // get the array of x,y coordinate then select x and invert it back into a date
       i = bisectDate(data, x0, 1),
       d0 = data[i - 1],
@@ -339,7 +349,7 @@ const drawTimeSeriesGraph = function (data, data2, title, title2, dateformat, bl
         y(d.prr) + ")")
         .attr("x2", width + width);
     }
-    const mousemove2 = function () {
+    function mousemove2 () {
       var x0 = x.invert(d3.mouse(this)[0]),
       i = bisectDate(data2, x0, 1),
       d0 = data2[i - 1],
@@ -377,6 +387,7 @@ const drawTimeSeriesGraph = function (data, data2, title, title2, dateformat, bl
   }
   appendTextsToCanvas(svg, width, margin, title);
   appendTextsToCanvas(svg2, width, margin, title2);
+  console.log('ending', data, data2, data.length > 0 ? typeof(data[0].year) : null)
 };
 
 const all = {
