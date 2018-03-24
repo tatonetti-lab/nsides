@@ -15,6 +15,7 @@
 import React from 'react';
 import Select from 'react-select';
 import '../../css/react-select.css';
+// import { drawTimeSeriesGraph } from '../../Helpers/graphing';
 
 class EffectSelectBox extends React.Component {
 	// displayName: 'EffectSelectBox';
@@ -38,7 +39,7 @@ class EffectSelectBox extends React.Component {
       } catch(err) {
         selectedOutcome = '';
       }
-      this.props.onDrugOutcomeChange(this.props.selectedDrug, selectedOutcome); 
+      this.props.onDrugOutcomeChange(this.props.selectedDrug, selectedOutcome);
     });
 	}
 

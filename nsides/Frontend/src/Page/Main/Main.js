@@ -1,11 +1,13 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
-import Header from './Header';
+import { setDrugEffectData } from '../../Redux/Actions/HomeAction';
 import { drawTimeSeriesGraph } from '../../Helpers/graphing';
 import DrugSelectBox from './DrugSelectBox';
 import EffectSelectBox from './EffectSelectBox';
 import SubmitModelButton from './SubmitModelButton';
+import Header from './Header';
+import ModelType from './ModelType';
 import '../../css/main.css';
 import '../../css/fonts.css';
 // import axios from 'axios';
@@ -23,6 +25,8 @@ class Main extends React.Component {
       outcomeOptions: [],
       submitNewModelOption: ''
     };
+    this.handleDrugChange = this.handleDrugChange.bind(this);
+    this.handleDrugOutcomeChange = this.handleDrugOutcomeChange.bind(this);
   }
 
   componentDidMount () {
@@ -58,8 +62,9 @@ class Main extends React.Component {
     }, () => {
       let { request, dateformat } = this.state;
       let title1, title2;
-      // console.log("newDrug", newDrug, "newOutcome", newOutcome)
-      if ((newDrug == "") || (newOutcome == "")) {
+      console.log("newDrug", newDrug, "newOutcome", newOutcome, this);
+      
+      if ((newDrug === "") || (newOutcome === "")) {
         if (this.state.submitNewModelOption !== '') {
           title1 = "";
           title2 = '';
@@ -77,10 +82,11 @@ class Main extends React.Component {
           })
           .then(function (j) {
             // console.log("data:");
-            // console.log(j);
+            console.log('received', j);
             var data = j["results"][0]["estimates"];
             var data2 = j["results"][0]["nreports"];
-            var modelType = j["results"][0]["model"]
+            var modelType = j["results"][0]["model"];
+            // console.log('data', data, 'data2', data2);
             // console.log("modelType: ", modelType);
             // console.log("drug-effect data", data);
             // console.log("number of reports by year", data2);
@@ -89,25 +95,31 @@ class Main extends React.Component {
             var data1 = data;
             var title1 = "Proportional Reporting Ratio over time";
             var title2 = "Number of reports by year";
+            console.log('yo')
+            this.props.setDrugEffectData(j.results);
             drawTimeSeriesGraph(data1, data2, title1, title2, dateformat, false, modelType);
-          })
+          }.bind(this))
           .catch(function (ex) {
             // console.log('Parsing failed', ex);
             request = null;
             var title1 = "Select a drug and effect"; //"No results found";
             var title2 = '';
+            console.log('hi',ex)
             drawTimeSeriesGraph([], [], title1, title2, dateformat, true);
           });
       }
     });
+
+    
   }
 
   render () {
+    // console.log('rendering', this.state);
     return <div id='content'>
       <Header/>
       <div id='selection'>
         <div className='select-row'>
-          <section>
+          <div className='drug-effect-boxes standardStyle'>
             <DrugSelectBox
               numOutcomeResults={this.state.numOutcomeResults}
               onDrugChange={(newDrug, topOutcomes, drugHasNoModel) => this.handleDrugChange(newDrug, topOutcomes, drugHasNoModel)}
@@ -118,7 +130,11 @@ class Main extends React.Component {
               selectedDrug={this.state.drugs}
               onDrugOutcomeChange={(newDrug, newOutcome) => this.handleDrugOutcomeChange(newDrug, newOutcome)}
             />
-          </section>
+          </div>
+          <div>
+            <ModelType 
+              drugEffectData={this.props.drugEffectData}/>
+          </div>
         </div>
         {this.state.submitNewModelOption !== '' &&
           <div className="newModelNotification">
@@ -132,18 +148,27 @@ class Main extends React.Component {
         }
       </div>
       <section className="select_bar">
-        <div id="viz_container"></div>
+        <div id="viz_container">
+        </div>
       </section>
     </div>;
   }
 }
 
 const mapStateToProps = (state) => {
-  return {};
+  let drugEffectData = state.HomeReducer.drugEffectData;
+  console.log(drugEffectData,'yooooo')
+  return {
+    drugEffectData
+  };
 };
   
-const mapDispatchToProps = (dispatch) => {
-  return {};
+const mapDispatchToProps = (dispatch) => { 
+  return {
+    setDrugEffectData: (data) => {
+      dispatch(setDrugEffectData(data));
+    }
+  };
 };
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Main));
