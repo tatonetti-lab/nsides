@@ -318,7 +318,7 @@ circle.dot {
   background: rgba(255, 255, 255, .1);
   /*flex: 1;*/
 }
-header, section, footer {
+header, section, footer, .standardStyle {
   max-width:850px;
   width: 100%;
   margin: 0 auto;
@@ -336,7 +336,7 @@ footer {
 .drug_title {
   font-size: 22px;
   font-weight:bold;
-  padding-top:25px;
+  padding-top:15px;
   padding-bottom:5px;
   text-align: left;
 }
@@ -382,7 +382,7 @@ path {
   shape-rendering: crispEdges;
 }
 
-.select-row {
+.drug-effect-boxes {
   display: flex; 
   flex-direction: row;
   text-align: center;
@@ -529,4 +529,8 @@ a {
 
 .svg-container-text {
   font-size: 16px;
+}
+
+.model-types {
+  text-align: center;
 }
