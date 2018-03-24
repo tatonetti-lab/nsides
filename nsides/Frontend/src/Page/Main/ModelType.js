@@ -22,12 +22,13 @@ class ModelType extends React.Component {
   }
 
   render () {
-    let data = this.props.drugEffectData;
+    let { value, drugEffectData } = this.props;
+    console.log(this.props);
     // console.log('data', data);
-    if (data.length === 0) {
+    if (drugEffectData.length === 0 || value === null) {
       return null;
     }
-    let options = data.map((dataset, i) => {
+    let options = drugEffectData.map((dataset, i) => {
       return <option key={i} 
               value={dataset.model}>
               {dataset.model}
@@ -36,7 +37,7 @@ class ModelType extends React.Component {
     return (
     <div className='standardStyle'>   
       Modeloptions: 
-      <select className='model-types' onChange={this.handleChange}>
+      <select className='model-types' onChange={this.handleChange} value={value}>
         {options}
       </select>
     </div>

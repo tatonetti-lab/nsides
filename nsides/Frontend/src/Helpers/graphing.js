@@ -71,10 +71,10 @@ const appendModelTypeToCanvas = function (svg, width, margin, modelType) {
 const modifyDataYearToDate = function (data, parseDate) {
   // console.log('before', d.year, d.prr, d.ci);
   return data.map(d => {
-    console.log('before',d);
+    // console.log('before',d);
     d = Object.assign({}, d);
     d.year = parseDate(d.year);
-    console.log(d);
+    // console.log(d);
     d.prr = +d.prr;
     d.ci = +d.ci;
     return d;
@@ -130,7 +130,7 @@ const drawTimeSeriesGraph = function (data, data2, title, title2, dateformat, bl
       // Get the data
     data = modifyDataYearToDate(data, parseDate);
     data2 = modifyData2YearToDate(data2, parseDate);
-    console.log('look here', 'data', data, 'data2', data2);
+    // console.log('look here', 'data', data, 'data2', data2);
     // Scale the range of the data
     x.domain(d3.extent(data, function (d) { return d.year; }));
     y.domain([0, d3.max(data, function (d) { return d.prr; }) > 2 ? 0.5 + d3.max(data, function (d) { return d.prr; }) : 2.5]);
@@ -387,7 +387,7 @@ const drawTimeSeriesGraph = function (data, data2, title, title2, dateformat, bl
   }
   appendTextsToCanvas(svg, width, margin, title);
   appendTextsToCanvas(svg2, width, margin, title2);
-  console.log('ending', data, data2, data.length > 0 ? typeof(data[0].year) : null)
+  // console.log('ending', data, data2, data.length > 0 ? typeof(data[0].year) : null)
 };
 
 const all = {
