@@ -1,4 +1,5 @@
 import * as d3 from 'd3';
+import c3 from 'c3';
 // let data1;
 // let dateformat = "%Y";
 // let blank;
@@ -11,7 +12,7 @@ Tooltip from: http://bl.ocks.org/d3noob/6eb506b129f585ce5c8a
 const createXAxis = function (x, height) {
   return d3.axisBottom()
     .scale(x)
-    .ticks(d3.timeYear.every(1)) // display 1 year intervals
+    //.ticks(d3.timeYear.every(1)) // display 1 year intervals
     .tickSizeInner(-height)
     .tickSizeOuter(0)
     .tickPadding(10);
@@ -89,7 +90,7 @@ const modifyData2YearToDate = function (data2, parseDate) {
     d2.nreports = +d2.nreports;
     return d2;
   });
-}
+};
 
 
 
@@ -131,10 +132,12 @@ const drawTimeSeriesGraph = function (data, data2, title, title2, dateformat, bl
     data = modifyDataYearToDate(data, parseDate);
     data2 = modifyData2YearToDate(data2, parseDate);
     // console.log('look here', 'data', data, 'data2', data2);
+
     // Scale the range of the data
-    x.domain(d3.extent(data, function (d) { return d.year; }));
+    // domain determines the range of possible values, extent determines the minimum and maxium of a set 
+    x.domain(d3.extent(data, function (d) { return d.year; })); 
     y.domain([0, d3.max(data, function (d) { return d.prr; }) > 2 ? 0.5 + d3.max(data, function (d) { return d.prr; }) : 2.5]);
-    y2.domain([0, d3.max(data2, function (d) { return d.nreports; }) > 5 ? 1.0 + d3.max(data2, function (d) { return d.nreports; }) : 5.5]);
+    y2.domain([0, d3.max(data2, function (d) { return d.nreports; }) > 5 ? 1.0 + d3.max(data2, function (d) { return d.nreports; }) : 5.5]); 
 
     // Threshold line
     var prrThreshold = 2;
@@ -298,23 +301,6 @@ const drawTimeSeriesGraph = function (data, data2, title, title2, dateformat, bl
       .attr("dx", 8)
       .attr("dy", "1em");
     // append the rectangle to capture mouse
-    svg.append("rect")
-      .attr("width", width)
-      .attr("height", height)
-      .style("fill", "none")
-      .style("pointer-events", "all")
-      .on("mouseover", function () { focus.style("display", null); })
-      .on("mouseout", function () { focus.style("display", "none"); })
-      .on("mousemove", mousemove);
-    svg2.append("rect")
-      .attr("width", width)
-      .attr("height", height)
-      .style("fill", "none")
-      .style("pointer-events", "all")
-      .on("mouseover", function () { focus2.style("display", null); })
-      .on("mouseout", function () { focus2.style("display", "none"); })
-      .on("mousemove", mousemove2);
-    // console.log(focus, focus2, focus._groups[0][0]);
     function mousemove () {
       var x0 = x.invert(d3.mouse(this)[0]), // get the array of x,y coordinate then select x and invert it back into a date
       i = bisectDate(data, x0, 1),
@@ -382,13 +368,81 @@ const drawTimeSeriesGraph = function (data, data2, title, title2, dateformat, bl
         y2(d.nreports) + ")")
         .attr("x2", width + width);
     }
+
+    svg.append("rect")
+      .attr("width", width)
+      .attr("height", height)
+      .style("fill", "none")
+      .style("pointer-events", "all")
+      .on("mouseover", function () { focus.style("display", null); })
+      .on("mouseout", function () { focus.style("display", "none"); })
+      .on("mousemove", mousemove);
+    svg2.append("rect")
+      .attr("width", width)
+      .attr("height", height)
+      .style("fill", "none")
+      .style("pointer-events", "all")
+      .on("mouseover", function () { focus2.style("display", null); })
+      .on("mouseout", function () { focus2.style("display", "none"); })
+      .on("mousemove", mousemove2);
+    // console.log(focus, focus2, focus._groups[0][0]);
     
     appendModelTypeToCanvas(svg, width, margin, modelType);
+    d3.select("#viz_container") // graph number 1
+      .append("div")
+      .attr("id", 'c3-graph')
+    drawGraphWithC3(data2);
   }
   appendTextsToCanvas(svg, width, margin, title);
   appendTextsToCanvas(svg2, width, margin, title2);
   // console.log('ending', data, data2, data.length > 0 ? typeof(data[0].year) : null)
 };
+
+
+const drawGraphWithC3 = function (data2) {
+  let nreports = [], years = [];
+  data2.forEach(datum => {
+    nreports.push(datum.nreports);
+    years.push(datum.year);
+  })
+  c3.generate({
+    bindto: `#c3-graph`,
+    data: {
+      x: 'year',
+      xFormat: '%Y',
+      columns: [
+        ['year', ...years],
+        ['nreports', ...nreports],
+        ['control', 50, 20, 10, 40, 15, 25, 50, 20, 10, 40, 15, 25, 50]
+      ],
+      axes: {
+        nreports: 'y',
+        control: 'y2'
+      }
+    },
+    axis: {
+      label: {
+        text: 'Year'
+      },
+      x: {
+        type: 'timeseries',
+        tick: {
+          format: (x) => x.getFullYear(),
+          values: [...years]
+        }
+      },
+      y2: {
+        show: true
+      }
+    },
+    grid: {
+      x: {
+        show: true,
+        values: [{value: 2004, label: 'kai'}, {value: 2016, label: 'rod'}]
+      }
+    }
+  });
+}
 
 const all = {
   drawTimeSeriesGraph

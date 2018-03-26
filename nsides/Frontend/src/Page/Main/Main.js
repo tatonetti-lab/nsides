@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
-import { setDrugEffectData, setSelectedModel } from '../../Redux/Actions/HomeAction';
+import { setDrugEffectData } from '../../Redux/Actions/HomeAction';
 import { drawTimeSeriesGraph } from '../../Helpers/graphing';
 import DrugSelectBox from './DrugSelectBox';
 import EffectSelectBox from './EffectSelectBox';
@@ -81,9 +81,9 @@ class Main extends React.Component {
             return response.json();
           })
           .then(function (j) {
-            let { selectedModel, setSelectedModel, setDrugEffectData } = this.props;
+            let { setDrugEffectData } = this.props;
             // console.log("data:");
-            console.log('received', j, '\n', selectedModel);
+            console.log('received', j, '\n');
             var data, data2, modelType;// hasModelType = false, foundIndex;
             modelType = j.results[0].model;
             data = j["results"][0]["estimates"];
@@ -117,19 +117,23 @@ class Main extends React.Component {
             var data1 = data;
             var title1 = "Proportional Reporting Ratio over time";
             var title2 = "Number of reports by year";
-            console.log('yo')
+            // console.log('modelType', modelType)
+            // setSelectedModel(modelType);
+            // let select = document.querySelector(`select.model-types`);
+            // if (select !== null) {
+            //   select.value = modelType;
+            // }
             setDrugEffectData(j.results);
-            setSelectedModel(modelType);
             drawTimeSeriesGraph(data1, data2, title1, title2, dateformat, false, modelType);
           }.bind(this))
-          .catch(function (ex) {
-            // console.log('Parsing failed', ex);
-            request = null;
-            var title1 = "Select a drug and effect"; //"No results found";
-            var title2 = '';
-            console.log('hi',ex)
-            drawTimeSeriesGraph([], [], title1, title2, dateformat, true);
-          });
+          // .catch(function (ex) {
+          //   // console.log('Parsing failed', ex);
+          //   request = null;
+          //   var title1 = "Select a drug and effect"; //"No results found";
+          //   var title2 = '';
+          //   console.log('hi',ex)
+          //   drawTimeSeriesGraph([], [], title1, title2, dateformat, true);
+          // });
       }
     });
 
@@ -156,9 +160,7 @@ class Main extends React.Component {
           </div>
           <div>
             <ModelType 
-              value={this.props.selectedModel}
-              drugEffectData={this.props.drugEffectData}
-              selectedModel={this.props.selectedModel}/>
+              drugEffectData={this.props.drugEffectData}/>
           </div>
         </div>
         {this.state.submitNewModelOption !== '' &&
@@ -181,11 +183,11 @@ class Main extends React.Component {
 }
 
 const mapStateToProps = (state) => {
-  let  { drugEffectData, selectedModel } = state.HomeReducer;
-  console.log(drugEffectData,'yooooo')
+  let  { drugEffectData } = state.HomeReducer;
+  console.log('drugEffectData', drugEffectData)
   return {
     drugEffectData,
-    selectedModel
+    // selectedModel
   };
 };
   
@@ -194,9 +196,9 @@ const mapDispatchToProps = (dispatch) => {
     setDrugEffectData: (data) => {
       dispatch(setDrugEffectData(data));
     },
-    setSelectedModel: (modelType) => {
-      dispatch(setSelectedModel(modelType));
-    }
+    // setSelectedModel: (modelType) => {
+    //   dispatch(setSelectedModel(modelType));
+    // }
   };
 };
 
