@@ -81,11 +81,33 @@ class Main extends React.Component {
             return response.json();
           })
           .then(function (j) {
+            let { setDrugEffectData } = this.props;
             // console.log("data:");
-            console.log('received', j);
-            var data = j["results"][0]["estimates"];
-            var data2 = j["results"][0]["nreports"];
-            var modelType = j["results"][0]["model"];
+            console.log('received', j, '\n');
+            var data, data2, modelType;// hasModelType = false, foundIndex;
+            modelType = j.results[0].model;
+            data = j["results"][0]["estimates"];
+            data2 = j["results"][0]["nreports"];
+            // if (selectedModel !== null) {
+            //   for (var i = 0; i < j.results.length; i++) {
+            //     if (j.results[i].model === selectedModel) {
+            //       hasModelType = true;
+            //       foundIndex = i;
+            //       break;
+            //     }
+            //   }
+            // }
+            // console.log('has modeltype',hasModelType)
+            // if (hasModelType) {
+            //   modelType = selectedModel;
+            //   data = j.results[foundIndex].estimates;
+            //   data2 = j.results[foundIndex].nreports;
+            // } else {
+            //   modelType = j.results[0].model;
+            //   data = j["results"][0]["estimates"];
+            //   data2 = j["results"][0]["nreports"];
+            //   setSelectedModel(modelType);
+            // }
             // console.log('data', data, 'data2', data2);
             // console.log("modelType: ", modelType);
             // console.log("drug-effect data", data);
@@ -95,18 +117,23 @@ class Main extends React.Component {
             var data1 = data;
             var title1 = "Proportional Reporting Ratio over time";
             var title2 = "Number of reports by year";
-            console.log('yo')
-            this.props.setDrugEffectData(j.results);
+            // console.log('modelType', modelType)
+            // setSelectedModel(modelType);
+            // let select = document.querySelector(`select.model-types`);
+            // if (select !== null) {
+            //   select.value = modelType;
+            // }
+            setDrugEffectData(j.results);
             drawTimeSeriesGraph(data1, data2, title1, title2, dateformat, false, modelType);
           }.bind(this))
-          .catch(function (ex) {
-            // console.log('Parsing failed', ex);
-            request = null;
-            var title1 = "Select a drug and effect"; //"No results found";
-            var title2 = '';
-            console.log('hi',ex)
-            drawTimeSeriesGraph([], [], title1, title2, dateformat, true);
-          });
+          // .catch(function (ex) {
+          //   // console.log('Parsing failed', ex);
+          //   request = null;
+          //   var title1 = "Select a drug and effect"; //"No results found";
+          //   var title2 = '';
+          //   console.log('hi',ex)
+          //   drawTimeSeriesGraph([], [], title1, title2, dateformat, true);
+          // });
       }
     });
 
@@ -156,10 +183,11 @@ class Main extends React.Component {
 }
 
 const mapStateToProps = (state) => {
-  let drugEffectData = state.HomeReducer.drugEffectData;
-  console.log(drugEffectData,'yooooo')
+  let  { drugEffectData } = state.HomeReducer;
+  console.log('drugEffectData', drugEffectData)
   return {
-    drugEffectData
+    drugEffectData,
+    // selectedModel
   };
 };
   
@@ -167,7 +195,10 @@ const mapDispatchToProps = (dispatch) => {
   return {
     setDrugEffectData: (data) => {
       dispatch(setDrugEffectData(data));
-    }
+    },
+    // setSelectedModel: (modelType) => {
+    //   dispatch(setSelectedModel(modelType));
+    // }
   };
 };
 

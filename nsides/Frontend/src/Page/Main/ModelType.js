@@ -8,10 +8,12 @@ class ModelType extends React.Component {
 
     };
     this.handleChange = this.handleChange.bind(this);
+    // this.handleClick = this.handleClick.bind(this);
   }
 
   handleChange (e) {
     let { selectedIndex, value } = e.target;
+    console.log(e.target.value)
     console.log(selectedIndex, value, this.props.drugEffectData);
     if (selectedIndex !== undefined) {
       let modelData = this.props.drugEffectData[selectedIndex];
@@ -21,13 +23,19 @@ class ModelType extends React.Component {
     }
   }
 
+  // handleClick (e) {
+  //   e.preventDefault();
+  //   e.target.parentNode.value = e.target.value;
+  // }
+
   render () {
-    let data = this.props.drugEffectData;
+    let { selectedModel, drugEffectData } = this.props;
+    console.log(this.props);
     // console.log('data', data);
-    if (data.length === 0) {
+    if (drugEffectData.length === 0 || selectedModel === null) {
       return null;
     }
-    let options = data.map((dataset, i) => {
+    let options = drugEffectData.map((dataset, i) => {
       return <option key={i} 
               value={dataset.model}>
               {dataset.model}
@@ -35,7 +43,7 @@ class ModelType extends React.Component {
     })
     return (
     <div className='standardStyle'>   
-      Modeloptions: 
+      Model Options: 
       <select className='model-types' onChange={this.handleChange}>
         {options}
       </select>
