@@ -15,3 +15,5 @@ fi
 
 rm shallow_out_$1_*.tgz
 rm results_$1_$2.tgz
+
+exit 0
