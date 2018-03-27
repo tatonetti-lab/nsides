@@ -1,4 +1,4 @@
-* {
+h1, h3, text, .effect_title, .drug_title {
   font-family: myriad;
 }
 
@@ -534,3 +534,45 @@ a {
 .model-types {
   text-align: center;
 }
+/*  c3 css   */
+g.c3-xgrid-lines, g.c3-ygrid-lines {
+  stroke: grey;
+  opacity: 0.2;
+}
+
+g.tick text, text.c3-axis-x-label, text.c3-axis-y-label, text.c3-axis-y2-label {
+  font-size: initial;
+}
+
+g.c3-ygrids line, g.c3-xgrids line {
+  stroke: grey;
+  opacity: 0.2 !important;
+}
+
+.c3-tooltip {
+  font-size: initial;
+}
+
+g.c3-legend-item text {
+  font-size: initial;
+}
+
+text.c3-title {
+  font-size: 19.3px;
+}
+
+#c3-graph g.c3-axis.c3-axis-y2 path {
+  fill: none;
+  stroke: grey;
+  stroke-width: 1.5;
+  shape-rendering: crispEdges
+}
+
+.c3-shape.c3-line {
+  stroke-width: 2.4;
+}
+/* line.c3-xgrid-focus {
+  stroke: black;
+  stroke-dasharray: 3,3;
+  visibility: visible !important;
+} */

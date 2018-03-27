@@ -117,15 +117,15 @@ const drawTimeSeriesGraph = function (data, data2, title, title2, dateformat, bl
     x = d3.scaleTime().range([0, width]), // scale from 0 - 600. How does this scale work? each x unit is 50 margin apart
     y = d3.scaleLinear().range([height, 0]), // scale from 140 - 0. 170 low, 0 high.
   // y2 is used for nreports y axis
-    y2 = d3.scaleLinear().range([height, 0]),
+    // y2 = d3.scaleLinear().range([height, 0]),
     xAxis = createXAxis(x, height),
     yAxis = createYAxis(y, width),
-    yAxis2 = createYAxis(y2, width),
+    // yAxis2 = createYAxis(y2, width),
   // Define the line
     prrline = createGraphLine(x, y, 'prr'), //createPrrLine(x, y);
-    nreportsline = createGraphLine(x, y2, 'nreports'), //createNReportsLine(x, y2);
-    svg = createSvg(margin), // Adds the svg canvas
-    svg2 = createSvg(margin); // Adds the second svg canvas
+    // nreportsline = createGraphLine(x, y2, 'nreports'), //createNReportsLine(x, y2);
+    svg = createSvg(margin); // Adds the svg canvas
+    // svg2 = createSvg(margin); // Adds the second svg canvas
   // console.log(svg._groups[0][0], svg2._groups[0][0]);
   if (!blank) {
       // Get the data
@@ -137,7 +137,7 @@ const drawTimeSeriesGraph = function (data, data2, title, title2, dateformat, bl
     // domain determines the range of possible values, extent determines the minimum and maxium of a set 
     x.domain(d3.extent(data, function (d) { return d.year; })); 
     y.domain([0, d3.max(data, function (d) { return d.prr; }) > 2 ? 0.5 + d3.max(data, function (d) { return d.prr; }) : 2.5]);
-    y2.domain([0, d3.max(data2, function (d) { return d.nreports; }) > 5 ? 1.0 + d3.max(data2, function (d) { return d.nreports; }) : 5.5]); 
+    // y2.domain([0, d3.max(data2, function (d) { return d.nreports; }) > 5 ? 1.0 + d3.max(data2, function (d) { return d.nreports; }) : 5.5]); 
 
     // Threshold line
     var prrThreshold = 2;
@@ -149,20 +149,20 @@ const drawTimeSeriesGraph = function (data, data2, title, title2, dateformat, bl
       .attr("y2", y(prrThreshold));
     // Add the prrline path.
     var lineSvg = svg.append("g");
-    var lineSvg2 = svg2.append("g");
+    // var lineSvg2 = svg2.append("g");
     lineSvg.append("path")
       .attr("class", "line")
       .attr("d", prrline(data));
-    lineSvg2.append("path")
-      .attr("class", "line")
-      .attr("d", nreportsline(data2));
+    // lineSvg2.append("path")
+    //   .attr("class", "line")
+    //   .attr("d", nreportsline(data2));
     // Add the Y Axis
     svg.append("g")
       .attr("class", "y axis")
       .call(yAxis);
-    svg2.append("g")
-      .attr("class", "y axis")
-      .call(yAxis2);
+    // svg2.append("g")
+    //   .attr("class", "y axis")
+    //   .call(yAxis2);
     // Only show every other y-axis tick
     // From https://stackoverflow.com/a/38921326
     var ticks = d3.selectAll(".tick text");
@@ -176,10 +176,10 @@ const drawTimeSeriesGraph = function (data, data2, title, title2, dateformat, bl
       .attr("class", "x axis")
       .attr("transform", "translate(0," + height + ")")
       .call(xAxis);
-    svg2.append("g")
-      .attr("class", "x axis")
-      .attr("transform", "translate(0," + height + ")")
-      .call(xAxis);
+    // svg2.append("g")
+      // .attr("class", "x axis")
+      // .attr("transform", "translate(0," + height + ")")
+      // .call(xAxis);
 
     // Y axis title
     var padding = 80;
@@ -189,12 +189,12 @@ const drawTimeSeriesGraph = function (data, data2, title, title2, dateformat, bl
       .attr("transform", "translate(-" + (padding / 2) + "," + (height / 2) + ")rotate(-90)")  // text is drawn off the screen top left, move down and out and rotate
       .attr("font-size", "13px")
       .text("PRR");
-    svg2.append("text")
-      .attr("class", "ylabel")
-      .attr("text-anchor", "middle")  // this makes it easy to center the text as the transform is applied to the anchor
-      .attr("transform", "translate(-" + (padding / 2) + "," + (height / 2) + ")rotate(-90)")  // text is drawn off the screen top left, move down and out and rotate
-      .attr("font-size", "13px")
-      .text("Number of Reports");
+    // svg2.append("text")
+    //   .attr("class", "ylabel")
+    //   .attr("text-anchor", "middle")  // this makes it easy to center the text as the transform is applied to the anchor
+    //   .attr("transform", "translate(-" + (padding / 2) + "," + (height / 2) + ")rotate(-90)")  // text is drawn off the screen top left, move down and out and rotate
+    //   .attr("font-size", "13px")
+    //   .text("Number of Reports");
     // Confidence area
     var confidenceArea = d3.area()
       .curve(d3.curveLinear)
@@ -209,7 +209,7 @@ const drawTimeSeriesGraph = function (data, data2, title, title2, dateformat, bl
 
 
     var focus = svg.append("g").style("display", "none"); // graphing area
-    var focus2 = svg2.append("g").style("display", "none"); // graphing area
+    // var focus2 = svg2.append("g").style("display", "none"); // graphing area
 
     // append the x line
     focus.append("line")
@@ -219,13 +219,13 @@ const drawTimeSeriesGraph = function (data, data2, title, title2, dateformat, bl
       .style("opacity", 0.5)
       .attr("y1", 0)
       .attr("y2", height);
-    focus2.append("line")
-      .attr("class", "x")
-      .style("stroke", "black")
-      .style("stroke-dasharray", "3,3")
-      .style("opacity", 0.5)
-      .attr("y1", 0)
-      .attr("y2", height);
+    // focus2.append("line")
+    //   .attr("class", "x")
+    //   .style("stroke", "black")
+    //   .style("stroke-dasharray", "3,3")
+    //   .style("opacity", 0.5)
+    //   .attr("y1", 0)
+    //   .attr("y2", height);
     // append the y line
     focus.append("line")
       .attr("class", "y")
@@ -234,13 +234,13 @@ const drawTimeSeriesGraph = function (data, data2, title, title2, dateformat, bl
       .style("opacity", 0.5)
       .attr("x1", width)
       .attr("x2", width);
-    focus2.append("line")
-      .attr("class", "y")
-      .style("stroke", "black")
-      .style("stroke-dasharray", "3,3")
-      .style("opacity", 0.5)
-      .attr("x1", width)
-      .attr("x2", width);
+    // focus2.append("line")
+    //   .attr("class", "y")
+    //   .style("stroke", "black")
+    //   .style("stroke-dasharray", "3,3")
+    //   .style("opacity", 0.5)
+    //   .attr("x1", width)
+    //   .attr("x2", width);
     // append the circle at the intersection
     focus.append("circle")
       .attr("class", "y")
@@ -248,12 +248,12 @@ const drawTimeSeriesGraph = function (data, data2, title, title2, dateformat, bl
       .style("stroke", "steelblue")
       .style("stroke-width", 1.5)
       .attr("r", 4);
-    focus2.append("circle")
-      .attr("class", "y")
-      .style("fill", "none")
-      .style("stroke", "steelblue")
-      .style("stroke-width", 1.5)
-      .attr("r", 4);
+    // focus2.append("circle")
+    //   .attr("class", "y")
+    //   .style("fill", "none")
+    //   .style("stroke", "steelblue")
+    //   .style("stroke-width", 1.5)
+    //   .attr("r", 4);
     // place the prr/nreports at the intersection
     focus.append("text")
       .attr("class", "y1")
@@ -262,21 +262,21 @@ const drawTimeSeriesGraph = function (data, data2, title, title2, dateformat, bl
       .style("opacity", 0.8)
       .attr("dx", 8)
       .attr("dy", "-.3em");
-    focus2.append("text")
-      .attr("class", "y1")
-      .style("stroke", "white")
-      .style("stroke-width", "3.5px")
-      .style("opacity", 0.8)
-      .attr("dx", 8)
-      .attr("dy", "-.3em");
+    // focus2.append("text")
+    //   .attr("class", "y1")
+    //   .style("stroke", "white")
+    //   .style("stroke-width", "3.5px")
+    //   .style("opacity", 0.8)
+    //   .attr("dx", 8)
+    //   .attr("dy", "-.3em");
     focus.append("text")
       .attr("class", "y2")
       .attr("dx", 8)
       .attr("dy", "-.3em");
-    focus2.append("text")
-      .attr("class", "y2")
-      .attr("dx", 8)
-      .attr("dy", "-.3em");
+    // focus2.append("text")
+    //   .attr("class", "y2")
+    //   .attr("dx", 8)
+    //   .attr("dy", "-.3em");
     // place the date at the intersection
     focus.append("text")
       .attr("class", "y3")
@@ -285,21 +285,21 @@ const drawTimeSeriesGraph = function (data, data2, title, title2, dateformat, bl
       .style("opacity", 0.8)
       .attr("dx", 8)
       .attr("dy", "1em");
-    focus2.append("text")
-      .attr("class", "y3")
-      .style("stroke", "white")
-      .style("stroke-width", "3.5px")
-      .style("opacity", 0.8)
-      .attr("dx", 8)
-      .attr("dy", "1em");
+    // focus2.append("text")
+    //   .attr("class", "y3")
+    //   .style("stroke", "white")
+    //   .style("stroke-width", "3.5px")
+    //   .style("opacity", 0.8)
+    //   .attr("dx", 8)
+    //   .attr("dy", "1em");
     focus.append("text")
       .attr("class", "y4")
       .attr("dx", 8)
       .attr("dy", "1em");
-    focus2.append("text")
-      .attr("class", "y4")
-      .attr("dx", 8)
-      .attr("dy", "1em");
+    // focus2.append("text")
+    //   .attr("class", "y4")
+    //   .attr("dx", 8)
+    //   .attr("dy", "1em");
     // append the rectangle to capture mouse
     function mousemove () {
       var x0 = x.invert(d3.mouse(this)[0]), // get the array of x,y coordinate then select x and invert it back into a date
@@ -335,39 +335,39 @@ const drawTimeSeriesGraph = function (data, data2, title, title2, dateformat, bl
         y(d.prr) + ")")
         .attr("x2", width + width);
     }
-    function mousemove2 () {
-      var x0 = x.invert(d3.mouse(this)[0]),
-      i = bisectDate(data2, x0, 1),
-      d0 = data2[i - 1],
-      d1 = data2[i],
-      d = x0 - d0.year > d1.year - x0 ? d1 : d0;
-      focus2.select("circle.y")
-        .attr("transform",
-        "translate(" + x(d.year) + "," +
-        y2(d.nreports) + ")");
-      focus2.select("text.y2")
-        .attr("transform",
-        "translate(" + x(d.year) + "," +
-        y2(d.nreports) + ")")
-        .attr("font-size", "12px")
-        .text(d.nreports);
-      focus2.select("text.y4")
-        .attr("transform",
-        "translate(" + x(d.year) + "," +
-        y2(d.nreports) + ")")
-        .attr("font-size", "12px")
-        .text(formatDate(d.year));
-      focus2.select(".x")
-        .attr("transform",
-        "translate(" + x(d.year) + "," +
-        y2(d.nreports) + ")")
-        .attr("y2", height - y2(d.nreports));
-      focus2.select(".y")
-        .attr("transform",
-        "translate(" + width * -1 + "," +
-        y2(d.nreports) + ")")
-        .attr("x2", width + width);
-    }
+    // function mousemove2 () {
+    //   var x0 = x.invert(d3.mouse(this)[0]),
+    //   i = bisectDate(data2, x0, 1),
+    //   d0 = data2[i - 1],
+    //   d1 = data2[i],
+    //   d = x0 - d0.year > d1.year - x0 ? d1 : d0;
+    //   focus2.select("circle.y")
+    //     .attr("transform",
+    //     "translate(" + x(d.year) + "," +
+    //     y2(d.nreports) + ")");
+    //   focus2.select("text.y2")
+    //     .attr("transform",
+    //     "translate(" + x(d.year) + "," +
+    //     y2(d.nreports) + ")")
+    //     .attr("font-size", "12px")
+    //     .text(d.nreports);
+    //   focus2.select("text.y4")
+    //     .attr("transform",
+    //     "translate(" + x(d.year) + "," +
+    //     y2(d.nreports) + ")")
+    //     .attr("font-size", "12px")
+    //     .text(formatDate(d.year));
+    //   focus2.select(".x")
+    //     .attr("transform",
+    //     "translate(" + x(d.year) + "," +
+    //     y2(d.nreports) + ")")
+    //     .attr("y2", height - y2(d.nreports));
+    //   focus2.select(".y")
+    //     .attr("transform",
+    //     "translate(" + width * -1 + "," +
+    //     y2(d.nreports) + ")")
+    //     .attr("x2", width + width);
+    // }
 
     svg.append("rect")
       .attr("width", width)
@@ -377,43 +377,68 @@ const drawTimeSeriesGraph = function (data, data2, title, title2, dateformat, bl
       .on("mouseover", function () { focus.style("display", null); })
       .on("mouseout", function () { focus.style("display", "none"); })
       .on("mousemove", mousemove);
-    svg2.append("rect")
-      .attr("width", width)
-      .attr("height", height)
-      .style("fill", "none")
-      .style("pointer-events", "all")
-      .on("mouseover", function () { focus2.style("display", null); })
-      .on("mouseout", function () { focus2.style("display", "none"); })
-      .on("mousemove", mousemove2);
+    // svg2.append("rect")
+    //   .attr("width", width)
+    //   .attr("height", height)
+    //   .style("fill", "none")
+    //   .style("pointer-events", "all")
+    //   .on("mouseover", function () { focus2.style("display", null); })
+    //   .on("mouseout", function () { focus2.style("display", "none"); })
+    //   .on("mousemove", mousemove2);
     // console.log(focus, focus2, focus._groups[0][0]);
     
     appendModelTypeToCanvas(svg, width, margin, modelType);
     d3.select("#viz_container") // graph number 1
       .append("div")
       .attr("id", 'c3-graph')
-    drawGraphWithC3(data2);
+    drawNreportsAndControlGraph(data2);
   }
   appendTextsToCanvas(svg, width, margin, title);
-  appendTextsToCanvas(svg2, width, margin, title2);
+  // appendTextsToCanvas(svg2, width, margin, title2);
   // console.log('ending', data, data2, data.length > 0 ? typeof(data[0].year) : null)
 };
 
+const yearAxis = [
+  {value: 2004},
+  {value: 2005},
+  {value: 2006},
+  {value: 2007},
+  {value: 2008},
+  {value: 2009},
+  {value: 2010},
+  {value: 2011},
+  {value: 2012},
+  {value: 2013},
+  {value: 2014},
+  {value: 2015},
+  {value: 2016},
+];
 
-const drawGraphWithC3 = function (data2) {
+const drawNreportsAndControlGraph = function (data2) {
   let nreports = [], years = [];
   data2.forEach(datum => {
     nreports.push(datum.nreports);
-    years.push(datum.year);
+    years.push(datum.year.getFullYear());
   })
   c3.generate({
     bindto: `#c3-graph`,
+    size: {
+      height: 330,
+      width: 850
+    },
+    padding: {
+      top: 20
+    },
+    title: {
+      text: 'Number of Reports and Proportion of Total Patients'
+    },
     data: {
       x: 'year',
-      xFormat: '%Y',
+      // xFormat: '%Y',
       columns: [
         ['year', ...years],
         ['nreports', ...nreports],
-        ['control', 50, 20, 10, 40, 15, 25, 50, 20, 10, 40, 15, 25, 50]
+        ['control', 0.3, 0.4, 0.2, 0.4, 0.15, 0.25, 0.50, 0.20, 0.10, 0.40, 0.15, 0.25, 0.50]
       ],
       axes: {
         nreports: 'y',
@@ -421,27 +446,70 @@ const drawGraphWithC3 = function (data2) {
       }
     },
     axis: {
-      label: {
-        text: 'Year'
-      },
       x: {
-        type: 'timeseries',
+        type: 'indexed',
+        label: {
+          text: 'Year',
+          position: 'outer-right'
+        },
         tick: {
-          format: (x) => x.getFullYear(),
-          values: [...years]
+          // format: (x) => x,
+          values: [...years],
+          outer: false  //removes superfluous axis overflow
+        },
+        padding: {
+          left: 0,  //remove padding on graphs left and right side
+          right: 0
+        }
+      },
+      y: {
+        show: true,
+        label: {
+          text: 'nreports',
+          position: 'outer-middle'
+        },
+        tick: {
+          outer: false
+        },
+        padding: {
+          top: 0,
+          bottom: 0
         }
       },
       y2: {
-        show: true
+        min: 0,
+        max: 1,
+        show: true,
+        label: {
+          text: 'control',
+          position: 'outer-middle'
+        },
+        tick: {
+          outer: false
+        },
+        padding: {
+          top: 0,
+          bottom: 0
+        }
       }
     },
     grid: {
       x: {
-        show: true,
-        values: [{value: 2004, label: 'kai'}, {value: 2016, label: 'rod'}]
+        show: true
+        // lines: yearAxis
+      },
+      y: {
+        show: true
+      },
+      focus: {
+        show: true
       }
+    },
+    legend: {
+      position: 'bottom'
     }
   });
+  // chart.focus();
 }
 
 const all = {
