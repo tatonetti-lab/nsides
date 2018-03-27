@@ -7,3 +7,4 @@ gfal-ls gsiftp://gftp-1.t2.ucsd.edu:2811/hadoop/osg/ColumbiaTBI/ramiv/nsides_out
 
 #rm shallow_out_$2_$1.tgz
 
+exit 0
