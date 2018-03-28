@@ -1,5 +1,6 @@
 import * as d3 from 'd3';
 import c3 from 'c3';
+// import '../../../node_modules/c3/c3.min.css';
 // let data1;
 // let dateformat = "%Y";
 // let blank;
@@ -208,8 +209,8 @@ const drawTimeSeriesGraph = function (data, data2, title, title2, dateformat, bl
       .attr("d", confidenceArea);
 
 
-    var focus = svg.append("g").style("display", "none"); // graphing area
-    // var focus2 = svg2.append("g").style("display", "none"); // graphing area
+    var focus = svg.append("g").style("display", "none"); //  focus area when mouse moves
+    // var focus2 = svg2.append("g").style("display", "none"); //  area
 
     // append the x line
     focus.append("line")
@@ -414,18 +415,117 @@ const yearAxis = [
   {value: 2016},
 ];
 
+const trimAxis = function (selector) {
+  let axis = document.querySelectorAll(selector);
+  axis.forEach((tick, i) => {
+    if (i % 2) {
+      tick.remove();
+    }
+  });
+}
+
+const provideFocus = function () {
+  var x0 = x.invert(d3.mouse(this)[0]),
+  i = bisectDate(data2, x0, 1),
+  d0 = data2[i - 1],
+  d1 = data2[i],
+  d = x0 - d0.year > d1.year - x0 ? d1 : d0;
+  focus.select("circle.y")
+    .attr("transform",
+    "translate(" + x(d.year) + "," +
+    y2(d.nreports) + ")");
+  focus.select("text.y2")
+    .attr("transform",
+    "translate(" + x(d.year) + "," +
+    y2(d.nreports) + ")")
+    .attr("font-size", "12px")
+    .text(d.nreports);
+  focus.select("text.y4")
+    .attr("transform",
+    "translate(" + x(d.year) + "," +
+    y2(d.nreports) + ")")
+    .attr("font-size", "12px")
+    .text(formatDate(d.year));
+  focus.select(".x")
+    .attr("transform",
+    "translate(" + x(d.year) + "," +
+    y2(d.nreports) + ")")
+    .attr("y2", height - y2(d.nreports));
+  focus.select(".y")
+    .attr("transform",
+    "translate(" + width * -1 + "," +
+    y2(d.nreports) + ")")
+    .attr("x2", width + width);
+}
+
+const setUpFocus = function () {
+  var height = 330;
+  var width = 850;
+  var svg = d3.select(`#c3-graph svg`);
+  var focus = svg.append("g").style("display", "none"); //  focus area when mouse moves
+
+  focus.append("line")
+    .attr("class", "x")
+    .style("stroke", "black")
+    .style("stroke-dasharray", "3,3")
+    .style("opacity", 0.5)
+    .attr("y1", 0)
+    .attr("y2", height);
+
+  focus.append("line")
+    .attr("class", "y")
+    .style("stroke", "black")
+    .style("stroke-dasharray", "3,3")
+    .style("opacity", 0.5)
+    .attr("x1", width)
+    .attr("x2", width);
+
+  focus.append("circle")
+    .attr("class", "y")
+    .style("fill", "none")
+    .style("stroke", "steelblue")
+    .style("stroke-width", 1.5)
+    .attr("r", 4);
+
+  focus.append("text")
+    .attr("class", "y1")
+    .style("stroke", "white")
+    .style("stroke-width", "3.5px")
+    .style("opacity", 0.8)
+    .attr("dx", 8)
+    .attr("dy", "-.3em");
+
+  focus.append("text")
+    .attr("class", "y2")
+    .attr("dx", 8)
+    .attr("dy", "-.3em");
+
+  focus.append("text")
+    .attr("class", "y3")
+    .style("stroke", "white")
+    .style("stroke-width", "3.5px")
+    .style("opacity", 0.8)
+    .attr("dx", 8)
+    .attr("dy", "1em");
+
+  focus.append("text")
+    .attr("class", "y4")
+    .attr("dx", 8)
+    .attr("dy", "1em");
+}
+
 const drawNreportsAndControlGraph = function (data2) {
   let nreports = [], years = [];
   data2.forEach(datum => {
     nreports.push(datum.nreports);
     years.push(datum.year.getFullYear());
-  })
-  c3.generate({
+  });
+  var chart = c3.generate({
     bindto: `#c3-graph`,
-    size: {
-      height: 330,
-      width: 850
-    },
+    // size: {
+    //   height: 330,
+    //   width: 850
+    // },
     padding: {
       top: 20
     },
@@ -510,6 +610,9 @@ const drawNreportsAndControlGraph = function (data2) {
     }
   });
   // chart.focus();
+  trimAxis(`#c3-graph g.c3-axis.c3-axis-y g`);
+  trimAxis(`#c3-graph g.c3-axis.c3-axis-y2 g`);
+  setUpFocus();
 }
 
 const all = {
