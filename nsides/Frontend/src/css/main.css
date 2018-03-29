@@ -561,18 +561,19 @@ text.c3-title {
   font-size: 19.3px;
 }
 
-#c3-graph g.c3-axis.c3-axis-y2 path {
+#c3-graph g.c3-axis path {
   fill: none;
   stroke: grey;
-  stroke-width: 1.5;
+  stroke-width: 1.2;
   shape-rendering: crispEdges
 }
 
 .c3-shape.c3-line {
   stroke-width: 2.4;
 }
-/* line.c3-xgrid-focus {
-  stroke: black;
+
+line.c3-xgrid-focus {
+  stroke: grey;
   stroke-dasharray: 3,3;
-  visibility: visible !important;
-} */
+  /* visibility: visible !important; */
+}
