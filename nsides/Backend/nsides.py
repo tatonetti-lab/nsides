@@ -14,6 +14,8 @@ The nSides web front-end, (re)implemented in Flask
 import os
 from flask import Flask, request, session, redirect, url_for, render_template, flash
 from flask_cors import CORS
+# from urlparse import urlparse, urljoin
+# from werkzeug.security import generate_password_hash
 import query_nsides_mongo
 import query_nsides_mysql
 from pymongo import MongoClient
@@ -26,6 +28,7 @@ from datetime import datetime
 from oauth2client.client import flow_from_clientsecrets
 from pprint import pprint
 
+# response is automatically created for each app.route
 
 def authenticated(fn):
     """Decorator for requiring authentication on a route."""
@@ -102,6 +105,7 @@ def load_portal_client(redirect_uri):
     flow = flow_from_clientsecrets(app.config['CLIENT_SECRET'],
                                    scope='PRODUCTION',
                                    redirect_uri=redirect_uri)
+    print 'flow \n ', flow
     return flow
 
 def get_result(base_url, path, access_token):
@@ -112,9 +116,9 @@ def get_result(base_url, path, access_token):
                         headers=req_headers,
                         verify=False)
     # resp.raise_for_status()
-    print 'Status code:', resp.status_code
+    # print 'Status code:', resp.status_code
     resp_result = resp.json()
-    print 'Response:', resp_result
+    # print 'Response:', resp_result
 
     if 'status' in resp_result:
         if resp_result['status'] == 'error':
@@ -139,9 +143,9 @@ def post_result(base_url, path, access_token, data_type, post_data):
     print "POST URL:"
     print req_url
     print "HEADERS:"
-    print pprint(req_headers)
+    # print pprint(req_headers)
     print "JSON:"
-    print pprint(post_data)
+    # print pprint(post_data)
     print ""
     if data_type == 'json':
         resp = requests.post(req_url, headers=req_headers, json=post_data, verify=False)
@@ -149,16 +153,16 @@ def post_result(base_url, path, access_token, data_type, post_data):
         resp = requests.post(req_url, headers=req_headers, data=post_data, verify=False)
     else:
         resp = 'Please choose the data type: "json" or "data"'
-        print resp
+        # print resp
         return False, resp
 
-    print 'Status code:', resp.status_code
+    # print 'Status code:', resp.status_code
     resp_result = resp.json()
-    print 'Response:', resp_result
+    # print 'Response:', resp_result
     
     if 'status' in resp_result:
         if resp_result['status'] == 'error':
-            print 'error message:', resp_result['message']
+            # print 'error message:', resp_result['message']
             return False, resp_result['message']
     elif 'fault' in resp_result:
         return False, resp_result['fault']['message']
@@ -226,6 +230,7 @@ def job_permission(job_id):
     return resp
 
 def is_safe_redirect_url(target):
+    # print 'yoooooooooooooooooo', urlparse, urljoin
     host_url = urlparse(request.host_url)
     redirect_url = urlparse(urljoin(request.host_url, target))
     return redirect_url.scheme in ('http', 'https') and host_url.netloc == redirect_url.netloc
@@ -264,82 +269,7 @@ def get_revoke():
 # def nsides_main_purl(drugs=None, outcomes=None, models=None):
 #     return render_template('nsides_main.html')
 
-# @app.route('/login', methods=['GET'])
-# def login():
-#     """Send the user to Agave Auth."""
-#     return redirect(url_for('authcallback'))
 
-# @app.route('/logout', methods=['GET'])
-# @authenticated
-# def logout():
-#     """
-#     - Revoke tokens with Agave Auth
-#     - Destroy session state
-#     - Redirect user to the Agave Auth logout page
-#     """
-#     get_revoke()
-#     session.clear()
-#     redirect_uri = url_for('nsides_main', _external=True)
-#     return redirect(redirect_uri)
-
-# @app.route('/authcallback', methods=['GET'])
-# def authcallback():
-#     """Handles interaction with Agave Auth service."""
-#     if 'error' in request.args:
-#         flash("We couldn't log you into the portal: " + request.args.get('error_description', request.args['error']))
-#         return redirect(url_for('nsides_main'))
-
-#     redirect_uri = url_for('authcallback', _external=True)
-#     client = load_portal_client(redirect_uri)
-#     auth_uri = client.step1_get_authorize_url()
-#     print 'auth uri', auth_uri
-    
-#     if 'code' not in request.args:
-#         # if no 'code' query string parameter, start Agave Auth login flow
-#         auth_uri = client.step1_get_authorize_url()
-#         return redirect(auth_uri)
-#     else:
-#         # otherwise, we're coming back from Agave Auth; start to exchange auth code for token
-#         code = request.args.get('code')
-#         print 'code', code
-#         tokens = client.step2_exchange(code)
-#         tokens.revoke_uri = app.config['REVOKE_URL']
-#         token_json = tokens.to_json()
-#         print 'token json',token_json
-        
-#         user_profile = get_result(app.config['PROFILE_URL_BASE'],
-#                                     'me',
-#                                     tokens.access_token)
-#         if user_profile[0]:
-#             print 'username',user_profile[1]['username']
-#         else:
-#             flash("User profile was not retrieved. Error:" + user_profile[1])
-
-#         session.update(
-#             tokens=tokens.to_json(),
-#             is_authenticated=True,
-#             name=user_profile[1]['full_name'],
-#             email=user_profile[1]['email'],
-#             institution='',
-#             primary_identity=user_profile[1]['username']
-#         )
-
-#         profile = udb.load_profile(session['primary_identity'])
-#         if profile:
-#             name, email, institution = profile
-#             session['name'] = name
-#             session['email'] = email
-#             session['institution'] = institution
-#         else:
-#             udb.save_profile(identity_id=session['primary_identity'],
-#                                   name=session['name'],
-#                                   email=session['email'],
-#                                   institution=session['institution'])
-#             handle_permission(session['primary_identity'])
-
-#             return redirect(url_for('profile', next=url_for('submit_job')))
-        
-#         return redirect(url_for('submit_job'))
 
 # @app.route('/jobsubmission', methods=['GET', 'POST'])
 # @authenticated
@@ -549,7 +479,7 @@ def api_call(service = None, meta = None, query = None):
                 model_type = 'all'
 
             query = {'drugs': drugs, 'outcome': outcome, 'model': model_type}
-            print "Parsed query:", query
+            # print "Parsed query:", query
 
             service_result = query_nsides_mongo.query_db(service, meta, query)
             json = '''{"results": %s}''' %(str(service_result))
@@ -558,7 +488,7 @@ def api_call(service = None, meta = None, query = None):
         elif meta == 'topOutcomesForDrug': #'get_top_10_effects':
             drugs = request.args.get('drugs')
             print('DRUGS:')
-            print(drugs)
+            # print(drugs)
             if drugs == [''] or drugs is None:
                 response.status = 400
                 return 'No drug(s) selected'
@@ -572,7 +502,7 @@ def api_call(service = None, meta = None, query = None):
                 model_type = 'all'
 
             query = {'drugs': drugs, 'numResults': num_results, 'model': model_type}
-            print "Parsed query:", query
+            # print "Parsed query:", query
 
             service_result = query_nsides_mongo.query_db(service, meta, query)
             json = '''{"results": %s}''' %(str(service_result))
@@ -661,9 +591,99 @@ def api_call(service = None, meta = None, query = None):
 
     return json
 
+###################
+#     ROUTES      #
+#################
+@app.route('/login', methods=['GET'])
+def login():
+    """Send the user to Agave Auth."""
+    print 'sending user to agave auth'
+    return redirect(url_for('authcallback'))
+
+@app.route('/logout', methods=['GET'])
+@authenticated
+def logout():
+    """
+    - Revoke tokens with Agave Auth
+    - Destroy session state
+    - Redirect user to the Agave Auth logout page
+    """
+    get_revoke()
+    session.clear()
+    redirect_uri = url_for('nsides_main', _external=True)
+    return redirect(redirect_uri)
+
+@app.route('/authcallback', methods=['GET'])
+def authcallback():
+    """Handles interaction with Agave Auth service."""
+    if 'error' in request.args:
+        flash("We couldn't log you into the portal: " + request.args.get('error_description', request.args['error']))
+        return redirect(url_for('nsides_main'))
+    print 'url was ', url_for('authcallback')
+    redirect_uri = url_for('authcallback', _external=True)
+    print 'redirect uri\n ', redirect_uri
+    client = load_portal_client(redirect_uri)
+    print 'client\n ', client
+    auth_uri = client.step1_get_authorize_url()
+    print 'auth uri\n ', auth_uri
+    
+    if 'code' not in request.args:
+        # if no 'code' query string parameter, start Agave Auth login flow
+        auth_uri = client.step1_get_authorize_url()
+        print 'starting agave auth login with\n', auth_uri
+        return redirect(auth_uri)
+    else:
+        # otherwise, we're coming back from Agave Auth; start to exchange auth code for token
+        code = request.args.get('code')
+        print 'code', code
+        tokens = client.step2_exchange(code)
+        tokens.revoke_uri = app.config['REVOKE_URL']
+        token_json = tokens.to_json()
+        print 'token json',token_json
+        
+        user_profile = get_result(app.config['PROFILE_URL_BASE'],
+                                    'me',
+                                    tokens.access_token)
+        if user_profile[0]:
+            print 'username',user_profile[1]['username']
+        else:
+            flash("User profile was not retrieved. Error:" + user_profile[1])
+
+        session.update(
+            tokens=tokens.to_json(),
+            is_authenticated=True,
+            name=user_profile[1]['full_name'],
+            email=user_profile[1]['email'],
+            institution='',
+            primary_identity=user_profile[1]['username']
+        )
+
+        profile = udb.load_profile(session['primary_identity'])
+        if profile:
+            name, email, institution = profile
+            session['name'] = name
+            session['email'] = email
+            session['institution'] = institution
+        else:
+            udb.save_profile(identity_id=session['primary_identity'],
+                                  name=session['name'],
+                                  email=session['email'],
+                                  institution=session['institution'])
+            handle_permission(session['primary_identity'])
+
+            return redirect(url_for('profile', next=url_for('submit_job')))
+        
+        return redirect(url_for('submit_job'))
+
+@app.route('/')
+def home():
+    return render_template("nsides.html")
+
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
+@authenticated
 def catch_all(path):
+    print 'fell in catchall'
     return render_template("nsides.html")
 
 if __name__ == "__main__":

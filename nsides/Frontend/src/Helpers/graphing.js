@@ -9,7 +9,6 @@ import c3 from 'c3';
 /* 
 Tooltip from: http://bl.ocks.org/d3noob/6eb506b129f585ce5c8a
 */
-//function drawTimeSeriesGraph(data,title,dateformat) {
 const createXAxis = function (x, height) {
   return d3.axisBottom()
     .scale(x)
@@ -142,6 +141,7 @@ const drawTimeSeriesGraph = function (data, data2, title, title2, dateformat, bl
 
     // Threshold line
     var prrThreshold = 2;
+    console.log('line 144', x.range()[0], x.range()[1], y(prrThreshold));
     svg.append("line")
       .attr("class", "divider")
       .attr("x1", x.range()[0])
@@ -458,9 +458,7 @@ const provideFocus = function () {
     .attr("x2", width + width);
 }
 
-const setUpFocus = function () {
-  var height = 330;
-  var width = 850;
+const setUpFocus = function (height, width, ) {
   var svg = d3.select(`#c3-graph svg`);
   var focus = svg.append("g").style("display", "none"); //  focus area when mouse moves
 
@@ -520,12 +518,8 @@ const drawNreportsAndControlGraph = function (data2) {
     nreports.push(datum.nreports);
     years.push(datum.year.getFullYear());
   });
-  var chart = c3.generate({
+  c3.generate({
     bindto: `#c3-graph`,
-    // size: {
-    //   height: 330,
-    //   width: 850
-    // },
     padding: {
       top: 20
     },
@@ -596,7 +590,6 @@ const drawNreportsAndControlGraph = function (data2) {
     grid: {
       x: {
         show: true
-        // lines: yearAxis
       },
       y: {
         show: true
@@ -612,7 +605,7 @@ const drawNreportsAndControlGraph = function (data2) {
   // chart.focus();
   trimAxis(`#c3-graph g.c3-axis.c3-axis-y g`);
   trimAxis(`#c3-graph g.c3-axis.c3-axis-y2 g`);
-  setUpFocus();
+  // setUpFocus();
 }
 
 const all = {

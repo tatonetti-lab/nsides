@@ -84,9 +84,9 @@ def query_db(service, method, query=False, cache=False):
 
     json_return = []
     if service == 'nsides':
-        print "  Service: ",service
-        print "  Method: ", method
-        print "  Query : ", query
+        # print "  Service: ",service
+        # print "  Method: ", method
+        # print "  Query : ", query
 
         if method == 'estimateForDrug_Outcome':
             if query["model"] == 'all':
@@ -363,7 +363,7 @@ def query_db(service, method, query=False, cache=False):
             #     "effect_snomed" : "435459",
             #     "effect_rxnorm" : "19097016"
             # })
-        print(json.dumps(json_return, indent=2))
+        # print(json.dumps(json_return, indent=2))
         return json.dumps(json_return)
 
     elif service == 'druginfo':
