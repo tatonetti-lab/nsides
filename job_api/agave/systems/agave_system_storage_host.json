@@ -1,5 +1,5 @@
 {
-  "owner": "cyoun",
+  "owner": "nsidescommunity",
   "available": true,
   "description": "flat file storage system for the Drug effect gateway",
   "storage": {
@@ -11,17 +11,17 @@
       "type": "SSHKEYS"
     },
     "publicAppsDir": "/apps",
-    "host": "192.31.21.207",
+    "host": "34.205.195.72",
     "rootDir": "/",
-    "homeDir": "/home/cyoun/projects/agave",
+    "homeDir": "/home/ubuntu/nsidescommunity",
     "proxyTunnel": "NO"
   },
   "type": "STORAGE",
-  "site": "degosg.org",
+  "site": "http://nsides.io/",
   "default": false,
   "public": false,
   "globalDefault": false,
-  "name": "Drug Effect Database Gateway Repository",
-  "id": "deg.osg.resp",
+  "name": "nsides storage (Amazon ElasticBeanstalk)",
+  "id": "nsides-job-repository",
   "status": "UP"
 }
