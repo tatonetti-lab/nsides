@@ -46,7 +46,7 @@ def query_db(service, method, query=False, cache=False):
     elif service == 'lab':
         print "Service: ",service
         print "Method: ",method
-        print "Query: ",query
+        # print "Query: ",query
         if method == 'ae_to_lab':
             SQL = '''select adverse_effect_name, lab_test_name, loinc_code, normal_range_low, normal_range_high, limit_value_low, limit_value_high, unit
                 from ebdb.adverse_event_to_lab_test;'''.format(query=query)
@@ -73,7 +73,7 @@ def query_db(service, method, query=False, cache=False):
     elif service == 'omop':
         print "Service: ",service
         print "Method: ",method
-        print "Query: ",query
+        # print "Query: ",query
 
         if method == 'reference':
             SQL = '''select *
@@ -81,7 +81,7 @@ def query_db(service, method, query=False, cache=False):
                 where drugbank_id != ''
                 and adverse_event = '{query}';'''.format(query=query)
 
-            print SQL
+            # print SQL
 
             cur.execute(SQL)
             results = cur.fetchall()
@@ -127,7 +127,7 @@ def query_db(service, method, query=False, cache=False):
     elif service == 'sider':
         print "Service: ",service
         print "Method: ",method
-        print "Query: ",query
+        # print "Query: ",query
         if method == 'drugForEffectFreq':
             SQL = """select stitch_id, drug_name, lower_bound, upper_bound
                     from effect_freqs
