@@ -12,6 +12,7 @@ class DrugSelectBox extends React.Component {
     this.state = {
       options: drugs,
       value: '', //[],
+      request: null
     };
   }
 
@@ -59,7 +60,7 @@ class DrugSelectBox extends React.Component {
       }
     } else {
       var api_call = '/api/v1/query?service=nsides&meta=topOutcomesForDrug&numResults=' + numResults + '&drugs=' + selectedDrug;
-      console.log(api_call);
+      console.log('apicall', api_call);
 
       request = fetch(api_call)
         .then(function (response) {

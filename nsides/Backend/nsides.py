@@ -27,6 +27,8 @@ import json
 from datetime import datetime
 from oauth2client.client import flow_from_clientsecrets
 from pprint import pprint
+import xml.etree.ElementTree as ET
+import urllib
 
 # response is automatically created for each app.route
 
@@ -259,104 +261,104 @@ def get_revoke():
 # ROUTES #
 ##########
 
-# @app.route('/')
-# def nsides_main():
-#     return render_template('nsides_main.html')
+@app.route('/')
+def nsides_main():
+    return render_template('nsides_main.html')
 
-# @app.route('/r/<drugs>')
-# @app.route('/r/<drugs>/<outcomes>')
-# @app.route('/r/<drugs>/<outcomes>/<models>')
-# def nsides_main_purl(drugs=None, outcomes=None, models=None):
-#     return render_template('nsides_main.html')
+@app.route('/r/<drugs>')
+@app.route('/r/<drugs>/<outcomes>')
+@app.route('/r/<drugs>/<outcomes>/<models>')
+def nsides_main_purl(drugs=None, outcomes=None, models=None):
+    return render_template('nsides_main.html')
 
 
 
-# @app.route('/jobsubmission', methods=['GET', 'POST'])
-# @authenticated
-# def submit_job():
-#     print request.method
+@app.route('/jobsubmission', methods=['GET', 'POST'])
+@authenticated
+def submit_job():
+    print request.method
 
-#     if request.method == 'GET':
-#         return render_template('jobsubmission.html')
+    if request.method == 'GET':
+        return render_template('jobsubmission.html')
 
-#     if request.method == 'POST':
-#         print "REQUEST: ", json.dumps(request.form, indent=2)
-#         if not request.form.get('mtype'):
-#             flash('Please select a model type.')
-#             return redirect(url_for('submit_job'))
-#         if not request.form.get('model_index'):
-#             flash('Please enter a drug index.')
-#             return redirect(url_for('submit_job'))
+    if request.method == 'POST':
+        print "REQUEST: ", json.dumps(request.form, indent=2)
+        if not request.form.get('mtype'):
+            flash('Please select a model type.')
+            return redirect(url_for('submit_job'))
+        if not request.form.get('model_index'):
+            flash('Please enter a drug index.')
+            return redirect(url_for('submit_job'))
 
-#         job = get_job(request.form.get('mtype'), request.form.get('model_index'))
-#         if job[0]:
-#             result = job_permission(job[1]['id'])
-#             if not result[0]:
-#                 flash('Job permission error: '+result[1])
-#             flash('Job request submitted successfully. Job ID: ' + job[1]['id'])
-#         else:
-#             flash('Job request was not submitted. Error: ' + job[1])
+        job = get_job(request.form.get('mtype'), request.form.get('model_index'))
+        if job[0]:
+            result = job_permission(job[1]['id'])
+            if not result[0]:
+                flash('Job permission error: '+result[1])
+            flash('Job request submitted successfully. Job ID: ' + job[1]['id'])
+        else:
+            flash('Job request was not submitted. Error: ' + job[1])
 
-#         return redirect(url_for('job_list'))
+        return redirect(url_for('job_list'))
 
-# @app.route('/profile', methods=['GET', 'POST'])
-# @authenticated
-# def profile():
-#     """Show user profile information"""
-#     if request.method == 'GET':
-#         identity_id = session.get('primary_identity')
-#         profile = udb.load_profile(identity_id)
+@app.route('/profile', methods=['GET', 'POST'])
+@authenticated
+def profile():
+    """Show user profile information"""
+    if request.method == 'GET':
+        identity_id = session.get('primary_identity')
+        profile = udb.load_profile(identity_id)
 
-#         if profile:
-#             name, email, institution = profile
+        if profile:
+            name, email, institution = profile
 
-#             session['name'] = name
-#             session['email'] = email
-#             session['institution'] = institution
+            session['name'] = name
+            session['email'] = email
+            session['institution'] = institution
         
-#         else:
-#             flash('Please complete any missing profile fields and press "save".')
+        else:
+            flash('Please complete any missing profile fields and press "save".')
 
-#         if request.args.get('next'):
-#             session['next'] = get_safe_redirect()
+        if request.args.get('next'):
+            session['next'] = get_safe_redirect()
 
-#         return render_template('profile.html')
+        return render_template('profile.html')
 
-#     elif request.method == 'POST':
-#         name = session['name'] = request.form['name']
-#         email = session['email'] = request.form['email']
-#         institution = session['institution'] = request.form['institution']
+    elif request.method == 'POST':
+        name = session['name'] = request.form['name']
+        email = session['email'] = request.form['email']
+        institution = session['institution'] = request.form['institution']
 
-#         udb.save_profile(identity_id=session['primary_identity'],
-#                          name=name,
-#                          email=email,
-#                          institution=institution)
+        udb.save_profile(identity_id=session['primary_identity'],
+                         name=name,
+                         email=email,
+                         institution=institution)
         
-#         flash('Thank you! Your profile has been successfully updated.')
+        flash('Thank you! Your profile has been successfully updated.')
 
-#         if 'next' in session:
-#             redirect_to = session['next']
-#             session.pop('next')
-#         else:
-#             redirect_to = url_for('profile')
+        if 'next' in session:
+            redirect_to = session['next']
+            session.pop('next')
+        else:
+            redirect_to = url_for('profile')
 
-#         return redirect(redirect_to)
+        return redirect(redirect_to)
 
-# @app.route('/signup', methods=['GET'])
-# def signup():
-#     """Send the user to Agave Auth"""
-#     return redirect(app.config['SIGNUP'])
+@app.route('/signup', methods=['GET'])
+def signup():
+    """Send the user to Agave Auth"""
+    return redirect(app.config['SIGNUP'])
 
-# @app.route('/api')
-# def api():
-#     return render_template('nsides_api.html')
+@app.route('/api')
+def api():
+    return render_template('nsides_api.html')
 
-# @app.route('/joblist', methods=['GET'])
-# @authenticated
-# def job_list():
-#     j_tokens = json.loads(session['tokens'])
-#     job_list = get_result(app.config['JOB_URL_BASE'], '', j_tokens['access_token'])
-#     return render_template('job_list.html', joblist=job_list)
+@app.route('/joblist', methods=['GET'])
+@authenticated
+def job_list():
+    j_tokens = json.loads(session['tokens'])
+    job_list = get_result(app.config['JOB_URL_BASE'], '', j_tokens['access_token'])
+    return render_template('job_list.html', joblist=job_list)
 
 
 # API STUFF
@@ -487,7 +489,15 @@ def api_call(service = None, meta = None, query = None):
         # e.g. /api/v1/query?service=nsides&meta=topOutcomesForDrug&numResults=10&drugs=19097016
         elif meta == 'topOutcomesForDrug': #'get_top_10_effects':
             drugs = request.args.get('drugs')
-            print('DRUGS:')
+            print type(drugs), drugs
+            url = urllib.urlopen('https://rxnav.nlm.nih.gov/REST/rxcui/'+'1191'+'/related?tty=IN')
+            tree = ET.parse(url)
+            root = tree.getroot()
+            rxcui = root.findall("./relatedGroup/conceptGroup/conceptProperties/rxcui")
+            for ele in rxcui:
+                print 'element was', ele.text
+            print('DRUGS:'), url, drugs
+            drugs = '1151789'
             # print(drugs)
             if drugs == [''] or drugs is None:
                 response.status = 400
@@ -588,7 +598,7 @@ def api_call(service = None, meta = None, query = None):
         json = '''{"": ""}'''
 
     json = json.replace("'", '"')
-
+    print 'Completing requests with ', json
     return json
 
 ###################
