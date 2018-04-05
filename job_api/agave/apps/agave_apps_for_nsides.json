@@ -1,0 +1,60 @@
+{
+  "id": "nsides-condor-dag-osg-0.1.1",
+  "name": "nsides-condor-dag-osg",
+  "icon": null,
+  "parallelism": "SERIAL",
+  "defaultProcessorsPerNode": 1,
+  "defaultMemoryPerNode": 1,
+  "defaultNodeCount": 1,
+  "defaultMaxRunTime": "48:00:00",
+  "defaultQueue": "condordagqueue",
+  "version": "0.1.1",
+  "isPublic": false,
+  "helpURI": "https://www.nsides.io/",
+  "label": "Run your codes in the osg",
+  "owner": "nsidescommunity",
+  "shortDescription": "Generic template for running arbitrary codes in osg",
+  "longDescription": "Application for running nsides codes on OSG",
+  "tags": [
+    "osg",
+    "nsides",
+    "drug"
+  ],
+  "ontology": [],
+  "executionType": "CLI",
+  "executionSystem": "nsidescommunity.condor-dag.org",
+  "deploymentPath": "/home/ubuntu/condor_dag_1",
+  "deploymentSystem": "nsides-job-repository",
+  "templatePath": "make_workflows_user.sh",
+  "testPath": "test.sh",
+  "checkpointable": false,
+  "modules": [],
+  "inputs": [],
+  "parameters": [
+    {
+      "id": "model_indexes",
+      "value": {
+        "visible": true,
+        "required": true,
+        "type": "string",
+        "order": 0,
+        "enquote": false,
+        "default": "2451",
+        "validator": null
+      },
+      "details": {
+        "label": "For multiple model indexes, the under bar is used. For example, \"2001_2983\".",
+        "description": null,
+        "argument": null,
+        "showArgument": false,
+        "repeatArgument": false
+      },
+      "semantics": {
+        "minCardinality": 1,
+        "maxCardinality": 1,
+        "ontology": []
+      }
+    }
+  ],
+  "outputs": []
+}

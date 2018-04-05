@@ -6,7 +6,6 @@
     "archiveSystem":"<system storage id>",
     "archivePath":"<storage path",
     "parameters":{
-	    "model_type":"<model type>",
 	    "model_indexes":"<model indexes>"
     },
     "notifications": [

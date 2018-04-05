@@ -1,5 +1,4 @@
 #!/bin/bash
-
 set -e
 
 FOLDER="$(python jobtofolder.py $1)"
@@ -14,7 +13,9 @@ else
 fi
 
 rm dnn_out_$1_*.tgz
-rm results_$1_$2.tgz
+# rm results_$1_$2.tgz
 rm scores*.npy
+
+cp results_$1_$2.tgz ../
 
 exit 0

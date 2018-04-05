@@ -1,0 +1,59 @@
+{
+  "maxSystemJobs": 100,
+  "executionType": "CLI",
+  "available": true,
+  "description": "The side effects are computed via deep learning models which are designed to be computed on the Open Science Grid.",
+  "storage": {
+    "proxy": null,
+    "protocol": "SFTP",
+    "mirror": false,
+    "port": 22,
+    "auth": {
+      "type": "SSHKEYS"
+    },
+    "host": "login.osgconnect.net",
+    "rootDir": "/",
+    "homeDir": "/home/nsidescommunity/repository",
+    "proxyTunnel": "NO"
+  },
+  "type": "EXECUTION",
+  "login": {
+    "proxy": null,
+    "protocol": "SSH",
+    "port": 22,
+    "auth": {
+      "type": "SSHKEYS"
+    },
+    "host": "login.osgconnect.net",
+    "proxyTunnel": "NO"
+  },
+  "startupScript": ".bashrc",
+  "scheduler": "FORK",
+  "default": false,
+  "public": false,
+  "maxSystemJobsPerUser": 10,
+  "id": "nsidescommunity.condor-dag.org",
+  "workDir": "/local-scratch/nsidescommunity/",
+  "owner": "nsidescommunity",
+  "site": "http://nsides.io/",
+  "environment": "",
+  "queues": [
+    {
+      "maxJobs": 100,
+      "maxMemoryPerNode": "1GB",
+      "default": false,
+      "maxRequestedTime": "48:00:00",
+      "name": "condordagqueue",
+      "description": null,
+      "maxNodes": 128,
+      "maxProcessorsPerNode": 32,
+      "mappedName": null,
+      "maxUserJobs": -1,
+      "customDirectives": null
+    }
+  ],
+  "globalDefault": false,
+  "name": "nSides Gateway",
+  "status": "UP",
+  "scratchDir": "/local-scratch/nsidescommunity/"
+}
