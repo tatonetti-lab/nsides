@@ -2,7 +2,7 @@ import React from 'react';
 import drugs from './drugs-top-200';
 import Select from 'react-select';
 import '../../css/react-select.css';
-
+console.log(drugs[0])
 var request = null;
 class DrugSelectBox extends React.Component {
   constructor(props) {

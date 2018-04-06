@@ -261,9 +261,9 @@ def get_revoke():
 # ROUTES #
 ##########
 
-@app.route('/')
-def nsides_main():
-    return render_template('nsides_main.html')
+# @app.route('/')
+# def nsides_main():
+#     return render_template('nsides_main.html')
 
 @app.route('/r/<drugs>')
 @app.route('/r/<drugs>/<outcomes>')
@@ -490,14 +490,17 @@ def api_call(service = None, meta = None, query = None):
         elif meta == 'topOutcomesForDrug': #'get_top_10_effects':
             drugs = request.args.get('drugs')
             print type(drugs), drugs
-            url = urllib.urlopen('https://rxnav.nlm.nih.gov/REST/rxcui/'+'1191'+'/related?tty=IN')
-            tree = ET.parse(url)
-            root = tree.getroot()
-            rxcui = root.findall("./relatedGroup/conceptGroup/conceptProperties/rxcui")
-            for ele in rxcui:
-                print 'element was', ele.text
-            print('DRUGS:'), url, drugs
-            drugs = '1151789'
+            drugs = drugs.split(',')
+            all_drugs_ingredients = []
+            for drug in drugs:
+                url = urllib.urlopen('https://rxnav.nlm.nih.gov/REST/rxcui/' + drug + '/related?tty=IN')
+                tree = ET.parse(url)
+                root = tree.getroot()
+                rxcui = root.findall("./relatedGroup/conceptGroup/conceptProperties/rxcui")
+                for ele in rxcui:
+                    all_drugs_ingredients.append(ele.text)
+            all_drugs_ingredients = ','.join(all_drugs_ingredients)
+            print('DRUGS:'), url, 'ingredients', all_drugs_ingredients
             # print(drugs)
             if drugs == [''] or drugs is None:
                 response.status = 400
@@ -511,7 +514,7 @@ def api_call(service = None, meta = None, query = None):
             if model_type == [''] or model_type is None:
                 model_type = 'all'
 
-            query = {'drugs': drugs, 'numResults': num_results, 'model': model_type}
+            query = {'drugs': all_drugs_ingredients, 'numResults': num_results, 'model': model_type}
             # print "Parsed query:", query
 
             service_result = query_nsides_mongo.query_db(service, meta, query)
