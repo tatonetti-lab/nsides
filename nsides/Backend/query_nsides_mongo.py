@@ -48,8 +48,8 @@ def main():
     print >> sys.stderr, "Loading password from ./nsides-mongo.cnf..."
     MONGODB_HOST, MONGODB_UN, MONGODB_PW = open('./nsides-mongo.cnf').read().strip().split('\n')
     
-    client = pymongo.MongoClient('mongodb://%s:%s@%s:%s/nsides_dev?authSource=admin' % (MONGODB_UN, MONGODB_PW, MONGODB_HOST, MONGODB_PORT))
-    db = client.nsides_dev
+    client = pymongo.MongoClient('mongodb://%s:%s@%s:%s/nsides_in?authSource=admin' % (MONGODB_UN, MONGODB_PW, MONGODB_HOST, MONGODB_PORT))
+    db = client.nsides_in
     estimates = db.estimates
 
     print >> sys.stderr, "%s" % db.collection_names()
@@ -73,9 +73,14 @@ def query_db(service, method, query=False, cache=False):
     # print 'MongoDB username: ', MONGODB_UN
     # print 'MongoDB password: ', MONGODB_PW
     
-    client = pymongo.MongoClient('mongodb://%s:%s@%s:%s/nsides_dev?authSource=admin' % (MONGODB_UN, MONGODB_PW, MONGODB_HOST, MONGODB_PORT))
-    db = client.nsides_dev
-    estimates = db.estimates
+    client = pymongo.MongoClient('mongodb://%s:%s@%s:%s/nsides_in?authSource=admin' % (MONGODB_UN, MONGODB_PW, MONGODB_HOST, MONGODB_PORT))
+    # db = client.nsides_in
+    db = client.nsides_in
+    estimates = None
+    if type(query["drugs"]) == 'string':
+        estimates = db.estimates_agave
+    else: 
+        estimates = db.estimates
     gpcr = db.gpcr
     
     
@@ -84,9 +89,9 @@ def query_db(service, method, query=False, cache=False):
 
     json_return = []
     if service == 'nsides':
-        # print "  Service: ",service
-        # print "  Method: ", method
-        # print "  Query : ", query
+        print "  Service: ",service
+        print "  Method: ", method
+        print "  Query : ", query
 
         if method == 'estimateForDrug_Outcome':
             if query["model"] == 'all':
@@ -146,7 +151,7 @@ def query_db(service, method, query=False, cache=False):
                                         { 'snomed': int(query["outcome"]) },
                                         { 'model': query["model"] }
                                         ]
-                                    });
+                                    })
             
                 if estimate_record is None:
                     print "  No record found"
@@ -221,7 +226,7 @@ def query_db(service, method, query=False, cache=False):
                 ]
 
             estimate_records = estimates.aggregate(pipeline)
-            #ipdb.set_trace()
+            # ipdb.set_trace()
 
             outcomes = []
             for record in estimate_records:

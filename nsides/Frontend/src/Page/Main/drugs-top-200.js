@@ -316,7 +316,7 @@ var rxnormDrugs = [
   { value: '4492', label: 'Fluorouracil'},
   { value: '3443', label: 'Diltiazem'},
   { value: '1114195', label: 'rivaroxaban'},
-  { value: undefined, label: 'Insulin'},
+  // { value: undefined, label: 'Insulin'},
   { value: '1102261', label: 'telaprevir'},
   { value: '82122', label: 'Levofloxacin'},
   { value: '3639', label: 'Doxorubicin'},
@@ -402,6 +402,6 @@ var rxnormDrugs = [
   { value: '8787', label: 'Propranolol'},
   { value: '6813', label: 'Methadone'},
   { value:'1012892', label: 'fingolimod'},
-  { value: undefined, label: 'Multivitamin preparation'}
+  // { value: undefined, label: 'Multivitamin preparation'}
 ]
 export default rxnormDrugs;

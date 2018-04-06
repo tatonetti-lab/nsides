@@ -265,11 +265,11 @@ def get_revoke():
 # def nsides_main():
 #     return render_template('nsides_main.html')
 
-@app.route('/r/<drugs>')
-@app.route('/r/<drugs>/<outcomes>')
-@app.route('/r/<drugs>/<outcomes>/<models>')
-def nsides_main_purl(drugs=None, outcomes=None, models=None):
-    return render_template('nsides_main.html')
+# @app.route('/r/<drugs>')
+# @app.route('/r/<drugs>/<outcomes>')
+# @app.route('/r/<drugs>/<outcomes>/<models>')
+# def nsides_main_purl(drugs=None, outcomes=None, models=None):
+#     return render_template('nsides_main.html')
 
 
 
@@ -439,6 +439,21 @@ def api_aeolus_drugpairList():
 def api_aeolus_drugpairReactionListMedDRA():
     return api_call('aeolus', 'drugpairReactionListMedDRA')
 
+def convertDrugsToIngredients (drugs):
+    drugs = drugs.split(',')
+    all_drugs_ingredients = []
+    for drug in drugs:
+        url = urllib.urlopen('https://rxnav.nlm.nih.gov/REST/rxcui/' + drug + '/related?tty=IN')
+        tree = ET.parse(url)
+        root = tree.getroot()
+        rxcui = root.findall("./relatedGroup/conceptGroup/conceptProperties/rxcui")
+        for ele in rxcui:
+            all_drugs_ingredients.append(ele.text)
+    if len(all_drugs_ingredients) == 1:
+        all_drugs_ingredients = int(all_drugs_ingredients[0])
+    else:
+        all_drugs_ingredients = ','.join(all_drugs_ingredients)
+    return all_drugs_ingredients
 
 @app.route('/api/v1/query')
 def api_call(service = None, meta = None, query = None):
@@ -467,6 +482,7 @@ def api_call(service = None, meta = None, query = None):
             #drugs = [drug.replace('|',',') for drug in request.params.get('drugs').split(',')]
             # ^ Separate individual drugs using comma. Drug class represented as `DrugA|DrugB|etc`
             drugs = request.args.get('drugs')
+            all_drugs_ingredients = convertDrugsToIngredients(drugs)
             if drugs == [''] or drugs is None:
                 response.status = 400
                 return 'No drug(s) selected'
@@ -480,7 +496,7 @@ def api_call(service = None, meta = None, query = None):
             if model_type == [''] or model_type is None:
                 model_type = 'all'
 
-            query = {'drugs': drugs, 'outcome': outcome, 'model': model_type}
+            query = {'drugs': all_drugs_ingredients, 'outcome': outcome, 'model': model_type}
             # print "Parsed query:", query
 
             service_result = query_nsides_mongo.query_db(service, meta, query)
@@ -489,18 +505,10 @@ def api_call(service = None, meta = None, query = None):
         # e.g. /api/v1/query?service=nsides&meta=topOutcomesForDrug&numResults=10&drugs=19097016
         elif meta == 'topOutcomesForDrug': #'get_top_10_effects':
             drugs = request.args.get('drugs')
-            print type(drugs), drugs
-            drugs = drugs.split(',')
-            all_drugs_ingredients = []
-            for drug in drugs:
-                url = urllib.urlopen('https://rxnav.nlm.nih.gov/REST/rxcui/' + drug + '/related?tty=IN')
-                tree = ET.parse(url)
-                root = tree.getroot()
-                rxcui = root.findall("./relatedGroup/conceptGroup/conceptProperties/rxcui")
-                for ele in rxcui:
-                    all_drugs_ingredients.append(ele.text)
-            all_drugs_ingredients = ','.join(all_drugs_ingredients)
-            print('DRUGS:'), url, 'ingredients', all_drugs_ingredients
+            # print type(drugs), drugs
+            all_drugs_ingredients = convertDrugsToIngredients(drugs)
+
+            print('DRUGS:'), 'ingredients', all_drugs_ingredients
             # print(drugs)
             if drugs == [''] or drugs is None:
                 response.status = 400
@@ -601,7 +609,7 @@ def api_call(service = None, meta = None, query = None):
         json = '''{"": ""}'''
 
     json = json.replace("'", '"')
-    print 'Completing requests with ', json
+    print 'Completing requests with ', json[0:14]
     return json
 
 ###################
