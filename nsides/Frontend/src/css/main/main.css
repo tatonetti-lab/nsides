@@ -385,7 +385,7 @@ path {
 .drug-effect-boxes {
   display: flex; 
   flex-direction: row;
-  text-align: center;
+  justify-content: center;
 }
 
 .select_container, .select_container_effect {

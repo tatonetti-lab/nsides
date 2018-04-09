@@ -1,8 +1,8 @@
 import React from 'react';
-import drugs from './drugs-top-200';
+import { rxnormDrugs } from '../../Helpers/drugs-top-200';
 import Select from 'react-select';
 import '../../css/react-select.css';
-console.log(drugs[0])
+console.log(rxnormDrugs[0])
 var request = null;
 class DrugSelectBox extends React.Component {
   constructor(props) {
@@ -10,7 +10,7 @@ class DrugSelectBox extends React.Component {
     this.handleSelectChange = this.handleSelectChange.bind(this);
     this.apiTopOutcomes = this.apiTopOutcomes.bind(this);
     this.state = {
-      options: drugs,
+      options: rxnormDrugs,
       value: '', //[],
       request: null
     };

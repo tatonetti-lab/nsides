@@ -8,7 +8,7 @@ import { Route, Switch, /*Redirect*/ } from 'react-router';
 import { ConnectedRouter, routerReducer, routerMiddleware } from 'react-router-redux';
 import Reducers from './Redux/Reducers/Reducers';
 import Main from './Page/Main/Main';
-
+import Jobsubmission from './Page/Jobsubmission/Jobsubmission';
 
 // Create a history of your choosing (we're using a browser history in this case)
 const history = createHistory();
@@ -41,6 +41,15 @@ let app = (
         {
           <Switch>
             <Route exact path="/" render={() => {
+              return <Main/>;
+            }}/>
+            <Route exact path="/jobsubmission" render={() => {
+              return <Jobsubmission/>;
+            }}/>
+            <Route exact path="/joblist" render={() => {
+              return <Main/>;
+            }}/>
+            <Route exact path="/profile" render={() => {
               return <Main/>;
             }}/>
           </Switch>

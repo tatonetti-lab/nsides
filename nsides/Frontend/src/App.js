@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
+import Header from './Header';
 // import Actions from './Redux/Actions/Actions';
 // import { push } from 'react-router-redux';
 // import axios from 'axios';
@@ -14,6 +15,7 @@ class App extends Component {
   render() {
     return (
       <div className="Application">
+        <Header/>
         { this.props.children }
       </div>
     );

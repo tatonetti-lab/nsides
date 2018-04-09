@@ -1,4 +1,4 @@
-var drugs = [
+var conceptIdDrugs = [
   { value: "1151789", label: "Etanercept" },
   { value: "1119119", label: "adalimumab" },
   { value: "1112807", label: "Aspirin" },
@@ -404,4 +404,7 @@ var rxnormDrugs = [
   { value:'1012892', label: 'fingolimod'},
   // { value: undefined, label: 'Multivitamin preparation'}
 ]
-export default rxnormDrugs;
+export {
+  rxnormDrugs,
+  conceptIdDrugs
+};

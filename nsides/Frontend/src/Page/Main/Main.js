@@ -6,9 +6,9 @@ import { drawTimeSeriesGraph } from '../../Helpers/graphing';
 import DrugSelectBox from './DrugSelectBox';
 import EffectSelectBox from './EffectSelectBox';
 import SubmitModelButton from './SubmitModelButton';
-import Header from './Header';
+import Header from '../../Header';
 import ModelType from './ModelType';
-import '../../css/main.css';
+import '../../css/main/main.css';
 import '../../css/fonts.css';
 // import axios from 'axios';
 // import Actions from '../../Redux/Actions/Actions';
@@ -143,7 +143,7 @@ class Main extends React.Component {
   render () {
     // console.log('rendering', this.state);
     return <div id='content'>
-      <Header/>
+      {/* <Header/> */}
       <div id='selection'>
         <div className='select-row'>
           <div className='drug-effect-boxes standardStyle'>
