@@ -8,8 +8,6 @@ import EffectSelectBox from './EffectSelectBox';
 import SubmitModelButton from './SubmitModelButton';
 import Header from '../../Header';
 import ModelType from './ModelType';
-import '../../css/main/main.css';
-import '../../css/fonts.css';
 // import axios from 'axios';
 // import Actions from '../../Redux/Actions/Actions';
 

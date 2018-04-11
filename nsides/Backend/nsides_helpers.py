@@ -3,6 +3,9 @@ import requests
 from pprint import pprint
 import json
 from datetime import datetime
+import xml.etree.ElementTree as ET
+import urllib
+
 with open('./job_template.json') as f:
     jobtemplate = json.load(f)
 
@@ -162,3 +165,19 @@ def get_revoke():
                          verify=False)
     resp.raise_for_status()
     print 'status code for the revoke: ', resp.status_code
+
+def convertDrugsToIngredients (drugs):
+    drugs = drugs.split(',')
+    all_drugs_ingredients = []
+    for drug in drugs:
+        url = urllib.urlopen('https://rxnav.nlm.nih.gov/REST/rxcui/' + drug + '/related?tty=IN')
+        tree = ET.parse(url)
+        root = tree.getroot()
+        rxcui = root.findall("./relatedGroup/conceptGroup/conceptProperties/rxcui")
+        for ele in rxcui:
+            all_drugs_ingredients.append(ele.text)
+    if len(all_drugs_ingredients) == 1:
+        all_drugs_ingredients = int(all_drugs_ingredients[0])
+    else:
+        all_drugs_ingredients = ','.join(all_drugs_ingredients)
+    return all_drugs_ingredients

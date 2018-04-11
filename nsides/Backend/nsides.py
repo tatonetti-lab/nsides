@@ -27,9 +27,7 @@ import json
 from datetime import datetime
 from oauth2client.client import flow_from_clientsecrets
 from pprint import pprint
-import xml.etree.ElementTree as ET
-import urllib
-
+from nsides_helpers import convertDrugsToIngredients
 # response is automatically created for each app.route
 
 def authenticated(fn):
@@ -210,7 +208,7 @@ def get_job(model_type, model_index):
     archival_path = app.config['SYSTEM_STOR_PATH']
     archival_path = archival_path.replace("<username>",session['primary_identity'])
     jobtemplate['archivePath'] = archival_path
-    jobtemplate['parameters']['model_type'] = model_type
+    # jobtemplate['parameters']['model_type'] = model_type
     jobtemplate['parameters']['model_indexes'] = model_index
     jobtemplate['notifications'][1]['url'] = session['email']
     jobtemplate['notifications'][2]['url'] = session['email']
@@ -273,33 +271,33 @@ def get_revoke():
 
 
 
-# @app.route('/jobsubmission', methods=['GET', 'POST'])
-# @authenticated
-# def submit_job():
-#     print request.method
+@app.route('/jobsubmission/submit-job', methods=['POST'])
+@authenticated
+def submit_job():
+    print request.method
 
-#     if request.method == 'GET':
-#         return render_template('jobsubmission.html')
+    # if request.method == 'GET':
+    #     return render_template('jobsubmission.html')
 
-#     if request.method == 'POST':
-#         print "REQUEST: ", json.dumps(request.form, indent=2)
-#         if not request.form.get('mtype'):
-#             flash('Please select a model type.')
-#             return redirect(url_for('submit_job'))
-#         if not request.form.get('model_index'):
-#             flash('Please enter a drug index.')
-#             return redirect(url_for('submit_job'))
+    if request.method == 'POST':
+        print "REQUEST: ", json.dumps(request.form, indent=2)
+        # if not request.form.get('mtype'):
+        #     flash('Please select a model type.')
+        #     return redirect(url_for('submit_job'))l
+        if not request.form.get('model_index'):
+            flash('Please enter a drug index.')
+            return redirect('/jobsubmission')
 
-#         job = get_job(request.form.get('mtype'), request.form.get('model_index'))
-#         if job[0]:
-#             result = job_permission(job[1]['id'])
-#             if not result[0]:
-#                 flash('Job permission error: '+result[1])
-#             flash('Job request submitted successfully. Job ID: ' + job[1]['id'])
-#         else:
-#             flash('Job request was not submitted. Error: ' + job[1])
+        job = get_job(request.form.get('mtype'), request.form.get('model_index'))
+        if job[0]:
+            result = job_permission(job[1]['id'])
+            if not result[0]:
+                flash('Job permission error: '+result[1])
+            flash('Job request submitted successfully. Job ID: ' + job[1]['id'])
+        else:
+            flash('Job request was not submitted. Error: ' + job[1])
 
-#         return redirect(url_for('job_list'))
+        return redirect(url_for('job_list'))
 
 # @app.route('/profile', methods=['GET', 'POST'])
 # @authenticated
@@ -438,22 +436,6 @@ def api_aeolus_drugpairList():
 @app.route('/api/v1/aeolus/drugpairReactionListMedDRA')
 def api_aeolus_drugpairReactionListMedDRA():
     return api_call('aeolus', 'drugpairReactionListMedDRA')
-
-def convertDrugsToIngredients (drugs):
-    drugs = drugs.split(',')
-    all_drugs_ingredients = []
-    for drug in drugs:
-        url = urllib.urlopen('https://rxnav.nlm.nih.gov/REST/rxcui/' + drug + '/related?tty=IN')
-        tree = ET.parse(url)
-        root = tree.getroot()
-        rxcui = root.findall("./relatedGroup/conceptGroup/conceptProperties/rxcui")
-        for ele in rxcui:
-            all_drugs_ingredients.append(ele.text)
-    if len(all_drugs_ingredients) == 1:
-        all_drugs_ingredients = int(all_drugs_ingredients[0])
-    else:
-        all_drugs_ingredients = ','.join(all_drugs_ingredients)
-    return all_drugs_ingredients
 
 @app.route('/api/v1/query')
 def api_call(service = None, meta = None, query = None):

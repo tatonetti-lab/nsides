@@ -23,7 +23,7 @@ class Jobsubmission extends React.Component {
   render () {
     return <div className="container">
       <div id="job_submit_container">
-        <form action="/jobsubmission" className="form-signin form-submitjob" method="POST">
+        <form action="/jobsubmission/submit-job" className="form-signin form-submitjob" method="POST">
           {/* <div className="form-group">
             <div className="drug_title">Model type</div>
             <select className="form-control" name="mtype">
