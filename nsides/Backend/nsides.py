@@ -208,7 +208,7 @@ def get_job(model_type, model_index):
     archival_path = app.config['SYSTEM_STOR_PATH']
     archival_path = archival_path.replace("<username>",session['primary_identity'])
     jobtemplate['archivePath'] = archival_path
-    # jobtemplate['parameters']['model_type'] = model_type
+    jobtemplate['parameters']['model_type'] = model_type
     jobtemplate['parameters']['model_indexes'] = model_index
     jobtemplate['notifications'][1]['url'] = session['email']
     jobtemplate['notifications'][2]['url'] = session['email']
@@ -271,22 +271,22 @@ def get_revoke():
 
 
 
-@app.route('/jobsubmission/submit-job', methods=['POST'])
+@app.route('/jobsubmission', methods=['GET', 'POST'])
 @authenticated
 def submit_job():
     print request.method
 
-    # if request.method == 'GET':
-    #     return render_template('jobsubmission.html')
+    if request.method == 'GET':
+        return render_template('jobsubmission.html')
 
     if request.method == 'POST':
         print "REQUEST: ", json.dumps(request.form, indent=2)
-        # if not request.form.get('mtype'):
-        #     flash('Please select a model type.')
-        #     return redirect(url_for('submit_job'))l
+        if not request.form.get('mtype'):
+            flash('Please select a model type.')
+            return redirect(url_for('submit_job'))
         if not request.form.get('model_index'):
             flash('Please enter a drug index.')
-            return redirect('/jobsubmission')
+            return redirect(url_for('submit_job'))
 
         job = get_job(request.form.get('mtype'), request.form.get('model_index'))
         if job[0]:
@@ -299,48 +299,48 @@ def submit_job():
 
         return redirect(url_for('job_list'))
 
-# @app.route('/profile', methods=['GET', 'POST'])
-# @authenticated
-# def profile():
-#     """Show user profile information"""
-#     if request.method == 'GET':
-#         identity_id = session.get('primary_identity')
-#         profile = udb.load_profile(identity_id)
+@app.route('/profile', methods=['GET', 'POST'])
+@authenticated
+def profile():
+    """Show user profile information"""
+    if request.method == 'GET':
+        identity_id = session.get('primary_identity')
+        profile = udb.load_profile(identity_id)
 
-#         if profile:
-#             name, email, institution = profile
+        if profile:
+            name, email, institution = profile
 
-#             session['name'] = name
-#             session['email'] = email
-#             session['institution'] = institution
+            session['name'] = name
+            session['email'] = email
+            session['institution'] = institution
         
-#         else:
-#             flash('Please complete any missing profile fields and press "save".')
+        else:
+            flash('Please complete any missing profile fields and press "save".')
 
-#         if request.args.get('next'):
-#             session['next'] = get_safe_redirect()
+        if request.args.get('next'):
+            session['next'] = get_safe_redirect()
 
-#         return render_template('profile.html')
+        return render_template('profile.html')
 
-#     elif request.method == 'POST':
-#         name = session['name'] = request.form['name']
-#         email = session['email'] = request.form['email']
-#         institution = session['institution'] = request.form['institution']
+    elif request.method == 'POST':
+        name = session['name'] = request.form['name']
+        email = session['email'] = request.form['email']
+        institution = session['institution'] = request.form['institution']
 
-#         udb.save_profile(identity_id=session['primary_identity'],
-#                          name=name,
-#                          email=email,
-#                          institution=institution)
+        udb.save_profile(identity_id=session['primary_identity'],
+                         name=name,
+                         email=email,
+                         institution=institution)
         
-#         flash('Thank you! Your profile has been successfully updated.')
+        flash('Thank you! Your profile has been successfully updated.')
 
-#         if 'next' in session:
-#             redirect_to = session['next']
-#             session.pop('next')
-#         else:
-#             redirect_to = url_for('profile')
+        if 'next' in session:
+            redirect_to = session['next']
+            session.pop('next')
+        else:
+            redirect_to = url_for('profile')
 
-#         return redirect(redirect_to)
+        return redirect(redirect_to)
 
 @app.route('/signup', methods=['GET'])
 def signup():
@@ -351,12 +351,12 @@ def signup():
 def api():
     return render_template('nsides_api.html')
 
-# @app.route('/joblist', methods=['GET'])
-# @authenticated
-# def job_list():
-#     j_tokens = json.loads(session['tokens'])
-#     job_list = get_result(app.config['JOB_URL_BASE'], '', j_tokens['access_token'])
-#     return render_template('job_list.html', joblist=job_list)
+@app.route('/joblist', methods=['GET'])
+@authenticated
+def job_list():
+    j_tokens = json.loads(session['tokens'])
+    job_list = get_result(app.config['JOB_URL_BASE'], '', j_tokens['access_token'])
+    return render_template('job_list.html', joblist=job_list)
 
 
 # API STUFF
