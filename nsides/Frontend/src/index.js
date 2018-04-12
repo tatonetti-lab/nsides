@@ -45,7 +45,7 @@ let app = (
             <Route exact path="/" render={() => {
               return <Main/>;
             }}/>
-            {/* <Route exact path="/jobsubmission" render={() => {
+            <Route exact path="/jobsubmission" render={() => {
               return <Jobsubmission/>;
             }}/>
             <Route exact path="/joblist" render={() => {
@@ -53,7 +53,7 @@ let app = (
             }}/>
             <Route exact path="/profile" render={() => {
               return <Profile/>;
-            }}/> */}
+            }}/>
           </Switch>
         }
       </App>

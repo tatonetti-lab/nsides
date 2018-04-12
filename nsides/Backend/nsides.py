@@ -12,7 +12,7 @@ The nSides web front-end, (re)implemented in Flask
 """
 
 import os
-from flask import Flask, request, session, redirect, url_for, render_template, flash
+from flask import Flask, request, session, redirect, url_for, render_template, flash, jsonify
 from flask_cors import CORS
 # from urlparse import urlparse, urljoin
 # from werkzeug.security import generate_password_hash
@@ -34,7 +34,7 @@ def authenticated(fn):
     """Decorator for requiring authentication on a route."""
     @wraps(fn)
     def decorated_function(*args, **kwargs):
-        print 'heeeeeeeeeeeeeeeeeeeeeeeeeeeeeey'
+        print 'Authentication triggered'
         if not session.get('is_authenticated'):
             return redirect(url_for('login', next=request.url))
         if request.path == '/logout':
@@ -271,13 +271,13 @@ def get_revoke():
 
 
 
-@app.route('/jobsubmission', methods=['GET', 'POST'])
+@app.route('/jobsubmission/submit-job', methods=['GET', 'POST'])
 @authenticated
 def submit_job():
     print request.method
 
-    if request.method == 'GET':
-        return render_template('jobsubmission.html')
+    # if request.method == 'GET':
+    #     return render_template('jobsubmission.html')
 
     if request.method == 'POST':
         print "REQUEST: ", json.dumps(request.form, indent=2)
@@ -299,7 +299,7 @@ def submit_job():
 
         return redirect(url_for('job_list'))
 
-@app.route('/profile', methods=['GET', 'POST'])
+@app.route('/profile/data', methods=['GET', 'POST'])
 @authenticated
 def profile():
     """Show user profile information"""
@@ -320,7 +320,11 @@ def profile():
         if request.args.get('next'):
             session['next'] = get_safe_redirect()
 
-        return render_template('profile.html')
+        if profile:
+            return jsonify({'name':name, 'email':email, 'institution':institution})
+        else:
+            return jsonify({'name':'None', 'email':'None', 'institution':'None'})
+        # return render_template('profile.html')
 
     elif request.method == 'POST':
         name = session['name'] = request.form['name']
@@ -338,7 +342,7 @@ def profile():
             redirect_to = session['next']
             session.pop('next')
         else:
-            redirect_to = url_for('profile')
+            redirect_to = '/profile'
 
         return redirect(redirect_to)
 
@@ -351,12 +355,13 @@ def signup():
 def api():
     return render_template('nsides_api.html')
 
-@app.route('/joblist', methods=['GET'])
+@app.route('/joblist/data', methods=['GET'])
 @authenticated
 def job_list():
     j_tokens = json.loads(session['tokens'])
     job_list = get_result(app.config['JOB_URL_BASE'], '', j_tokens['access_token'])
-    return render_template('job_list.html', joblist=job_list)
+    return jsonify(job_list)
+    # return render_template('job_list.html', joblist=job_list)
 
 
 # API STUFF
