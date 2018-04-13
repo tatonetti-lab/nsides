@@ -4,11 +4,11 @@ var DIST_DIR = path.join(__dirname, '/Frontend/dist');
 
 module.exports = {
   entry: `${SRC_DIR}/index.js`,
-  mode: 'development',
-  // mode: 'production',
-  devtool: '#eval-source-map',
+  // mode: 'development',
+  // // mode: 'production',
+  // devtool: '#eval-source-map',
   output: {
-    filename: 'bundle.js',
+    filename: 'bundle.[hash].js',
     path: DIST_DIR
   },
   module: {

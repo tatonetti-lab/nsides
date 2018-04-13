@@ -12,7 +12,7 @@ The nSides web front-end, (re)implemented in Flask
 """
 
 import os
-from flask import Flask, request, session, redirect, url_for, render_template, flash, jsonify
+from flask import Flask, request, session, redirect, url_for, render_template, flash, jsonify, make_response, send_from_directory
 from flask_cors import CORS
 # from urlparse import urlparse, urljoin
 # from werkzeug.security import generate_password_hash
@@ -682,6 +682,12 @@ def authcallback():
             return redirect(url_for('profile', next=url_for('submit_job')))
         
         return redirect(url_for('submit_job'))
+
+@app.route('/serve_bundle')
+def serve_bundle():
+    resp = make_response(send_from_directory('../Frontend/dist/', 'bundle.77670b3396b73f4f75d0.js.gz'))
+    resp.headers['Content-Encoding'] = 'gzip'
+    return resp
 
 @app.route('/')
 def home():

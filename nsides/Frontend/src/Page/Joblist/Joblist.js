@@ -23,8 +23,7 @@ class Joblist extends React.Component {
   render () {
     let jobs = this.state.jobs;
     let rows;
-    // console.log(jobs);
-    if (jobs.length > 0) {
+    if (jobs.length > 0 && Array.isArray(jobs)) {
       rows = jobs.map((job) => {
         return <tr>
           <td>{ job['id'] }</td>
