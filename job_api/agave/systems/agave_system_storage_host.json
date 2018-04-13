@@ -1,0 +1,27 @@
+{
+  "owner": "nsidescommunity",
+  "available": true,
+  "description": "flat file storage system for the Drug effect gateway",
+  "storage": {
+    "proxy": null,
+    "protocol": "SFTP",
+    "mirror": false,
+    "port": 22,
+    "auth": {
+      "type": "SSHKEYS"
+    },
+    "publicAppsDir": "/apps",
+    "host": "34.205.195.72",
+    "rootDir": "/",
+    "homeDir": "/home/ubuntu/nsidescommunity",
+    "proxyTunnel": "NO"
+  },
+  "type": "STORAGE",
+  "site": "http://nsides.io/",
+  "default": false,
+  "public": false,
+  "globalDefault": false,
+  "name": "nsides storage (Amazon ElasticBeanstalk)",
+  "id": "nsides-job-repository",
+  "status": "UP"
+}

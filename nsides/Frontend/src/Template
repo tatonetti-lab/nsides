@@ -1,0 +1,95 @@
+/* eslint-disable */
+
+import React from 'react';
+import { connect } from 'react-redux';
+import { withRouter } from 'react-router';
+import axios from 'axios';
+import Actions from '../../Redux/Actions/Actions';
+
+class  extends React.Component {
+  constructor (props) {
+    super (props);
+    this.state = {
+
+    }
+  }
+  render () {
+    return
+  }
+}
+
+const mapStateToProps = (state) => {
+  return {};
+};
+  
+const mapDispatchToProps = (dispatch) => {
+  return {};
+};
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)());
+
+
+
+
+
+
+//DUMB COMPONENT
+
+
+import React from 'react';
+
+const ? = (props) => {
+  return ;
+}
+
+export default ;
+
+
+
+
+
+
+
+
+
+
+
+
+const start = {
+
+};
+
+const  = (state = start, action) => {
+  const newState = Object.assign({}, state);
+  switch (action.type) {
+    case ``:
+      
+    default:
+      return state;
+  }
+};
+
+export default
+
+
+
+
+
+
+
+
+
+
+const = () => {
+  let action = {
+    type: ``,
+    payload: 
+  };
+  return action;
+}
+
+const all = {
+  
+};
+
+export default all;
