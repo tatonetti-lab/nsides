@@ -618,8 +618,8 @@ def logout():
     """
     get_revoke()
     session.clear()
-    redirect_uri = url_for('nsides_main', _external=True)
-    return redirect(redirect_uri)
+    # redirect_uri = url_for('nsides_main', _external=True)
+    return redirect('/')
 
 @app.route('/authcallback', methods=['GET'])
 def authcallback():
@@ -699,7 +699,7 @@ def get_session():
 
 @app.route('/serve_bundle')
 def serve_bundle():
-    resp = make_response(send_from_directory('../Frontend/dist/', 'bundle.a935d66db114cde837ab.js.gz'))
+    resp = make_response(send_from_directory('../Frontend/dist/', 'bundle.42e44e34b5bc3ab63fc0.js.gz'))
     resp.headers['Content-Encoding'] = 'gzip'
     # resp = make_response(send_from_directory('../Frontend/dist/', 'bundle.js'))
     return resp

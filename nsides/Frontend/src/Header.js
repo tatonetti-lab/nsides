@@ -12,9 +12,9 @@ class Header extends React.Component {
     let { session } = this.props;
     let logIn = session.name ? (
       <div id="login-link">
-        <a href="{{url_for('logout')}}">log out</a>
+        <a href="/logout">log out</a>
         <br/>
-        Current user: <a href="/profile">{session.primary_identity}</a>
+        Current user: <a href="/profile">{session.name}</a>
         <br/>
         <a href="/joblist">View submitted jobs</a>
       </div>
