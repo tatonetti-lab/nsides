@@ -7,10 +7,6 @@ module.exports = {
   // mode: 'development',
   // // mode: 'production',
   // devtool: '#eval-source-map',
-  output: {
-    filename: 'bundle.[hash].js',
-    path: DIST_DIR
-  },
   module: {
     rules: [
       {

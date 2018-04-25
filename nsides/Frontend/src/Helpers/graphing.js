@@ -96,11 +96,11 @@ const modifyData2YearToDate = function (data2, parseDate) {
 
 
 const drawTimeSeriesGraph = function (data, data2, title, title2, dateformat, blank = false, modelType = 'DNN') {
-  console.log(
-    'data', data, '\ndata2', data2, '\ntitle', title, 
-    '\ntitle2', title2, '\ndateformat', dateformat, 
-    '\nblank', blank, '\nmodelType', modelType
-  );
+  // console.log(
+  //   'data', data, '\ndata2', data2, '\ntitle', title, 
+  //   '\ntitle2', title2, '\ndateformat', dateformat, 
+  //   '\nblank', blank, '\nmodelType', modelType
+  // );
   document.getElementById("viz_container").innerHTML = ""; // resets the viz_container
   data = data.slice();
   data2 = data2.slice();

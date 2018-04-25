@@ -674,19 +674,34 @@ def authcallback():
             session['institution'] = institution
         else:
             udb.save_profile(identity_id=session['primary_identity'],
-                                  name=session['name'],
-                                  email=session['email'],
-                                  institution=session['institution'])
+                                name=session['name'],
+                                email=session['email'],
+                                institution=session['institution'])
             handle_permission(session['primary_identity'])
 
-            return redirect(url_for('profile', next=url_for('submit_job')))
+            # return redirect(url_for('profile', next=url_for('submit_job')))
+            return redirect('/')
         
-        return redirect(url_for('submit_job'))
+        # return redirect(url_for('submit_job'))
+        return redirect('/jobsubmission')
+@app.route('/session')
+def get_session():
+    if 'primary_identity' in session:
+        profile = udb.load_profile(session['primary_identity'])
+        name, email, institution = profile
+        obj = {
+            'name': name,
+            'email': email,
+            'institution': institution
+        }
+        return jsonify(obj)
+    return jsonify({})
 
 @app.route('/serve_bundle')
 def serve_bundle():
-    resp = make_response(send_from_directory('../Frontend/dist/', 'bundle.77670b3396b73f4f75d0.js.gz'))
+    resp = make_response(send_from_directory('../Frontend/dist/', 'bundle.a935d66db114cde837ab.js.gz'))
     resp.headers['Content-Encoding'] = 'gzip'
+    # resp = make_response(send_from_directory('../Frontend/dist/', 'bundle.js'))
     return resp
 
 @app.route('/')

@@ -14,7 +14,7 @@ const HomeReducer = (state = start, action) => {
       newState.selectedModel = action.payload;
       return newState;
     default:
-      return state;
+      return newState;
   }
 }
 

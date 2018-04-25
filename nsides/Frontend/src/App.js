@@ -1,18 +1,31 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
+import axios from 'axios';
+import { updateUserSession } from './Redux/Actions/UserActions';
 import Header from './Header';
 import './css/main.css';
 import './css/fonts.css';
 // import './css/login.css';
 // import Actions from './Redux/Actions/Actions';
 // import { push } from 'react-router-redux';
-// import axios from 'axios';
 
 class App extends Component {
+  constructor (props) {
+    super (props);
+  }
 
   componentDidMount () {
-  
+    const { boundUpdateUserSession } = this.props;
+
+    axios({
+      method: 'GET',
+      url: '/session'
+    }).then(result => {
+      const data = result.data;
+      // console.log('session', result, data, updateUserSession);
+      boundUpdateUserSession(data);
+    })
   }
 
   render() {
@@ -33,6 +46,9 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    boundUpdateUserSession: (session) => {
+      dispatch(updateUserSession(session));
+    }
   }
 };
 

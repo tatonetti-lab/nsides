@@ -13,8 +13,8 @@ class ModelType extends React.Component {
 
   handleChange (e) {
     let { selectedIndex, value } = e.target;
-    console.log(e.target.value)
-    console.log(selectedIndex, value, this.props.drugEffectData);
+    // console.log(e.target.value)
+    // console.log(selectedIndex, value, this.props.drugEffectData);
     if (selectedIndex !== undefined) {
       let modelData = this.props.drugEffectData[selectedIndex];
       let title1 = "Proportional Reporting Ratio over time";
@@ -30,7 +30,7 @@ class ModelType extends React.Component {
 
   render () {
     let { selectedModel, drugEffectData } = this.props;
-    console.log(this.props);
+    // console.log(this.props);
     // console.log('data', data);
     if (drugEffectData.length === 0 || selectedModel === null) {
       return null;

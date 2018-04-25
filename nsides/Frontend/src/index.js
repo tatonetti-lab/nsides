@@ -7,10 +7,12 @@ import createHistory from 'history/createBrowserHistory';
 import { Route, Switch, /*Redirect*/ } from 'react-router';
 import { ConnectedRouter, routerReducer, routerMiddleware } from 'react-router-redux';
 import Reducers from './Redux/Reducers/Reducers';
+import PrivateRoute from './PrivateRoute';
 import Main from './Page/Main/Main';
 import Jobsubmission from './Page/Jobsubmission/Jobsubmission';
 import Profile from './Page/Profile/Profile';
 import Joblist from './Page/Joblist/Joblist';
+import Handle404 from './Handle404';
 
 // Create a history of your choosing (we're using a browser history in this case)
 const history = createHistory();
@@ -45,7 +47,16 @@ let app = (
             <Route exact path="/" render={() => {
               return <Main/>;
             }}/>
-            <Route exact path="/jobsubmission" render={() => {
+            <PrivateRoute exact 
+              path="/jobsubmission"  
+              component={Jobsubmission}/>
+            <PrivateRoute exact 
+              path="/joblist"  
+              component={Joblist}/>
+            <PrivateRoute exact 
+              path="/profile"  
+              component={Profile}/>
+            {/* <Route exact path="/jobsubmission" render={() => {
               return <Jobsubmission/>;
             }}/>
             <Route exact path="/joblist" render={() => {
@@ -53,7 +64,8 @@ let app = (
             }}/>
             <Route exact path="/profile" render={() => {
               return <Profile/>;
-            }}/>
+            }}/> */}
+            <Route path="*" component={Handle404} status={404}/>
           </Switch>
         }
       </App>

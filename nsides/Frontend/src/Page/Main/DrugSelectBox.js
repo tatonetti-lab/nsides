@@ -2,7 +2,7 @@ import React from 'react';
 import { rxnormDrugs } from '../../Helpers/drugs-top-200';
 import Select from 'react-select';
 import '../../css/react-select.css';
-console.log(rxnormDrugs[0])
+// console.log(rxnormDrugs[0])
 var request = null;
 class DrugSelectBox extends React.Component {
   constructor(props) {

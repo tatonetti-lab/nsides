@@ -326,7 +326,7 @@ header, section, footer, .standardStyle {
 footer {
   max-height: 150px;
 }
-.select_bar {
+.select_bar, .center {
   text-align: center;
 }
 #bar {

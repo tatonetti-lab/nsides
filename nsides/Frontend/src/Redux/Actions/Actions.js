@@ -1,7 +1,9 @@
-import HomeAction from './MainAction';
+import HomeActions from './HomeActions';
+import UserActions from './UserActions';
 
 const Actions = {
-  HomeAction
+  HomeActions,
+  UserActions
 };
 
 export default Actions;

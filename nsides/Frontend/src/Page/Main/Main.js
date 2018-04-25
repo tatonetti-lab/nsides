@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
-import { setDrugEffectData } from '../../Redux/Actions/HomeAction';
+import { setDrugEffectData } from '../../Redux/Actions/HomeActions';
 import { drawTimeSeriesGraph } from '../../Helpers/graphing';
 import DrugSelectBox from './DrugSelectBox';
 import EffectSelectBox from './EffectSelectBox';
@@ -182,7 +182,7 @@ class Main extends React.Component {
 
 const mapStateToProps = (state) => {
   let  { drugEffectData } = state.HomeReducer;
-  console.log('drugEffectData', drugEffectData)
+  // console.log('drugEffectData', drugEffectData)
   return {
     drugEffectData,
     // selectedModel
