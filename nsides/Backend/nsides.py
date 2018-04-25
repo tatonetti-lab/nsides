@@ -697,12 +697,16 @@ def get_session():
         return jsonify(obj)
     return jsonify({})
 
-@app.route('/serve_bundle')
+@app.route('/serve_bundle')#production
 def serve_bundle():
-    resp = make_response(send_from_directory('../Frontend/dist/', 'bundle.42e44e34b5bc3ab63fc0.js.gz'))
+    resp = make_response(send_from_directory('../Frontend/dist/', 'bundle.365efd478a6d900a4b52.js.gz'))
     resp.headers['Content-Encoding'] = 'gzip'
-    # resp = make_response(send_from_directory('../Frontend/dist/', 'bundle.js'))
     return resp
+
+# @app.route('/serve_bundle')#development
+# def serve_bundle():
+#     resp = make_response(send_from_directory('../Frontend/dist/', 'bundle.js'))
+#     return resp
 
 @app.route('/')
 def home():
@@ -710,7 +714,7 @@ def home():
 
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
-@authenticated
+# @authenticated
 def catch_all(path):
     print 'fell in catchall'
     return render_template("nsides.html")

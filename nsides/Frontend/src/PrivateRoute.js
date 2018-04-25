@@ -10,7 +10,7 @@ class PrivateRoute extends React.Component {
 
   render () {
     const { session, Component, history } = this.props;
-    if (session) {
+    if (session.name) {
       return <Component/>
     } else {
       // history.push('/login');
@@ -20,7 +20,7 @@ class PrivateRoute extends React.Component {
 }
 
 const mapStateToProps = (state) => {
-  const session = state.User.session;
+  const session = state.UserReducer.session;
   return {
     session
   }
