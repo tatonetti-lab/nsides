@@ -714,7 +714,7 @@ def home():
 
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
-# @authenticated
+@authenticated
 def catch_all(path):
     print 'fell in catchall'
     return render_template("nsides.html")
