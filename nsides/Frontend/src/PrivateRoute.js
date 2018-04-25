@@ -9,7 +9,7 @@ class PrivateRoute extends React.Component {
   }
 
   render () {
-    const { session, Component, history } = this.props;
+    const { session, component:Component, history } = this.props;
     if (session.name) {
       return <Component/>
     } else {
