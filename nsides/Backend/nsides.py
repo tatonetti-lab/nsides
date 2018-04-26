@@ -34,8 +34,9 @@ def authenticated(fn):
     """Decorator for requiring authentication on a route."""
     @wraps(fn)
     def decorated_function(*args, **kwargs):
-        print 'Authentication triggered'
+        print 'Authentication triggered session status', session.get('is_authenticated')
         if not session.get('is_authenticated'):
+            print 'Not authenticated', session.get('is_authenticated')
             return redirect(url_for('login', next=request.url))
         if request.path == '/logout':
             return fn(*args, **kwargs)
@@ -319,6 +320,7 @@ def profile():
 
         if request.args.get('next'):
             session['next'] = get_safe_redirect()
+            print 'next url', session['next']
 
         if profile:
             return jsonify({'name':name, 'email':email, 'institution':institution})
@@ -655,6 +657,7 @@ def authcallback():
         if user_profile[0]:
             print 'username',user_profile[1]['username']
         else:
+            print 'failed to retrieve user profile'
             flash("User profile was not retrieved. Error:" + user_profile[1])
 
         session.update(
@@ -668,11 +671,13 @@ def authcallback():
 
         profile = udb.load_profile(session['primary_identity'])
         if profile:
+            print 'udb profile found'
             name, email, institution = profile
             session['name'] = name
             session['email'] = email
             session['institution'] = institution
         else:
+            print 'udb profile not found saving to udb'
             udb.save_profile(identity_id=session['primary_identity'],
                                 name=session['name'],
                                 email=session['email'],
@@ -683,7 +688,9 @@ def authcallback():
             return redirect('/')
         
         # return redirect(url_for('submit_job'))
+        print 'returning to /jobsubmission'
         return redirect('/jobsubmission')
+
 @app.route('/session')
 def get_session():
     if 'primary_identity' in session:
