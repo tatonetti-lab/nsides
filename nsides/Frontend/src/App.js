@@ -15,7 +15,7 @@ class App extends Component {
     super (props);
   }
 
-  componentDidMount () {
+  componentWillMount () {
     const { boundUpdateUserSession } = this.props;
 
     axios({
