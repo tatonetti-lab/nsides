@@ -50,12 +50,12 @@ const mapStateToProps = (state) => {
   const session = state.UserReducer.session;
   return {
     session
-  }
+  };
 }
 
 const mapDispatcherToProps = (dispatch) => {
   return {
     
-  }
+  };
 }
 export default withRouter(connect(mapStateToProps, mapDispatcherToProps)(Header));

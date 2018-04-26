@@ -41,7 +41,7 @@ class App extends Component {
 const mapStateToProps = (state) => {
   //console.log('state is ',state);
   return { 
-  }
+  };
 };
 
 const mapDispatchToProps = (dispatch) => {
@@ -49,7 +49,7 @@ const mapDispatchToProps = (dispatch) => {
     boundUpdateUserSession: (session) => {
       dispatch(updateUserSession(session));
     }
-  }
+  };
 };
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(App));
