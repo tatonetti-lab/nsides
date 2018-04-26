@@ -699,7 +699,7 @@ def get_session():
 
 @app.route('/serve_bundle')#production
 def serve_bundle():
-    resp = make_response(send_from_directory('../Frontend/dist/', 'bundle.e62bf96da890f6eb99e2.js.gz'))
+    resp = make_response(send_from_directory('../Frontend/dist/', 'bundle.a3bd4f51c9b453455638.js.gz'))
     resp.headers['Content-Encoding'] = 'gzip'
     return resp
 
