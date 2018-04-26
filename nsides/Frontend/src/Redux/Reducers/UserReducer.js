@@ -1,5 +1,6 @@
 let start = {
-  session: {}
+  session: {},
+  requestedSession: false
 };
 
 const UserReducer = (state = start, action) => {
@@ -9,6 +10,7 @@ const UserReducer = (state = start, action) => {
     case `UPDATE USER INFO`:
       console.log('update user info', newState);
       newState.session = action.payload;
+      newState.requestedSession = true;
       return newState;
     default:
       return newState;

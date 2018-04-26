@@ -29,18 +29,27 @@ class App extends Component {
   }
 
   render() {
-    return (
-      <div className="Application">
-        <Header/>
-        { this.props.children }
-      </div>
-    );
+    let { requestedSession } = this.props;
+    if (requestedSession) {
+      return (
+        <div className="Application">
+          <Header/>
+          { 
+            this.props.children 
+          }
+        </div>
+        );
+    } else {
+      return <div></div>
+    }
   }
 }
 
 const mapStateToProps = (state) => {
   //console.log('state is ',state);
+  let requestedSession = state.UserReducer.requestedSession;
   return { 
+    requestedSession
   };
 };
 
