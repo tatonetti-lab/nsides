@@ -141,7 +141,7 @@ const drawTimeSeriesGraph = function (data, data2, title, title2, dateformat, bl
 
     // Threshold line
     var prrThreshold = 2;
-    console.log('line 144', x.range()[0], x.range()[1], y(prrThreshold));
+    // console.log('line 144', x.range()[0], x.range()[1], y(prrThreshold));
     svg.append("line")
       .attr("class", "divider")
       .attr("x1", x.range()[0])

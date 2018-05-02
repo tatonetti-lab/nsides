@@ -8,7 +8,7 @@ const UserReducer = (state = start, action) => {
   // console.log('home state', newState, action);
   switch (action.type) {
     case `UPDATE USER INFO`:
-      console.log('update user info', newState);
+      // console.log('update user info', newState);
       newState.session = action.payload;
       newState.requestedSession = true;
       return newState;

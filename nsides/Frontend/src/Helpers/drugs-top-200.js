@@ -211,7 +211,7 @@ var rxnormDrugs = [
   { value: '161', label: 'Acetaminophen'},
   { value: '83367', label: 'atorvastatin'},
   { value: '36567', label: 'Simvastatin'},
-  { value:'4603', label: 'Furosemide'},
+  { value: '4603', label: 'Furosemide'},
   { value: '354770', label: 'natalizumab'},
   { value: '7646', label: 'Omeprazole'},
   { value: '6809', label: 'Metformin'},
@@ -262,7 +262,7 @@ var rxnormDrugs = [
   { value: '1819', label: 'Buprenorphine'},
   { value: '72625', label: 'duloxetine'},
   { value: '60548', label: 'exenatide'},
-  { value:'41126', label: 'fluticasone'},
+  { value: '41126', label: 'fluticasone'},
   { value: '232158', label: 'rofecoxib'},
   { value: '69749', label: 'valsartan'},
   { value: '39786', label: 'venlafaxine'},
@@ -345,7 +345,7 @@ var rxnormDrugs = [
   { value: '6901', label: 'Methylphenidate'},
   { value: '337525', label: 'erlotinib'},
   { value: '4450', label: 'Fluconazole'},
-  { value:'67108', label: 'Enoxaparin'},
+  { value: '67108', label: 'Enoxaparin'},
   { value: '993449', label: 'denosumab'},
   { value: '1897', label: 'Calcium Carbonate'},
   { value: '703', label: 'Amiodarone'},
@@ -401,7 +401,7 @@ var rxnormDrugs = [
   { value: '10180', label: 'Sulfamethoxazole'},
   { value: '8787', label: 'Propranolol'},
   { value: '6813', label: 'Methadone'},
-  { value:'1012892', label: 'fingolimod'},
+  { value: '1012892', label: 'fingolimod'},
   // { value: undefined, label: 'Multivitamin preparation'}
 ]
 export {
