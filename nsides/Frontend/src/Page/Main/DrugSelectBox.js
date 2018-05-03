@@ -39,7 +39,7 @@ class DrugSelectBox extends React.Component {
     // var numResults = this.props.numOutcomeResults;
     var outcomeOptions;
 
-    console.log("selectedDrug", selectedDrug, "numResults", numResults);
+    console.log("selectedDrug", selectedDrug, "numResults", numResults, 'value', value);
 
     if (selectedDrug === '') {
       // console.log('No selectedDrug; no API call necessary');
@@ -112,15 +112,18 @@ class DrugSelectBox extends React.Component {
   }
 
   render() {
+    const { props, apiTopOutcomes } = this;
+    const { value, options } = props;
     return (
       <div className="section select_container">
         <div className="drug_title">Drug</div>
-        <Select name="selected-drugs" joinValues multi simpleValue
-          value={this.props.value}
+        <Select name="selected-drugs" 
+          joinValues multi simpleValue
+          value={value}
           placeholder="Select drug(s)..."
           noResultsText="Drug not found"
-          options={this.props.options}
-          onChange={this.apiTopOutcomes}/>
+          options={options}
+          onChange={apiTopOutcomes}/>
       </div>
     );
   }

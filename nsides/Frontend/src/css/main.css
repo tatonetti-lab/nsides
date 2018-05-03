@@ -425,7 +425,7 @@ path {
 .svg-content-responsive {
   display: inline-block;
   position: absolute;
-  top: 10px;
+  /* top: 10px; */
   left: 0;
 }
 
@@ -532,7 +532,14 @@ a {
 }
 
 .model-types {
+  margin: 10px auto 0px;
   text-align: center;
+  max-width: 850px;
+  width: 100%;
+}
+
+.main-graph-loading {
+  margin-top: 100px;
 }
 /*  c3 css   */
 g.c3-xgrid-lines, g.c3-ygrid-lines {

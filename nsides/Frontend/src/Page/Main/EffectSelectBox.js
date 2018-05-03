@@ -19,7 +19,7 @@ import { withRouter } from 'react-router';
 import axios from 'axios';
 import HomeAction from '../../Redux/Actions/HomeActions';
 import '../../css/react-select.css';
-import { drawTimeSeriesGraph } from '../../Helpers/graphing';
+import { drawTimeSeriesGraph, showLoading } from '../../Helpers/graphing';
 
 class EffectSelectBox extends React.Component {
 	// displayName: 'EffectSelectBox';
@@ -38,15 +38,16 @@ class EffectSelectBox extends React.Component {
 	handleSelectChange (value) {
     const { handleDrugOutcomeChange } = this;
     const { drugs } = this.props;
+    console.log('effect value', value);
     handleDrugOutcomeChange(drugs, value);
   }
   
   handleDrugOutcomeChange (drugs, value) {
-    const { value: outcome } = value;
-    const { submitNewModelOption,  } = this.props;
-    let { boundSetDrugEffectModels, boundEffectSelectBoxEffectChange, request, dateformat } = this.props;
-    boundEffectSelectBoxEffectChange(drugs, outcome, value);
+    let { submitNewModelOption, boundSetDrugEffectModels, boundEffectSelectBoxEffectChange, request, dateformat } = this.props;
+    const outcome = value === null ? '' : value.value;
     let title1, title2;
+    boundEffectSelectBoxEffectChange(drugs, outcome, value);
+    showLoading();
     // console.log("newDrug", drugs, "newOutcome", outcome, this);
     
     if ((drugs === "") || (outcome === "")) {
@@ -89,15 +90,18 @@ class EffectSelectBox extends React.Component {
     
 	render () {        
     // console.log(this.props);
+    const { props, handleSelectChange } = this;
+    const { value, outcomeOptions } = props;
+
     return (
       <div className="section select_container_effect">
         <div className="effect_title">Effect</div>
         <Select name="selected-effect"
-          value={this.props.value} //{this.state.value}
+          value={value} //{this.state.value}
           placeholder="Select effect..."
-          noResultsText="No effects found"
-          options={this.props.outcomeOptions}
-          onChange={this.handleSelectChange} />
+          noResultsText='No effects found'
+          options={outcomeOptions}
+          onChange={handleSelectChange} />
       </div>
     );
 	}

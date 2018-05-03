@@ -32,12 +32,14 @@ class ModelType extends React.Component {
   // }
 
   render () {
-    let { selectedModel, drugEffectModels } = this.props;
+    let { selectedModel, drugEffectModels, effectSelectBoxValue } = this.props;
     // console.log(this.props);
     // console.log('data', data);
-    if (drugEffectModels.length === 0 || selectedModel === null) {
+    if (drugEffectModels.length === 0 || selectedModel === null || effectSelectBoxValue === null) {
       return null;
     }
+
+
     let options = drugEffectModels.map((dataset, i) => {
       return <option key={i} 
               value={dataset.model}>
@@ -45,9 +47,9 @@ class ModelType extends React.Component {
             </option>;
     })
     return (
-    <div className='standardStyle center'>
+    <div className='model-types'>
       Model Options: 
-      <select className='model-types' onChange={this.handleChange}>
+      <select onChange={this.handleChange}>
         {options}
       </select>
     </div>
@@ -56,9 +58,11 @@ class ModelType extends React.Component {
 }
 
 const mapStateToProps = (state) => {
-  const { drugEffectModels } = state.HomeReducer;
+  const { drugEffectModels, effectSelectBox } = state.HomeReducer;
+  const { value } = effectSelectBox;
   return {
-    drugEffectModels
+    drugEffectModels,
+    effectSelectBoxValue: value
   };
 };
   

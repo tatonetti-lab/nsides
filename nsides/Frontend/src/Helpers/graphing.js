@@ -1,5 +1,6 @@
 import * as d3 from 'd3';
 import c3 from 'c3';
+import React from 'react';
 // import '../../../node_modules/c3/c3.min.css';
 // let data1;
 // let dateformat = "%Y";
@@ -608,11 +609,21 @@ const drawNreportsAndControlGraph = function (data2) {
   // setUpFocus();
 }
 
+const showLoading = () => {
+  let viz_container = document.getElementById("viz_container");
+  let loading = document.createElement('img');
+  loading.src = '../../dist/gifs/loading.gif';
+  loading.className = 'main-graph-loading';
+  viz_container.innerHTML = "";
+  viz_container.append(loading);
+}
 const all = {
-  drawTimeSeriesGraph
+  drawTimeSeriesGraph,
+  showLoading
 };
 
 export default all;
 export { 
-  drawTimeSeriesGraph 
+  drawTimeSeriesGraph,
+  showLoading
 };

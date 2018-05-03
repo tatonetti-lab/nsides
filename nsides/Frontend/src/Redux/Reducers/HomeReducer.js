@@ -9,11 +9,11 @@ let start = {
   numOutcomeResults: 'all',
   submitNewModelOption: '',
   drugSelectBox: {
-    value: '',
+    value: null,
     options: rxnormDrugs
   },
   effectSelectBox: {
-    value: '',
+    value: null,
     outcome: '',
     outcomeOptions: []
   }
@@ -23,7 +23,7 @@ const HomeReducer = (state = start, action) => {
   let newState = Object.assign({}, state);
   let { effectSelectBox, drugSelectBox } = newState;
   let data = action.payload;
-  // console.log('home state', newState);
+  console.log('home state', newState, 'data', data);
   switch (action.type) {
     case `HOMEACTION SET DRUG EFFECT MODELS`: {
       newState.drugEffectModels = data;
@@ -35,7 +35,14 @@ const HomeReducer = (state = start, action) => {
       return newState;
     }
     case `HOMEACTION DRUGSELECTBOX SET DRUG`: {
-       drugSelectBox.value = data.value;
+      drugSelectBox.value = data.value;
+      if (data.value === '') {
+        effectSelectBox.value = null;
+      }
+      effectSelectBox.outcomeOptions = [{
+        label: `Loading...`,
+        value: `N/A`
+      }];
       return newState;
     }
     case `HOMEACTION DRUGSELECTBOX DRUG CHANGE`: {

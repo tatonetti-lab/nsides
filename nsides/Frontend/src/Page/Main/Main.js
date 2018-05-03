@@ -34,6 +34,7 @@ class Main extends React.Component {
 
   render () {
     // console.log('rendering', this.state);
+
     return <div id='content'>
       {/* <Header/> */}
       <div id='selection'>
