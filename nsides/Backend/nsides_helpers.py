@@ -198,7 +198,11 @@ def setUpFor (code_type):
     end_line = '))\n'
 
     new_line = start_line + code_type + "', '" + file_name + "'" + end_line
-
+    if code_type == 'prod':
+        code[10] = "    resp.headers['Content-Encoding'] = 'gzip'\n"
+    elif code_type == 'dev':
+        code[10] = '\n'
+    
     if code[9] != new_line:
         code[9] = new_line
         with open('./serve_pages.py', 'w') as f:

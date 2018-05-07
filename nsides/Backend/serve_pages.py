@@ -8,6 +8,7 @@ serve_pages = Blueprint('serve_pages', __name__, template_folder='../Frontend/di
 @serve_pages.route('/serve_bundle')#development
 def serve_bundle():
     resp = make_response(send_from_directory('../Frontend/dist/bundles/prod', 'bundle.8961cf123cea39a94a73.js.gz'))
+    resp.headers['Content-Encoding'] = 'gzip'
     return resp
 
 @serve_pages.route('/')
