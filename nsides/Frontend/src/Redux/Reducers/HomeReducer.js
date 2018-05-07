@@ -23,7 +23,7 @@ const HomeReducer = (state = start, action) => {
   let newState = Object.assign({}, state);
   let { effectSelectBox, drugSelectBox } = newState;
   let data = action.payload;
-  console.log('home state', newState, 'data', data);
+  // console.log('home state', newState, 'data', data);
   switch (action.type) {
     case `HOMEACTION SET DRUG EFFECT MODELS`: {
       newState.drugEffectModels = data;
@@ -56,7 +56,7 @@ const HomeReducer = (state = start, action) => {
       effectSelectBox.value = data.value;
       newState.outcome = data.outcome;
       newState.drugs = data.drugs;
-      console.log('effect select box', data);
+      // console.log('effect select box', data);
       return newState
     }
     default: {

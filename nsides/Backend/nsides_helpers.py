@@ -1,3 +1,4 @@
+import os
 from oauth2client.client import flow_from_clientsecrets
 import requests
 from pprint import pprint
@@ -5,6 +6,9 @@ import json
 from datetime import datetime
 import xml.etree.ElementTree as ET
 import urllib
+from flask import redirect, request, url_for
+from functools import wraps
+from nsides import session
 
 with open('./job_template.json') as f:
     jobtemplate = json.load(f)
@@ -181,3 +185,35 @@ def convertDrugsToIngredients (drugs):
     else:
         all_drugs_ingredients = ','.join(all_drugs_ingredients)
     return all_drugs_ingredients
+
+def setUpFor (code_type):
+    hashDictionary = {}
+
+    file_name = os.listdir('../Frontend/dist/bundles/' + code_type)[0]
+    hashDictionary[file_name[0]] = file_name[1]
+    with open('./serve_pages.py','r') as f:
+        code = f.readlines()
+        f.close()
+    start_line = "    resp = make_response(send_from_directory('../Frontend/dist/bundles/"
+    end_line = '))\n'
+
+    new_line = start_line + code_type + "', '" + file_name + "'" + end_line
+
+    if code[9] != new_line:
+        code[9] = new_line
+        with open('./serve_pages.py', 'w') as f:
+            f.write(''.join(code))
+            f.close()
+
+def authenticated(fn):
+    """Decorator for requiring authentication on a route."""
+    @wraps(fn)
+    def decorated_function(*args, **kwargs):
+        print 'Authentication triggered session status', session.get('is_authenticated')
+        if not session.get('is_authenticated'):
+            print 'Not authenticated', session.get('is_authenticated')
+            return redirect(url_for('login', next=request.url))
+        if request.path == '/logout':
+            return fn(*args, **kwargs)
+        return fn(*args, **kwargs)
+    return decorated_function

@@ -20,29 +20,19 @@ import query_nsides_mongo
 import query_nsides_mysql
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
-from functools import wraps
+# from functools import wraps
 import requests
 import click
 import json
 from datetime import datetime
 from oauth2client.client import flow_from_clientsecrets
 from pprint import pprint
-from nsides_helpers import convertDrugsToIngredients
+from nsides_helpers import convertDrugsToIngredients, setUpFor, authenticated
+from serve_pages import serve_pages
 # response is automatically created for each app.route
 
-def authenticated(fn):
-    """Decorator for requiring authentication on a route."""
-    @wraps(fn)
-    def decorated_function(*args, **kwargs):
-        print 'Authentication triggered session status', session.get('is_authenticated')
-        if not session.get('is_authenticated'):
-            print 'Not authenticated', session.get('is_authenticated')
-            return redirect(url_for('login', next=request.url))
-        if request.path == '/logout':
-            return fn(*args, **kwargs)
-        return fn(*args, **kwargs)
-    return decorated_function
-
+setUpFor('prod') #use for production
+# setUpFor('dev') #use for development
 #########
 # INITS #
 #########
@@ -52,6 +42,7 @@ CORS(app)
 app.secret_key = 'changeme'
 #app.config.from_envvar('NSIDES_FRONTEND_SETTINGS', silent=True)
 app.config.from_pyfile('nsides_flask.conf')
+app.register_blueprint(serve_pages)
 
 with open(app.config['JOB_TEMPLATE']) as f:
     jobtemplate = json.load(f)
@@ -704,27 +695,6 @@ def get_session():
         return jsonify(obj)
     return jsonify({})
 
-# @app.route('/serve_bundle')#production
-# def serve_bundle():
-#     resp = make_response(send_from_directory('../Frontend/dist/', 'bundle.5a639e81ff13d734e676.js.gz'))
-#     resp.headers['Content-Encoding'] = 'gzip'
-#     return resp
-
-@app.route('/serve_bundle')#development
-def serve_bundle():
-    resp = make_response(send_from_directory('../Frontend/dist/', 'bundle.js'))
-    return resp
-
-@app.route('/')
-def home():
-    return render_template("nsides.html")
-
-@app.route('/', defaults={'path': ''})
-@app.route('/<path:path>')
-@authenticated
-def catch_all(path):
-    print 'fell in catchall'
-    return render_template("nsides.html")
 
 if __name__ == "__main__":
     app.run(host='localhost',
