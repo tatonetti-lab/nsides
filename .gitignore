@@ -20,6 +20,7 @@ packages/*
 
 data/
 job_api/example/venv/
+/nsides/venv
 
 .eslintrc
 node_modules
