@@ -68,13 +68,19 @@ class EffectSelectBox extends React.Component {
         .then((j) => {
           // console.log("data:");
           j = j.data;
-          // console.log('received', j, '\n');
-          var data, data2, modelType;// hasModelType = false, foundIndex;
+          console.log('received', j, '\n');
+          var data1, data2, modelType;// hasModelType = false, foundIndex;
           modelType = j.results[0].model;
-          data = j["results"][0]["estimates"];
+          // data = j["results"][0]["estimates"];
+          data1 = j['results'].map((datum) => {
+            let estimates = datum.estimates;
+            let model = datum.model;
+            return {
+              model,
+              estimates
+            };
+          })
           data2 = j["results"][0]["nreports"];
-
-          var data1 = data;
           var title1 = "Proportional Reporting Ratio over time";
           var title2 = "Number of reports by year";
 

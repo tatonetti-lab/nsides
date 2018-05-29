@@ -39,23 +39,23 @@ class DrugSelectBox extends React.Component {
     // var numResults = this.props.numOutcomeResults;
     var outcomeOptions;
 
-    console.log("selectedDrug", selectedDrug, "numResults", numResults, 'value', value);
+    // console.log("selectedDrug", selectedDrug, "numResults", numResults, 'value', value);
 
     if (selectedDrug === '') {
       // console.log('No selectedDrug; no API call necessary');
       if (request) {
-        console.log("Pre-resolve:", request);
+        // console.log("Pre-resolve:", request);
         Promise.resolve(request)
           .then(() => {
             handleDrugChange('', [], '');
-            console.log("Post-resolve:", request);
+            // console.log("Post-resolve:", request);
           });
       } else {
         handleDrugChange('', [], '');
       }
     } else {
       var api_call = '/api/v1/query?service=nsides&meta=topOutcomesForDrug&numResults=' + numResults + '&drugs=' + selectedDrug;
-      console.log('apicall', api_call);
+      // console.log('apicall', api_call);
 
       axios({
         method: 'GET',
@@ -64,7 +64,7 @@ class DrugSelectBox extends React.Component {
         .then((j) => {
           j = j.data;
           outcomeOptions = j["results"][0]["topOutcomes"];
-          console.log("outcomeOptions", outcomeOptions);
+          // console.log("outcomeOptions", outcomeOptions);
           handleDrugChange(selectedDrug, outcomeOptions, '')
         }).catch((ex) => {
           // console.log('No outcomes found', ex);
@@ -133,7 +133,7 @@ const mapStateToProps = (state) => {
   let { HomeReducer } = state;
   let { numOutcomeResults, drugSelectBox } = HomeReducer;
   let { value, options } = drugSelectBox;
-  console.log('value',value, options)
+  // console.log('value',value, options)
   return {
     numOutcomeResults,
     value,

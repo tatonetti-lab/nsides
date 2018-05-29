@@ -31,8 +31,8 @@ from nsides_helpers import convertDrugsToIngredients, setUpFor, authenticated
 from serve_pages import serve_pages
 # response is automatically created for each app.route
 
-setUpFor('prod') #USE FOR PRODUCTION
-# setUpFor('dev') #USE FOR DEVELOPMENT
+# setUpFor('prod') #USE FOR PRODUCTION
+setUpFor('dev') #USE FOR DEVELOPMENT
 
 #########
 # INITS #
