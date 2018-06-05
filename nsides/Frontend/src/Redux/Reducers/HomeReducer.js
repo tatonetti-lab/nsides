@@ -60,7 +60,7 @@ const HomeReducer = (state = start, action) => {
       return newState
     }
     default: {
-      return newState;
+      return state;
     }
   }
 }

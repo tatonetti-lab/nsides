@@ -51,9 +51,9 @@ class Main extends React.Component {
               // onDrugOutcomeChange={(newDrug, newOutcome) => this.handleDrugOutcomeChange(newDrug, newOutcome)}
             />
           </div>
-          <div>
+          {/* <div>
             <ModelType/>
-          </div>
+          </div> */}
         </div>
         {this.props.submitNewModelOption !== '' &&
           <div className="newModelNotification">

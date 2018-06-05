@@ -273,7 +273,7 @@ circle.dot {
   filter: alpha(opacity=20);
   opacity: 0.2;
   
-  fill: steelblue !important;
+  /* fill: steelblue !important; */
 }
 /**
 .area.above {

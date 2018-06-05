@@ -13,7 +13,7 @@ const UserReducer = (state = start, action) => {
       newState.requestedSession = true;
       return newState;
     default:
-      return newState;
+      return state;
   }
 }
 
