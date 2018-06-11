@@ -5,7 +5,7 @@ import { withRouter } from 'react-router';
 import axios from 'axios';
 import '../../css/react-select.css';
 import HomeActions from '../../Redux/Actions/HomeActions';
-import { drawTimeSeriesGraph } from '../../Helpers/graphing';
+import { drawTimeSeriesGraph } from '../../Helpers/graphTools/graphing';
 // console.log(rxnormDrugs[0])
 var request = null;
 class DrugSelectBox extends React.Component {

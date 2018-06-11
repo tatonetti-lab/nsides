@@ -1,5 +1,5 @@
 import React from 'react';
-import { drawTimeSeriesGraph } from '../../Helpers/graphing';
+import { drawTimeSeriesGraph } from '../../Helpers/graphTools/graphing';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 

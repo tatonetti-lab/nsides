@@ -541,7 +541,34 @@ a {
 .main-graph-loading {
   margin-top: 100px;
 }
-/*  c3 css   */
+/*                                                 d3 css                                      */
+.toggles-container {
+  display: flex;
+  transform: translate(0px,310px);
+  justify-content: center;
+}
+
+.legend-group {
+  margin: 0px 20px 0px 0px;
+  font-size: initial;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.color-square {
+  font-size: initial;
+  height: 10px;
+  width: 10px;
+  margin-right: 5px;
+}
+
+.fade-it {
+  opacity: 0.3;
+}
+/*                                                 c3 css                                      */
+
 g.c3-xgrid-lines, g.c3-ygrid-lines {
   stroke: grey;
   opacity: 0.2;
@@ -584,3 +611,4 @@ line.c3-xgrid-focus {
   stroke-dasharray: 3,3;
   /* visibility: visible !important; */
 }
+

@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { setdrugEffectModels } from '../../Redux/Actions/HomeActions';
-import { drawTimeSeriesGraph } from '../../Helpers/graphing';
+import { drawTimeSeriesGraph } from '../../Helpers/graphTools/graphing';
 import DrugSelectBox from './DrugSelectBox';
 import EffectSelectBox from './EffectSelectBox';
 import SubmitModelButton from './SubmitModelButton';

@@ -19,7 +19,7 @@ import { withRouter } from 'react-router';
 import axios from 'axios';
 import HomeAction from '../../Redux/Actions/HomeActions';
 import '../../css/react-select.css';
-import { drawTimeSeriesGraph, showLoading } from '../../Helpers/graphing';
+import { drawTimeSeriesGraph, showLoading } from '../../Helpers/graphTools/graphing';
 
 class EffectSelectBox extends React.Component {
 	// displayName: 'EffectSelectBox';

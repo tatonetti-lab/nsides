@@ -1,7 +1,8 @@
 import * as d3 from 'd3';
 import c3 from 'c3';
 import React from 'react';
-import lineGraphToggle from './lineGraphToggle';
+
+const d = document;
 
 const createXAxis = function (svg, x, height) {
   let xAxis = d3.axisBottom()
@@ -178,7 +179,8 @@ const createConfidenceArea = (svg, data, x, y, color) => {
 const createFocusAndMouseHandler = function (svg, height, width, data, x, y, bisectDate, formatDate, color) {
   var focus = svg.append("g")
     .style("display", "none")
-    .attr("class", "focus " + modelToColor[color]); //  focus area when mouse moves
+    .attr("class", "focus " + modelToColor[color])//  focus area when mouse moves
+    .attr("data-status", "show");
 
   // append the x line
   focus.append("line")
@@ -236,8 +238,8 @@ const createFocusAndMouseHandler = function (svg, height, width, data, x, y, bis
 
   // append the rectangle to capture mouse
   function mousemove () {
-    let classNames = focus.attr('class').split(' ');
-    if (classNames.length === 2) {
+    let status = focus.attr('data-status');
+    if (status === 'show') {
       var x0 = x.invert(d3.mouse(this)[0]), // get the array of x,y coordinate then select x and invert it back into a date
       i = bisectDate(data, x0, 1),
       d0 = data[i - 1],
@@ -279,7 +281,7 @@ const createFocusAndMouseHandler = function (svg, height, width, data, x, y, bis
   }
 };
 
-const setUpRectForFocuses = (svg, height, width, focusAndMouses) => {
+const setUpRectWithFocuses = (svg, height, width, focusAndMouses) => {
   let rect = svg.append("rect")  //area of the graph for focuses to move (one rect for all focuses)
     .attr('class', 'focus-rect')
     .attr("width", width)
@@ -294,7 +296,9 @@ const setUpRectForFocuses = (svg, height, width, focusAndMouses) => {
 
   rect.on("mouseover", function () { 
     focusAndMouses.forEach((focusAndMouse) => {
-      focusAndMouse.focus.style("display", null);
+      if (focusAndMouse.focus.attr('data-status') === 'show') {
+        focusAndMouse.focus.style("display", null);
+      }
     }); 
   })
   .on("mouseout", function () { 
@@ -320,12 +324,78 @@ const modelToColor = {
   'rgb(116, 196, 118)': 'lrc-part'
 };
 
-const setUpToggleGraphOnOff = (svg, data) => {
-  data.forEach((datum) => {
-    svg.append(() => {
-      return <lineGraphToggle graphInfo={datum}/>;
+const legendClickHandler = (e, datum, ele) => {
+  const model = datum.model;
+  const modelClass = '.' + model + '-part';
+  let allComponents = document.querySelectorAll(modelClass);
+  let line = allComponents[0];
+  let confidenceArea = allComponents[1];
+  let focus = allComponents[2];
+  let displayUpdate, eleStatus = ele.dataset.status;
+  // console.log(line, confidenceArea, focus)
+
+  if (eleStatus === 'remove') {
+    displayUpdate = 'none';
+    status = 'add';
+    focus.dataset.status = 'hide';
+  } else {
+    displayUpdate = null;
+    status = 'remove';
+    focus.dataset.status = 'show';
+  }
+  ele.dataset.status = status;
+  line.style.display = displayUpdate;
+  confidenceArea.style.display = displayUpdate;
+};
+
+const createLegendGroup = (datum, model) => {
+  var g = d.createElement('div');
+  g.setAttribute('class', 'legend-group ' + model);
+  g.dataset.status = 'remove';
+  g.addEventListener('click', function (e) {
+    legendClickHandler(e, datum, this);
+  });
+  g.addEventListener('mouseenter', function (e) {
+    // console.log('event', e);
+    d.querySelectorAll('.legend-group').forEach((ele) => {
+      if (ele.classList[1] !== model) {
+        ele.classList.add('fade-it');
+      }
     });
   });
+  g.addEventListener('mouseleave', function (e) {
+    // console.log('event', e);
+    d.querySelectorAll('.legend-group').forEach((ele) => {
+      if (ele.classList[1] !== model) {
+        ele.classList.remove('fade-it');
+      }
+    })
+  });
+  return g;
+}
+
+const setUpToggleGraphOnOff = (svg, data) => {
+  let togglesContainer = d.createElement('div');
+  togglesContainer.setAttribute('class', 'toggles-container');
+
+  data.forEach((datum) => {
+    var model = datum.model;
+    var legendGroup = createLegendGroup(datum, model);
+
+    var colorSquare = d.createElement('div');
+    colorSquare.setAttribute('class', 'color-square ' + model);
+    colorSquare.style.backgroundColor = modelToColor[model];
+
+    var text = d.createElement('text');
+    text.innerHTML = model;
+
+    legendGroup.append(colorSquare);
+    legendGroup.append(text);
+
+    togglesContainer.append(legendGroup);
+  });
+
+  document.querySelector('.svg-container').append(togglesContainer);
 };
 
 const drawTimeSeriesGraph = function (data, data2, title, title2, dateformat, blank = false, modelType = 'DNN') {
@@ -350,7 +420,7 @@ const drawTimeSeriesGraph = function (data, data2, title, title2, dateformat, bl
       .range([0, width]) // scale from 0 - 600. How does this scale work? each x unit is 50 margin apart
       .domain(d3.extent(dataWithMaxPrr, function (d) { return d.year; }));
     y = d3.scaleLinear()
-      .range([height, 0]) // scale from 140 - 0. 170 low, 0 high.
+      .range([height, 0]) // scale from 170 - 0. 170 low, 0 high.
       .domain([0, d3.max(dataWithMaxPrr, function (d) { return d.prr; }) > 2 ? (0.5 + d3.max(dataWithMaxPrr, function (d) { return d.prr; })) : 2.5]);
 
     createYAxis(svg, y, width, height);
@@ -370,9 +440,8 @@ const drawTimeSeriesGraph = function (data, data2, title, title2, dateformat, bl
       focusAndMouses.push(focusAndMouse);
     });
 
-    setUpRectForFocuses(svg, height, width, focusAndMouses);
-    // setUpToggleGraphOnOff(svg, data);
-    // setUpFocuses(svg, height, width, focusAndMouses);
+    setUpRectWithFocuses(svg, height, width, focusAndMouses);
+    setUpToggleGraphOnOff(svg, data);
 
     d3.select("#viz_container") // graph number 1
       .append("div")
@@ -523,3 +592,28 @@ export {
   showLoading,
   modelToColor
 };
+
+function newFunction(model, datum) {
+    var group = d.createElement('div');
+    group.setAttribute('class', 'legend-group ' + model);
+    group.dataset.status = 'remove';
+    group.addEventListener('click', function (e) {
+      legendClickHandler(e, datum, this);
+    });
+    group.addEventListener('mouseenter', function (e) {
+      // console.log('event', e);
+      d.querySelectorAll('.legend-group').forEach((ele) => {
+        if (ele.classList[1] !== model) {
+          ele.classList.add('fade-it');
+        }
+      });
+    });
+    group.addEventListener('mouseleave', function (e) {
+      // console.log('event', e);
+      d.querySelectorAll('.legend-group').forEach((ele) => {
+        if (ele.classList[1] !== model) {
+          ele.classList.remove('fade-it');
+        }
+      });
+    });
+  }
