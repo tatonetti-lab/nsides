@@ -2,6 +2,17 @@ import pymysql
 
 # Define table names
 #CONFIG_FILE = "nsides.cnf"           # log-in credentials for database
+def connect ():
+    print "Connecting to the MySQL API..."
+
+    # Connect to MySQL database
+    print "Connecting to MySQL database"
+
+    conn = pymysql.connect(read_default_file='nsides.cnf',
+                db='ebdb',
+                charset='utf8mb4',
+                cursorclass=pymysql.cursors.DictCursor)
+    return conn
 
 def query_db(service, method, query=False, cache=False):
 
@@ -120,6 +131,25 @@ def query_db(service, method, query=False, cache=False):
                     "concept_name": result[u'concept_name'].encode('ascii','ignore')
                 })
                 
+        elif method == 'nameToConcept':
+            names = str(tuple(query))
+            SQL = '''
+                SELECT concept_id, concept_name FROM concept
+                WHERE concept_name IN %s
+                ''' %(names)
+            
+            print "RUNNING MYSQL QUERY..."
+            cur.execute(SQL)
+            results = cur.fetchall()
+            print "FINISHED QUERY"
+
+            ref = {}
+
+            for result in results:
+                c_name = result[u'concept_name']
+                c_id = result[u'concept_id']
+                ref[c_name] = c_id
+            return ref
 
         return json_return
 
@@ -576,3 +606,6 @@ def query_db(service, method, query=False, cache=False):
     conn.close()
 
     return json_return
+
+def nameToConcept (name):
+    return

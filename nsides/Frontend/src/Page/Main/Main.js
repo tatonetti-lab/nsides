@@ -1,13 +1,13 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
-import { setdrugEffectModels } from '../../Redux/Actions/HomeActions';
+import { setdrugEffectModels } from '../../Redux/Actions/HomeActions/DrugSelectBoxActions';
 import { drawTimeSeriesGraph } from '../../Helpers/graphTools/graphing';
 import DrugSelectBox from './DrugSelectBox';
 import EffectSelectBox from './EffectSelectBox';
 import SubmitModelButton from './SubmitModelButton';
-import Header from '../../Header';
-import ModelType from './ModelType';
+// import Header from '../../Header';
+// import ModelType from './ModelType';
 // import axios from 'axios';
 // import Actions from '../../Redux/Actions/Actions';
 
@@ -29,11 +29,11 @@ class Main extends React.Component {
 
   componentDidMount () {
     let { dateformat } = this.state;
-    drawTimeSeriesGraph([], [], "Select a drug and effect", "", dateformat, true);
+    drawTimeSeriesGraph([], [], "Select a drug and effect", true);
   }
 
   render () {
-    // console.log('rendering', this.state);
+    // console.log('rendering', this.state)
 
     return <div id='content'>
       {/* <Header/> */}
@@ -88,10 +88,7 @@ const mapDispatchToProps = (dispatch) => {
   return {
     setdrugEffectModels: (data) => {
       dispatch(setdrugEffectModels(data));
-    },
-    // setSelectedModel: (modelType) => {
-    //   dispatch(setSelectedModel(modelType));
-    // }
+    }
   };
 };
 

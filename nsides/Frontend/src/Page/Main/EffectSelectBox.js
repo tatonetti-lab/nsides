@@ -13,13 +13,16 @@
 // https://github.com/tatonetti-lab/nsides or go to:
 // http://creativecommons.org/licenses/by-nc-sa/4.0/
 import React from 'react';
-import Select from 'react-select';
+// import Select from 'react-select';
+import Autosuggest from 'react-autosuggest';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import axios from 'axios';
-import HomeAction from '../../Redux/Actions/HomeActions';
-import '../../css/react-select.css';
-import { drawTimeSeriesGraph, showLoading } from '../../Helpers/graphTools/graphing';
+import EffectSelectBoxActions from '../../Redux/Actions/HomeActions/EffectSelectBoxActions';
+import { drawTimeSeriesGraph, showLoading, callOrNotDrugAndEffectData } from '../../Helpers/graphTools/graphing';
+import effects from '../../Helpers/effects-7084';
+import { escapeRegexCharacters } from '../../Helpers/utility';
+import '../../css/react-Autosuggest.css';
 
 class EffectSelectBox extends React.Component {
 	// displayName: 'EffectSelectBox';
@@ -30,84 +33,114 @@ class EffectSelectBox extends React.Component {
 			// value: this.props.outcome //'', //[],
       // numOutcomeResults: this.props.numOutcomeResults
       // loadingIconStyle: {float:"right", display:"none"},
+      
     };
-    this.handleSelectChange = this.handleSelectChange.bind(this);
-    this.handleDrugOutcomeChange = this.handleDrugOutcomeChange.bind(this);
+    this.onSuggestionsFetchRequested = this.onSuggestionsFetchRequested.bind(this);
+    this.onSuggestionsClearRequested = this.onSuggestionsClearRequested.bind(this);
+    this.getSuggestions = this.getSuggestions.bind(this);
+    this.renderSuggestion = this.renderSuggestion.bind(this);
+    this.onChange = this.onChange.bind(this);
+    // this.handleSelectChange = this.handleSelectChange.bind(this);
+    // this.handleDrugOutcomeChange = this.handleDrugOutcomeChange.bind(this);
+    
 	}
 
-	handleSelectChange (value) {
-    const { handleDrugOutcomeChange } = this;
-    const { drugs } = this.props;
-    console.log('effect value', value);
-    handleDrugOutcomeChange(drugs, value);
-  }
+	// handleSelectChange (value) {
+  //   const { handleDrugOutcomeChange } = this;
+  //   const { drugs } = this.props;
+  //   console.log('effect value', value);
+  //   handleDrugOutcomeChange(drugs, value);
+  // }
   
-  handleDrugOutcomeChange (drugs, value) {
-    let { submitNewModelOption, boundSetDrugEffectModels, boundEffectSelectBoxEffectChange, request, dateformat } = this.props;
-    const outcome = value === null ? '' : value.value;
-    let title1, title2;
-    boundEffectSelectBoxEffectChange(drugs, outcome, value);
-    showLoading();
-    // console.log("newDrug", drugs, "newOutcome", outcome, this);
-    
-    if ((drugs === "") || (outcome === "")) {
-      if (submitNewModelOption !== '') {
-        title1 = "";
-        title2 = '';
-      } else {
-        title1 = "Select a drug and effect";
-        title2 = '';
-      }
-      drawTimeSeriesGraph([], [], title1, title2, dateformat, true);
-    } else {
-      var api_call = "/api/v1/query?service=nsides&meta=estimateForDrug_Outcome&drugs=" + drugs + "&outcome=" + outcome;
-      axios({
-        method: 'GET',
-        url: api_call
-      })
-        .then((j) => {
-          // console.log("data:");
-          j = j.data;
-          console.log('received', j, '\n');
-          var data1, data2, modelType;// hasModelType = false, foundIndex;
-          modelType = j.results[0].model;
-          // data = j["results"][0]["estimates"];
-          data1 = j['results'].map((datum) => {
-            let estimates = datum.estimates;
-            let model = datum.model;
-            return {
-              model,
-              estimates
-            };
-          })
-          data2 = j["results"][0]["nreports"];
-          var title1 = "Proportional Reporting Ratio over time";
-          var title2 = "Number of reports by year";
+  // handleDrugOutcomeChange (drugs, value) {
+  //   let { submitNewModelOption, boundSetDrugEffectModels, boundEffectSelectBoxEffectChange, request, dateformat } = this.props;
+  //   const outcome = value === null ? '' : value.value;
+  //   let title1;
+  //   boundEffectSelectBoxEffectChange(drugs, outcome, value);
+  //   showLoading();
+  //   // console.log("newDrug", drugs, "newOutcome", outcome, this);
+  //   callOrNotDrugAndEffectData(drugs, value, 'Select a drug and effect');
+  // }
+  
+  getSuggestions(value) {
+    const escapedValue = escapeRegexCharacters(value.trim());
+    let { suggestions } = this.props;
+    let options = suggestions.length > 0 ? suggestions : effects;
 
-          boundSetDrugEffectModels(j.results);
-          drawTimeSeriesGraph(data1, data2, title1, title2, dateformat, false, modelType);
-        });
-    };
+    if (escapedValue === '') {
+      return [];
+    }
+  
+    const regex = new RegExp(escapedValue, 'i');
+    return options.filter((option) => {
+      // console.log(option);
+      return regex.test(option.label);
+    });
   }
 
-//	toggleDisabled (e) {
-//		this.setState({ disabled: e.target.checked });
-//	}
+  onSuggestionsFetchRequested({ value }) {
+    let { setSelectionSuggestions } = this.props;
+    let suggestions = this.getSuggestions(value);
+    // console.log('length of suggestions is ', suggestions.length);
+    if (suggestions.length < 1001) {
+      setSelectionSuggestions(suggestions);
+    } else {
+      setSelectionSuggestions([]);
+    }
+  };
+
+  onSuggestionsClearRequested() {
+    this.props.setSelectionSuggestions([]);
+  };
+
+  getSuggestionValue(suggestion) {
+    // console.log('selected',suggestion);
+    return suggestion.label;
+  }
+
+  renderSuggestion(suggestion) {
+    // console.log(suggestion, 'k');
+    return (
+      <div>{suggestion.label}</div>
+    );
+  }
+
+  onChange(event, { newValue, method }) {
+    // console.log('new', newValue);
+    this.props.setEffectBoxText(newValue);
+  };
+
+
+
+
     
 	render () {        
     // console.log(this.props);
     const { props, handleSelectChange } = this;
-    const { value, outcomeOptions } = props;
+    const { text, outcomeOptions, suggestions } = props;
+    const inputProps = {
+      placeholder: 'Type an effect',
+      value: text,
+      onChange: this.onChange
+    };
+    // console.log(inputProps);
 
     return (
       <div className="section select_container_effect">
         <div className="effect_title">Effect</div>
-        <Select name="selected-effect"
+        {/* <Select name="selected-effect"
           value={value} //{this.state.value}
           placeholder="Select effect..."
           noResultsText='No effects found'
-          options={outcomeOptions}
-          onChange={handleSelectChange} />
+          options={effects}
+          onChange={handleSelectChange} /> */}
+        <Autosuggest 
+          suggestions={suggestions} //
+          onSuggestionsFetchRequested={this.onSuggestionsFetchRequested} //
+          onSuggestionsClearRequested={this.onSuggestionsClearRequested} // 
+          getSuggestionValue={this.getSuggestionValue} //get the name of the suggestion
+          renderSuggestion={this.renderSuggestion} //
+          inputProps={inputProps}/>
       </div>
     );
 	}
@@ -115,112 +148,32 @@ class EffectSelectBox extends React.Component {
 
 const mapStateToProps = (state) => {
   const HomeReducer = state.HomeReducer;
-  const { submitNewModelOption, drugs, request, dateformat } = HomeReducer;
-  const { value, outcome, outcomeOptions } = HomeReducer.effectSelectBox;
+  const { submitNewModelOption, drugs } = HomeReducer;
+  const { value, outcome, outcomeOptions, text, suggestions } = HomeReducer.effectSelectBox;
   return {
+    suggestions,
+    text,
     outcome,
     outcomeOptions,
     drugs,
-    request,
-    dateformat,
     submitNewModelOption,
     value
   };
 };
   
 const mapDispatchToProps = (dispatch) => {
-  const { setDrugEffectModels, effectSelectBoxEffectChange } = HomeAction;
+  const { effectSelectBoxEffectChange, setSelectionSuggestions, setEffectBoxText } = EffectSelectBoxActions;
   return {
-    boundSetDrugEffectModels: (data) => {
-      dispatch(setDrugEffectModels(data));
+    setEffectBoxText: (value) => {
+      dispatch(setEffectBoxText(value));
     },
-    boundEffectSelectBoxEffectChange: (drugs, outcome, value) => {
-      dispatch(effectSelectBoxEffectChange(drugs, outcome, value));
+    setSelectionSuggestions: (suggestions) => {
+      dispatch(setSelectionSuggestions(suggestions));
+    },
+    boundEffectSelectBoxEffectChange: (value, outcome) => {
+      dispatch(effectSelectBoxEffectChange(value, outcome));
     }
   };
 };
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(EffectSelectBox));
-
-// handleDrugOutcomeChange(newDrug, newOutcome) {
-//   this.setState({
-//     drugs: newDrug,
-//     outcome: newOutcome
-//   }, () => {
-//     let { request, dateformat } = this.state;
-//     let title1, title2;
-//     console.log("newDrug", newDrug, "newOutcome", newOutcome, this);
-    
-//     if ((newDrug === "") || (newOutcome === "")) {
-//       if (this.state.submitNewModelOption !== '') {
-//         title1 = "";
-//         title2 = '';
-//       } else {
-//         title1 = "Select a drug and effect";
-//         title2 = '';
-//       }
-//       drawTimeSeriesGraph([], [], title1, title2, dateformat, true);
-//     } else {
-//       var api_call = "/api/v1/query?service=nsides&meta=estimateForDrug_Outcome&drugs=" + newDrug + "&outcome=" + newOutcome;
-//       // console.log(api_call);
-//       request = fetch(api_call) // http://stackoverflow.com/a/41059178
-//         .then(function (response) {
-//           return response.json();
-//         })
-//         .then(function (j) {
-//           let { setdrugEffectModels } = this.props;
-//           // console.log("data:");
-//           console.log('received', j, '\n');
-//           var data, data2, modelType;// hasModelType = false, foundIndex;
-//           modelType = j.results[0].model;
-//           data = j["results"][0]["estimates"];
-//           data2 = j["results"][0]["nreports"];
-//           // if (selectedModel !== null) {
-//           //   for (var i = 0; i < j.results.length; i++) {
-//           //     if (j.results[i].model === selectedModel) {
-//           //       hasModelType = true;
-//           //       foundIndex = i;
-//           //       break;
-//           //     }
-//           //   }
-//           // }
-//           // console.log('has modeltype',hasModelType)
-//           // if (hasModelType) {
-//           //   modelType = selectedModel;
-//           //   data = j.results[foundIndex].estimates;
-//           //   data2 = j.results[foundIndex].nreports;
-//           // } else {
-//           //   modelType = j.results[0].model;
-//           //   data = j["results"][0]["estimates"];
-//           //   data2 = j["results"][0]["nreports"];
-//           //   setSelectedModel(modelType);
-//           // }
-//           // console.log('data', data, 'data2', data2);
-//           // console.log("modelType: ", modelType);
-//           // console.log("drug-effect data", data);
-//           // console.log("number of reports by year", data2);
-
-//           /* Set variables */
-//           var data1 = data;
-//           var title1 = "Proportional Reporting Ratio over time";
-//           var title2 = "Number of reports by year";
-//           // console.log('modelType', modelType)
-//           // setSelectedModel(modelType);
-//           // let select = document.querySelector(`select.model-types`);
-//           // if (select !== null) {
-//           //   select.value = modelType;
-//           // }
-//           setdrugEffectModels(j.results);
-//           drawTimeSeriesGraph(data1, data2, title1, title2, dateformat, false, modelType);
-//         }.bind(this))
-//         // .catch(function (ex) {
-//         //   // console.log('Parsing failed', ex);
-//         //   request = null;
-//         //   var title1 = "Select a drug and effect"; //"No results found";
-//         //   var title2 = '';
-//         //   console.log('hi',ex)
-//         //   drawTimeSeriesGraph([], [], title1, title2, dateformat, true);
-//         // });
-//     }
-//   });
-// }

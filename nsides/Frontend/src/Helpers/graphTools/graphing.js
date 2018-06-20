@@ -1,6 +1,7 @@
 import * as d3 from 'd3';
 import c3 from 'c3';
-import React from 'react';
+import axios from 'axios';
+// import React from 'react';
 
 const d = document;
 
@@ -398,11 +399,12 @@ const setUpToggleGraphOnOff = (svg, data) => {
   document.querySelector('.svg-container').append(togglesContainer);
 };
 
-const drawTimeSeriesGraph = function (data, data2, title, title2, dateformat, blank = false, modelType = 'DNN') {
+const drawTimeSeriesGraph = function (data, data2, title, blank = false, modelType = 'DNN') {
   // console.log('data', data, '\ndata2', data2, '\ntitle', title, '\ntitle2', title2, '\ndateformat', dateformat, '\nblank', blank, '\nmodelType', modelType);
   document.getElementById("viz_container").innerHTML = ""; // resets the viz_container
   data = data.slice();
   data2 = data2.slice();
+  let dateformat = '%Y';
   // Set the dimensions of the canvas / graph
   let margin = { top: 50, right: 150, bottom: 50, left: 50 },
     width = 800 - margin.left - margin.right,  // 600
@@ -580,40 +582,80 @@ const showLoading = () => {
   viz_container.innerHTML = "";
   viz_container.append(loading);
 }
+
+const callOrNotDrugAndEffectData = (formattedDrugstring, effectValue, title1) => {
+  if (formattedDrugstring.length > 0 && effectValue != null) {
+    var api_call = "/api/v1/query?service=nsides&meta=estimateForDrug_Outcome&drugs=" + formattedDrugstring + "&outcome=" + effectValue.value;
+    axios({
+      method: 'GET',
+      url: api_call
+    })
+      .then((j) => {
+        console.log("data:");
+        j = j.data;
+        // console.log('received', j, '\n');
+        var data1, data2, modelType;// hasModelType = false, foundIndex;
+        modelType = j.results[0].model;
+        // data = j["results"][0]["estimates"];
+        data1 = j['results'].map((datum) => {
+          let estimates = datum.estimates;
+          let model = datum.model;
+          return {
+            model,
+            estimates
+          };
+        });
+        data2 = j["results"][0]["nreports"];
+        var title1 = "Proportional Reporting Ratio over time";
+        var title2 = "Number of reports by year";
+
+        // boundSetDrugEffectModels(j.results);
+        drawTimeSeriesGraph(data1, data2, title1, false, modelType);
+      });
+  } else {
+    drawTimeSeriesGraph([], [], title1, true);
+  }
+}
+
+
+
+
 const all = {
   drawTimeSeriesGraph,
   showLoading,
-  modelToColor
+  modelToColor,
+  callOrNotDrugAndEffectData
 };
 
 export default all;
 export { 
   drawTimeSeriesGraph,
   showLoading,
-  modelToColor
+  modelToColor,
+  callOrNotDrugAndEffectData
 };
 
-function newFunction(model, datum) {
-    var group = d.createElement('div');
-    group.setAttribute('class', 'legend-group ' + model);
-    group.dataset.status = 'remove';
-    group.addEventListener('click', function (e) {
-      legendClickHandler(e, datum, this);
-    });
-    group.addEventListener('mouseenter', function (e) {
-      // console.log('event', e);
-      d.querySelectorAll('.legend-group').forEach((ele) => {
-        if (ele.classList[1] !== model) {
-          ele.classList.add('fade-it');
-        }
-      });
-    });
-    group.addEventListener('mouseleave', function (e) {
-      // console.log('event', e);
-      d.querySelectorAll('.legend-group').forEach((ele) => {
-        if (ele.classList[1] !== model) {
-          ele.classList.remove('fade-it');
-        }
-      });
-    });
-  }
+// function newFunction(model, datum) {
+//     var group = d.createElement('div');
+//     group.setAttribute('class', 'legend-group ' + model);
+//     group.dataset.status = 'remove';
+//     group.addEventListener('click', function (e) {
+//       legendClickHandler(e, datum, this);
+//     });
+//     group.addEventListener('mouseenter', function (e) {
+//       // console.log('event', e);
+//       d.querySelectorAll('.legend-group').forEach((ele) => {
+//         if (ele.classList[1] !== model) {
+//           ele.classList.add('fade-it');
+//         }
+//       });
+//     });
+//     group.addEventListener('mouseleave', function (e) {
+//       // console.log('event', e);
+//       d.querySelectorAll('.legend-group').forEach((ele) => {
+//         if (ele.classList[1] !== model) {
+//           ele.classList.remove('fade-it');
+//         }
+//       });
+//     });
+//   }

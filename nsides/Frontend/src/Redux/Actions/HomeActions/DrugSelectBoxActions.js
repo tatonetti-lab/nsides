@@ -13,11 +13,11 @@ const setSelectedModel = (modelType) => {
   }
 };
 
-const drugSelectBoxDrugChange = (newDrug, topOutcomes, drugHasNoModel) => {
+const drugSelectBoxDrugChange = (newDrugs, topOutcomes, drugHasNoModel) => {
   return {
     type: `HOMEACTION DRUGSELECTBOX DRUG CHANGE`,
     payload: {
-      newDrug,
+      newDrugs,
       topOutcomes,
       drugHasNoModel
     }
@@ -31,26 +31,13 @@ const drugSelectBoxSetDrug = (value) => {
       value
     }
   }
-}
-
-const effectSelectBoxEffectChange = (drugs, outcome, value) => {
-  console.log(drugs, outcome, value);
-  return {
-    type: `HOME ACTION EFFECTSELECTBOX EFFECT CHANGE`,
-    payload: {
-      drugs,
-      outcome,
-      value
-    }
-  }
 };
 
 let all = {
   setDrugEffectModels,
   setSelectedModel,
   drugSelectBoxDrugChange,
-  drugSelectBoxSetDrug,
-  effectSelectBoxEffectChange
+  drugSelectBoxSetDrug
 };
 
 export default all;
@@ -58,6 +45,5 @@ export {
   setDrugEffectModels,
   setSelectedModel,
   drugSelectBoxDrugChange,
-  drugSelectBoxSetDrug,
-  effectSelectBoxEffectChange
-};
+  drugSelectBoxSetDrug
+}

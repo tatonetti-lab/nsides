@@ -21,8 +21,7 @@ class ModelType extends React.Component {
     if (selectedIndex !== undefined) {
       let modelData = drugEffectModels[selectedIndex];
       let title1 = "Proportional Reporting Ratio over time";
-      let title2 = "Number of reports by year";
-      drawTimeSeriesGraph(modelData.estimates, modelData.nreports, title1, title2, '%Y', false, modelData.model);
+      drawTimeSeriesGraph(modelData.estimates, modelData.nreports, title1, false, modelData.model);
     }
   }
 

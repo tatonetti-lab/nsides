@@ -246,7 +246,7 @@ var rxnormDrugs = [
   { value: '301542', label: 'rosuvastatin'},
   { value: '6579', label: 'Magnesium Chloride'},
   { value: '40790', label: 'pantoprazole'},
-  { value: '875807', label: 'Calcium Chloride / Glucose / Lactate/ Magnesium Chloride / Sodium Chloride Intraperitoneal Solution'},
+  { value: '875807', label: 'Calcium Chloride / Glucose / Lactate / Magnesium Chloride / Sodium Chloride Intraperitoneal Solution'},
   { value: '36437', label: 'Sertraline'},
   { value: '1202', label: 'Atenolol'},
   { value: '39993', label: 'zolpidem'},
@@ -289,7 +289,7 @@ var rxnormDrugs = [
   { value: '2626', label: 'Clozapine'},
   { value: '9143', label: 'Ranitidine'},
   { value: '4493', label: 'Fluoxetine'},
-  { value: '8591', label: 'PotassiumChloride'},
+  { value: '8591', label: 'Potassium Chloride'},
   { value: '321988', label: 'Escitalopram'},
   { value: '519', label: 'Allopurinol'},
   { value: '1373478', label: 'dimethyl fumarate'},
@@ -330,7 +330,7 @@ var rxnormDrugs = [
   { value: '19484', label: 'Bisoprolol'},
   { value: '10737', label:'Trazodone'},
   { value: '1292', label: 'Baclofen'},
-  { value: '86009', label: 'InsulinLispro'},
+  { value: '86009', label: 'Insulin Lispro'},
   { value: '4083', label: 'Estradiol'},
   { value: '3827', label: 'Enalapril'},
   { value: '593411', label: 'sitagliptin'},
@@ -403,7 +403,10 @@ var rxnormDrugs = [
   { value: '6813', label: 'Methadone'},
   { value: '1012892', label: 'fingolimod'},
   // { value: undefined, label: 'Multivitamin preparation'}
-]
+];
+
+
+
 export {
   rxnormDrugs,
   conceptIdDrugs

@@ -6,11 +6,17 @@ const bind = (dispatch, action) => {
   };
 };
 
+const escapeRegexCharacters = function (str) {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+};
+
 const all = {
-  bind
+  bind,
+  escapeRegexCharacters
 };
 
 export default all;
 export {
-  bind
+  bind,
+  escapeRegexCharacters
 };

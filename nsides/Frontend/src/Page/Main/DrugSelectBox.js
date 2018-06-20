@@ -4,8 +4,8 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import axios from 'axios';
 import '../../css/react-select.css';
-import HomeActions from '../../Redux/Actions/HomeActions';
-import { drawTimeSeriesGraph } from '../../Helpers/graphTools/graphing';
+import DrugSelectBoxActions from '../../Redux/Actions/HomeActions/DrugSelectBoxActions';
+import { drawTimeSeriesGraph, callOrNotDrugAndEffectData } from '../../Helpers/graphTools/graphing';
 // console.log(rxnormDrugs[0])
 var request = null;
 class DrugSelectBox extends React.Component {
@@ -22,12 +22,8 @@ class DrugSelectBox extends React.Component {
     this.apiTopOutcomes = this.apiTopOutcomes.bind(this);
   }
 
-  // handleSelectChange(value) {
-  //   // this.setState({ value }, () => {
-  //   //   this.apiTopOutcomes();
-  //   // });
-  //   let { apiTopOutcomes } = this;
-  //   apiTopOutcomes(value);
+  // componentDidMount () {
+
   // }
 
   apiTopOutcomes(value) {
@@ -39,24 +35,14 @@ class DrugSelectBox extends React.Component {
     // var numResults = this.props.numOutcomeResults;
     var outcomeOptions;
 
-    // console.log("selectedDrug", selectedDrug, "numResults", numResults, 'value', value);
+    console.log("selectedDrug", selectedDrug, "numResults", numResults, 'value', value);
 
     if (selectedDrug === '') {
       // console.log('No selectedDrug; no API call necessary');
-      if (request) {
-        // console.log("Pre-resolve:", request);
-        Promise.resolve(request)
-          .then(() => {
-            handleDrugChange('', [], '');
-            // console.log("Post-resolve:", request);
-          });
-      } else {
-        handleDrugChange('', [], '');
-      }
+      handleDrugChange('', [], '');
     } else {
       var api_call = '/api/v1/query?service=nsides&meta=topOutcomesForDrug&numResults=' + numResults + '&drugs=' + selectedDrug;
       // console.log('apicall', api_call);
-
       axios({
         method: 'GET',
         url: api_call
@@ -64,14 +50,9 @@ class DrugSelectBox extends React.Component {
         .then((j) => {
           j = j.data;
           outcomeOptions = j["results"][0]["topOutcomes"];
-          // console.log("outcomeOptions", outcomeOptions);
+          // console.log("outcomeOptions", outcomeOptions.map(item => JSON.stringify(item)).join(', \n'));
           handleDrugChange(selectedDrug, outcomeOptions, '')
-        }).catch((ex) => {
-          // console.log('No outcomes found', ex);
-          // console.log("INFO: selectedDrug:");
-          // console.log(selectedDrug);
-          handleDrugChange('', [], selectedDrug);
-        });
+        })
     }
   }
 
@@ -97,18 +78,16 @@ class DrugSelectBox extends React.Component {
     return selectedDrug;
   }
   
-  handleDrugChange(newDrug, topOutcomes, drugHasNoModel) {
-    let { drugChange, dateformat } = this.props;
-    drugChange(newDrug, topOutcomes, drugHasNoModel)
+  handleDrugChange(drugs, topOutcomes, drugHasNoModel) {
+    let { drugChange, dateformat, effectValue } = this.props;
+    drugChange(drugs, topOutcomes, drugHasNoModel)
     let title1, title2;
     if (drugHasNoModel !== '') {
       title1 = '';
-      title2 = '';
     } else {
       title1 = "Select a drug and effect";
-      title2 = '';
     }
-    drawTimeSeriesGraph([], [], title1, title2, dateformat, true);
+    callOrNotDrugAndEffectData(drugs, effectValue, title1)
   }
 
   render() {
@@ -131,18 +110,21 @@ class DrugSelectBox extends React.Component {
 
 const mapStateToProps = (state) => {
   let { HomeReducer } = state;
-  let { numOutcomeResults, drugSelectBox } = HomeReducer;
+  let { numOutcomeResults, drugSelectBox, effectSelectBox, drugs } = HomeReducer;
   let { value, options } = drugSelectBox;
-  // console.log('value',value, options)
+  let { value: effectValue } = effectSelectBox;
+  // console.log('value',value, options, effectValue)
   return {
     numOutcomeResults,
     value,
-    options
+    options,
+    drugs,
+    effectValue
   };
 };
   
 const mapDispatchToProps = (dispatch) => {
-  const { drugSelectBoxDrugChange, drugSelectBoxSetDrug } = HomeActions;
+  const { drugSelectBoxDrugChange, drugSelectBoxSetDrug } = DrugSelectBoxActions;
   return {
     drugChange: (newDrug, topOutcomes, drugHasNoModel) => {
       dispatch(drugSelectBoxDrugChange(newDrug, topOutcomes, drugHasNoModel));

@@ -593,6 +593,13 @@ def api_call(service = None, meta = None, query = None):
     print 'Completing requests with ', json[0:14]
     return json
 
+@app.route('/drugsFromEffect', methods=['POST'])
+def drugsFromEffect():
+    data = request.get_json()
+    print data
+    query_nsides_mongo.query_effect(data)
+    return 'k'
+
 ###################
 #     ROUTES      #
 #################

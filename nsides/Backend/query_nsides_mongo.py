@@ -19,6 +19,7 @@ import pymongo
 from operator import itemgetter
 import json
 import query_nsides_mysql
+from nsides_helpers import rxnormToName, rxnormToListElement, ingredientRxnormToName
 
 import ipdb
 
@@ -58,6 +59,22 @@ def main():
     query_db('nsides', 'estimateForDrug_Outcome', {'drugs': '19097016', 'model': 'dnn', 'outcome': '4294679'})
 
     return True
+
+def connect():
+    print "Connecting to the API..."
+
+    # Connect to MongoDB database
+    print "Connecting to database"
+
+    print >> sys.stderr, "Loading password from ./nsides-mongo.cnf..."
+    MONGODB_HOST, MONGODB_UN, MONGODB_PW = open('./nsides-mongo.cnf').read().strip().split('\n')
+
+    # print 'MongoDB host: ', MONGODB_HOST
+    # print 'MongoDB username: ', MONGODB_UN
+    # print 'MongoDB password: ', MONGODB_PW
+    
+    client = pymongo.MongoClient('mongodb://%s:%s@%s:%s/nsides_in?authSource=admin' % (MONGODB_UN, MONGODB_PW, MONGODB_HOST, MONGODB_PORT))
+    return client
 
 def query_db(service, method, query=False, cache=False):
 
@@ -211,8 +228,8 @@ def query_db(service, method, query=False, cache=False):
                     {"$match": {"rxnorm": query["drugs"]}},
                     {"$unwind": "$nreports"},
                     {"$group": {"_id": "$snomed", "totalnreports": { "$sum": "$nreports.nreports" }} },
-                    {"$match": {"totalnreports": {"$gte": 1} } },
-                    {"$sort": {"totalnreports": -1} },
+                    {"$match": {"totalnreports": {"$gte": 1} } },  # $gte selects greater than or equal to 
+                    {"$sort": {"totalnreports": -1} },  # descending order
                     {"$limit": num_results}
                 ]
             else:
@@ -251,8 +268,7 @@ def query_db(service, method, query=False, cache=False):
                     "topOutcomes" : outcome_options,
                     "drug" : query["drugs"],
                 }) 
-
-
+                
         elif method == 'topOutcomesForDrug_old': #'get_top_10_effects':
             # Given drug and model, return top 10 outcomes ordered by 2016 CI
             # For now, fetch all documents and process in Python
@@ -392,6 +408,66 @@ def query_db(service, method, query=False, cache=False):
             all_gpcrs = list(gpcr.find({'GPCR_uniprot_': query['uniprot']}, 
                                        {'_id': 0, 'cell_line_ID': 0}))
             return json.dumps(all_gpcrs)
+
+def query_effect(query):
+    client = connect()
+    db = client.nsides_in
+    estimates = db.estimates
+    json_return = []
+
+    print query['numResults']
+    if query["numResults"] == 'all':
+        #num_results = 'all'
+        num_results = 10000
+    else:
+        num_results = int(query["numResults"])
+    
+
+    pipeline = None
+    effect = int(query['effect'])
+    
+    if query["model"] == 'all':
+        pipeline = [
+            {"$match": {"snomed": effect}},
+            {"$unwind": "$nreports"},
+            {"$group": {"_id": "$rxnorm", "totalnreports": { "$sum": "$nreports.nreports" }} },
+            {"$match": {"totalnreports": {"$gte": 1} } },  # $gte selects greater than or equal to 
+            {"$sort": {"totalnreports": -1} },  # descending order
+            {"$limit": num_results}
+        ]
+    else:
+        pipeline = [
+            {"$match": {"snomed": effect, "model": query["model"]}},
+            {"$unwind": "$nreports"},
+            {"$group": {"_id": "$rxnorm", "totalnreports": { "$sum": "$nreports.nreports" }} },
+            {"$match": {"totalnreports": {"$gte": 1} } },
+            {"$sort": {"totalnreports": -1} },
+            {"$limit": num_results}
+        ]
+
+    estimate_records = estimates.aggregate(pipeline)
+    # ipdb.set_trace()
+    # print len(estimate_records)
+    listOptions = []
+
+    for record in estimate_records:
+        rxnormId = record['_id']
+        if rxnormId in rxnormToName:
+            listOptions.append({
+                'value': rxnormId,
+                'label': rxnormToName[rxnormId]
+            })
+    print len(listOptions)
+
+    # outcome_options = []
+    # for position, concept_id in enumerate(outcomes): # Added enumeration to list
+    #     if concept_id in concept_id2name:
+    #         outcome_options.append( { 'value': concept_id, 'label': str(position + 1) + " - " + concept_id2name[concept_id].replace("'", "") } )
+    
+    json_return.append({
+            "topOutcomes" : listOptions,
+            "effect" : query["effect"],
+        })
 
 if __name__ == '__main__':
     main()

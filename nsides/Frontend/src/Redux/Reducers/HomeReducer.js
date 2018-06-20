@@ -3,19 +3,19 @@ import { rxnormDrugs } from '../../Helpers/drugs-top-200';
 let start = {
   drugEffectModels: [],
   selectedModel: null,
-  dateformat: '%Y',
-  request: null,
   drugs: '',
   numOutcomeResults: 'all',
   submitNewModelOption: '',
   drugSelectBox: {
-    value: null,
-    options: rxnormDrugs
+    value: null, //id
+    options: rxnormDrugs 
   },
   effectSelectBox: {
-    value: null,
-    outcome: '',
-    outcomeOptions: []
+    suggestions: [],
+    text: '', //text in input field
+    value: null, // object containing value and label of selected effect
+    outcome: '', //name
+    outcomeOptions: [] 
   }
 };
 
@@ -46,17 +46,24 @@ const HomeReducer = (state = start, action) => {
       return newState;
     }
     case `HOMEACTION DRUGSELECTBOX DRUG CHANGE`: {
-      newState.drugs = data.newDrug;
+      newState.drugs = data.newDrugs;
       newState.submitNewModelOption = data.drugHasNoModel;
       effectSelectBox.outcome = '';
       effectSelectBox.outcomeOptions = data.topOutcomes;
       return newState;
     }
-    case `HOME ACTION EFFECTSELECTBOX EFFECT CHANGE`: {
+    case `HOMEACTION EFFECTSELECTBOX EFFECT CHANGE`: {
       effectSelectBox.value = data.value;
-      newState.outcome = data.outcome;
-      newState.drugs = data.drugs;
+      // newState.drugs = data.drugs;
       // console.log('effect select box', data);
+      return newState;
+    }
+    case `HOMEACTION EFFECTSELECTBOX SET TEXT`: {
+      effectSelectBox.text = data;
+      return newState;
+    }
+    case `HOMEACTION EFFECTSELECTBOX SET SUGGESTIONS`: {
+      effectSelectBox.suggestions = data;
       return newState
     }
     default: {
