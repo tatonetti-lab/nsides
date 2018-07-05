@@ -76,14 +76,6 @@ const appendTextsToCanvas = function (svg, width, margin, title) {
     .text(title);
 };
 
-const appendModelTypeToCanvas = function (svg, width, margin, modelType) {
-  svg.append("text")
-    .attr("x", width)
-    .attr("y", 0 - (margin.top / 2) + 12)
-    .attr("text-anchor", "end")
-    .text("Model type: " + modelType);
-};
-
 const modifyDataYearToDate = function (data, parseDate) {
   // console.log('before', data);
   return data.map(d => {
@@ -399,8 +391,8 @@ const setUpToggleGraphOnOff = (svg, data) => {
   document.querySelector('.svg-container').append(togglesContainer);
 };
 
-const drawTimeSeriesGraph = function (data, data2, title, blank = false, modelType = 'DNN') {
-  // console.log('data', data, '\ndata2', data2, '\ntitle', title, '\ntitle2', title2, '\ndateformat', dateformat, '\nblank', blank, '\nmodelType', modelType);
+const drawTimeSeriesGraph = function (data, data2, title = "Select a drug and effect", blank = false, modelType = 'DNN') {
+  // console.log('data', data, '\ndata2', data2, '\ntitle', title, '\ndateformat', dateformat, '\nblank', blank, '\nmodelType', modelType);
   document.getElementById("viz_container").innerHTML = ""; // resets the viz_container
   data = data.slice();
   data2 = data2.slice();
@@ -476,7 +468,7 @@ const trimAxis = function (selector) {
       tick.remove();
     }
   });
-}
+};
 
 const drawNreportsAndControlGraph = function (data2, parseDate) {
   data2 = modifyData2YearToDate(data2, parseDate);
@@ -572,7 +564,7 @@ const drawNreportsAndControlGraph = function (data2, parseDate) {
   // chart.focus();
   trimAxis(`#c3-graph g.c3-axis.c3-axis-y g`);
   trimAxis(`#c3-graph g.c3-axis.c3-axis-y2 g`);
-}
+};
 
 const showLoading = () => {
   let viz_container = document.getElementById("viz_container");
@@ -581,39 +573,50 @@ const showLoading = () => {
   loading.className = 'main-graph-loading';
   viz_container.innerHTML = "";
   viz_container.append(loading);
-}
+};
 
-const callOrNotDrugAndEffectData = (formattedDrugstring, effectValue, title1) => {
-  if (formattedDrugstring.length > 0 && effectValue != null) {
-    var api_call = "/api/v1/query?service=nsides&meta=estimateForDrug_Outcome&drugs=" + formattedDrugstring + "&outcome=" + effectValue.value;
-    axios({
-      method: 'GET',
-      url: api_call
-    })
+const getDrugsFromEffect = (effect) => {
+  axios({
+    method: 'GET',
+    url: `/api/drugsFromEffect/query?effect=${effect}`,
+  })
+};
+
+const callOrNotDrugAndEffectData = (formattedDrugstring, effectObj) => {
+  console.log('callOrNOtDrugAndEffectData params', formattedDrugstring, effectObj);
+  let drugValuesExist = formattedDrugstring.length > 0;
+  let effectValueExist = effectObj != null;
+  if (drugValuesExist && effectValueExist) {
+    showLoading();
+    var api_call = "/api/drugs_and_effect_result/query?drugs=" + formattedDrugstring + "&outcome=" + effectObj.value;
+    axios(api_call)
       .then((j) => {
-        console.log("data:");
         j = j.data;
-        // console.log('received', j, '\n');
+        console.log('received', j, '\n');
         var data1, data2, modelType;// hasModelType = false, foundIndex;
-        modelType = j.results[0].model;
-        // data = j["results"][0]["estimates"];
-        data1 = j['results'].map((datum) => {
-          let estimates = datum.estimates;
-          let model = datum.model;
-          return {
-            model,
-            estimates
-          };
-        });
-        data2 = j["results"][0]["nreports"];
-        var title1 = "Proportional Reporting Ratio over time";
-        var title2 = "Number of reports by year";
+        if (j.results.length) {
+                  // modelType = j.results[0].model;
+          // data = j["results"][0]["estimates"];
+          data1 = j['results'].map((datum) => {
+            let estimates = datum.estimates;
+            let model = datum.model;
+            return {
+              model,
+              estimates
+            };
+          });
+          data2 = j["results"][0]["nreports"];
+          var title1 = "Proportional Reporting Ratio over time";
+          var title2 = "Number of reports by year";
 
-        // boundSetDrugEffectModels(j.results);
-        drawTimeSeriesGraph(data1, data2, title1, false, modelType);
+          // boundSetDrugEffectModels(j.results);
+          drawTimeSeriesGraph(data1, data2, title1, false, modelType);
+        } else {
+          drawTimeSeriesGraph([], [], 'No data for combination', true);
+        }
       });
   } else {
-    drawTimeSeriesGraph([], [], title1, true);
+    drawTimeSeriesGraph([], [], 'Select a drug and Effect', true);
   }
 }
 

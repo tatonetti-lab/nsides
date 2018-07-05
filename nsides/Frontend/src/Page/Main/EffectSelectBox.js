@@ -20,7 +20,6 @@ import { withRouter } from 'react-router';
 import axios from 'axios';
 import EffectSelectBoxActions from '../../Redux/Actions/HomeActions/EffectSelectBoxActions';
 import { drawTimeSeriesGraph, showLoading, callOrNotDrugAndEffectData } from '../../Helpers/graphTools/graphing';
-import effects from '../../Helpers/effects-7084';
 import { escapeRegexCharacters } from '../../Helpers/utility';
 import '../../css/react-Autosuggest.css';
 
@@ -28,45 +27,21 @@ class EffectSelectBox extends React.Component {
 	// displayName: 'EffectSelectBox';
 	constructor (props) {
     super(props);
-    this.state = {
-			// options: this.props.outcomeOptions,
-			// value: this.props.outcome //'', //[],
-      // numOutcomeResults: this.props.numOutcomeResults
-      // loadingIconStyle: {float:"right", display:"none"},
-      
+    this.state = {      
     };
     this.onSuggestionsFetchRequested = this.onSuggestionsFetchRequested.bind(this);
     this.onSuggestionsClearRequested = this.onSuggestionsClearRequested.bind(this);
+    this.getSuggestionValue = this.getSuggestionValue.bind(this);
     this.getSuggestions = this.getSuggestions.bind(this);
     this.renderSuggestion = this.renderSuggestion.bind(this);
-    this.onChange = this.onChange.bind(this);
-    // this.handleSelectChange = this.handleSelectChange.bind(this);
-    // this.handleDrugOutcomeChange = this.handleDrugOutcomeChange.bind(this);
-    
+    this.onChange = this.onChange.bind(this);    
 	}
-
-	// handleSelectChange (value) {
-  //   const { handleDrugOutcomeChange } = this;
-  //   const { drugs } = this.props;
-  //   console.log('effect value', value);
-  //   handleDrugOutcomeChange(drugs, value);
-  // }
-  
-  // handleDrugOutcomeChange (drugs, value) {
-  //   let { submitNewModelOption, boundSetDrugEffectModels, boundEffectSelectBoxEffectChange, request, dateformat } = this.props;
-  //   const outcome = value === null ? '' : value.value;
-  //   let title1;
-  //   boundEffectSelectBoxEffectChange(drugs, outcome, value);
-  //   showLoading();
-  //   // console.log("newDrug", drugs, "newOutcome", outcome, this);
-  //   callOrNotDrugAndEffectData(drugs, value, 'Select a drug and effect');
-  // }
   
   getSuggestions(value) {
     const escapedValue = escapeRegexCharacters(value.trim());
-    let { suggestions } = this.props;
-    let options = suggestions.length > 0 ? suggestions : effects;
-
+    let { suggestions, outcomeOptions } = this.props;
+    let options = suggestions.length > 0 ? suggestions : outcomeOptions;
+    // console.log('options', options, suggestions, outcomeOptions);
     if (escapedValue === '') {
       return [];
     }
@@ -80,10 +55,10 @@ class EffectSelectBox extends React.Component {
 
   onSuggestionsFetchRequested({ value }) {
     let { setSelectionSuggestions } = this.props;
-    let suggestions = this.getSuggestions(value);
+    let filteredSuggestions = this.getSuggestions(value);
     // console.log('length of suggestions is ', suggestions.length);
-    if (suggestions.length < 1001) {
-      setSelectionSuggestions(suggestions);
+    if (filteredSuggestions.length < 1001) {
+      setSelectionSuggestions(filteredSuggestions);
     } else {
       setSelectionSuggestions([]);
     }
@@ -94,7 +69,19 @@ class EffectSelectBox extends React.Component {
   };
 
   getSuggestionValue(suggestion) {
-    // console.log('selected',suggestion);
+    console.log('selected',suggestion);
+    let { effectSelectBoxEffectChange, drugs } = this.props;
+    if (drugs.length) {
+      effectSelectBoxEffectChange(suggestion);
+    } else {
+      let url = '/api/drugsFromEffect/query?effect=' + suggestion.value;
+      axios(url)
+        .then(result => {
+          let drugOptions = result.data.topOutcomes;
+          effectSelectBoxEffectChange(suggestion, drugOptions);
+        })
+    }
+    callOrNotDrugAndEffectData(drugs, suggestion);
     return suggestion.label;
   }
 
@@ -109,32 +96,22 @@ class EffectSelectBox extends React.Component {
     // console.log('new', newValue);
     this.props.setEffectBoxText(newValue);
   };
-
-
-
-
     
 	render () {        
     // console.log(this.props);
     const { props, handleSelectChange } = this;
-    const { text, outcomeOptions, suggestions } = props;
+    const { text, options, suggestions } = props;
     const inputProps = {
       placeholder: 'Type an effect',
       value: text,
       onChange: this.onChange
     };
-    // console.log(inputProps);
+    // console.log('input', inputProps, suggestions);
 
     return (
       <div className="section select_container_effect">
         <div className="effect_title">Effect</div>
-        {/* <Select name="selected-effect"
-          value={value} //{this.state.value}
-          placeholder="Select effect..."
-          noResultsText='No effects found'
-          options={effects}
-          onChange={handleSelectChange} /> */}
-        <Autosuggest 
+        <Autosuggest
           suggestions={suggestions} //
           onSuggestionsFetchRequested={this.onSuggestionsFetchRequested} //
           onSuggestionsClearRequested={this.onSuggestionsClearRequested} // 
@@ -148,8 +125,9 @@ class EffectSelectBox extends React.Component {
 
 const mapStateToProps = (state) => {
   const HomeReducer = state.HomeReducer;
-  const { submitNewModelOption, drugs } = HomeReducer;
-  const { value, outcome, outcomeOptions, text, suggestions } = HomeReducer.effectSelectBox;
+  const { submitNewModelOption, drugs, effectSelectBox, drugSelectBox } = HomeReducer;
+  const { value, outcome, outcomeOptions, text, suggestions } = effectSelectBox;
+  // console.log(state);
   return {
     suggestions,
     text,
@@ -170,8 +148,8 @@ const mapDispatchToProps = (dispatch) => {
     setSelectionSuggestions: (suggestions) => {
       dispatch(setSelectionSuggestions(suggestions));
     },
-    boundEffectSelectBoxEffectChange: (value, outcome) => {
-      dispatch(effectSelectBoxEffectChange(value, outcome));
+    effectSelectBoxEffectChange: (effect, drugOptions) => {
+      dispatch(effectSelectBoxEffectChange(effect, drugOptions));
     }
   };
 };

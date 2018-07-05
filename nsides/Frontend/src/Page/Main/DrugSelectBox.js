@@ -7,7 +7,7 @@ import '../../css/react-select.css';
 import DrugSelectBoxActions from '../../Redux/Actions/HomeActions/DrugSelectBoxActions';
 import { drawTimeSeriesGraph, callOrNotDrugAndEffectData } from '../../Helpers/graphTools/graphing';
 // console.log(rxnormDrugs[0])
-var request = null;
+
 class DrugSelectBox extends React.Component {
   constructor(props) {
     super(props);
@@ -17,7 +17,7 @@ class DrugSelectBox extends React.Component {
       // request: null
     };
     // this.handleSelectChange = this.handleSelectChange.bind(this);
-    this.handleDrugChange = this.handleDrugChange.bind(this);
+    // this.handleDrugChange = this.handleDrugChange.bind(this);
     this.formSelectedDrugString = this.formSelectedDrugString.bind(this);
     this.apiTopOutcomes = this.apiTopOutcomes.bind(this);
   }
@@ -27,33 +27,30 @@ class DrugSelectBox extends React.Component {
   // }
 
   apiTopOutcomes(value) {
-    let { handleDrugChange, formSelectedDrugString } = this;
-    let { numOutcomeResults: numResults, boundDrugSelectBoxSetDrug } = this.props;
+    let { handleDrugChange, formSelectedDrugString, props } = this;
+    let { numOutcomeResults: numResults, drugSelectBoxSetDrug, effectValue, drugSelectBoxDrugChange } = props;
     let selectedDrug = formSelectedDrugString(value);
-    boundDrugSelectBoxSetDrug(value);
+    drugSelectBoxSetDrug(value);
     
     // var numResults = this.props.numOutcomeResults;
     var outcomeOptions;
-
     console.log("selectedDrug", selectedDrug, "numResults", numResults, 'value', value);
 
-    if (selectedDrug === '') {
-      // console.log('No selectedDrug; no API call necessary');
-      handleDrugChange('', [], '');
-    } else {
-      var api_call = '/api/v1/query?service=nsides&meta=topOutcomesForDrug&numResults=' + numResults + '&drugs=' + selectedDrug;
-      // console.log('apicall', api_call);
-      axios({
-        method: 'GET',
-        url: api_call
-      })
-        .then((j) => {
-          j = j.data;
-          outcomeOptions = j["results"][0]["topOutcomes"];
+    callOrNotDrugAndEffectData(selectedDrug, effectValue);
+
+    var api_call = '/api/effectsFromDrugs/query?drugs=' + selectedDrug;
+    // console.log('apicall', api_call);
+    axios(api_call)
+      .then((j) => {
+        j = j.data;
+        if (j.topOutcomes.length > 0) {
+          outcomeOptions = j.topOutcomes;
           // console.log("outcomeOptions", outcomeOptions.map(item => JSON.stringify(item)).join(', \n'));
-          handleDrugChange(selectedDrug, outcomeOptions, '')
-        })
-    }
+          drugSelectBoxDrugChange(selectedDrug, outcomeOptions, '');
+        } else {
+          drugSelectBoxDrugChange('', [], 'no data for this combination');
+        }
+      })
   }
 
   formSelectedDrugString (value) {
@@ -77,18 +74,7 @@ class DrugSelectBox extends React.Component {
     }
     return selectedDrug;
   }
-  
-  handleDrugChange(drugs, topOutcomes, drugHasNoModel) {
-    let { drugChange, dateformat, effectValue } = this.props;
-    drugChange(drugs, topOutcomes, drugHasNoModel)
-    let title1, title2;
-    if (drugHasNoModel !== '') {
-      title1 = '';
-    } else {
-      title1 = "Select a drug and effect";
-    }
-    callOrNotDrugAndEffectData(drugs, effectValue, title1)
-  }
+
 
   render() {
     const { props, apiTopOutcomes } = this;
@@ -126,10 +112,10 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   const { drugSelectBoxDrugChange, drugSelectBoxSetDrug } = DrugSelectBoxActions;
   return {
-    drugChange: (newDrug, topOutcomes, drugHasNoModel) => {
+    drugSelectBoxDrugChange: (newDrug, topOutcomes, drugHasNoModel) => {
       dispatch(drugSelectBoxDrugChange(newDrug, topOutcomes, drugHasNoModel));
     },
-    boundDrugSelectBoxSetDrug: (value) => {
+    drugSelectBoxSetDrug: (value) => {
       dispatch(drugSelectBoxSetDrug(value));
     }
   };

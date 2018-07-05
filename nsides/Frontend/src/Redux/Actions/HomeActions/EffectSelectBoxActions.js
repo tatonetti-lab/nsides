@@ -1,9 +1,10 @@
-const effectSelectBoxEffectChange = (value) => {
-  console.log(value);
+const effectSelectBoxEffectChange = (effect, drugOptions) => {
+  // console.log(value);
   return {
     type: `HOMEACTION EFFECTSELECTBOX EFFECT CHANGE`,
     payload: {
-      value
+      effect,
+      drugOptions
     }
   }
 };

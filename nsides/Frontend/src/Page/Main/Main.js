@@ -15,16 +15,8 @@ class Main extends React.Component {
   constructor (props) {
     super (props);
     this.state = {
-      // dateformat: '%Y',
-      // request: null,
-      // drugs: '',
-      // outcome: '',
-      // numOutcomeResults: 'all',
-      // outcomeOptions: [],
-      // submitNewModelOption: ''
+
     };
-    // this.handleDrugChange = this.handleDrugChange.bind(this);
-    // this.handleDrugOutcomeChange = this.handleDrugOutcomeChange.bind(this);
   }
 
   componentDidMount () {
@@ -55,7 +47,7 @@ class Main extends React.Component {
             <ModelType/>
           </div> */}
         </div>
-        {this.props.submitNewModelOption !== '' &&
+        {this.props.drugHasNoModel !== '' &&
           <div className="newModelNotification">
             <p>We have not yet generated a model for this drug / drug combination.</p>
             <p>If you would like to submit this drug for computation, click on the following button:</p>
@@ -75,11 +67,11 @@ class Main extends React.Component {
 }
 
 const mapStateToProps = (state) => {
-  let  { drugEffectModels, submitNewModelOption } = state.HomeReducer;
+  let  { drugEffectModels, drugHasNoModel } = state.HomeReducer;
   // console.log('drugEffectModels', drugEffectModels)
   return {
     drugEffectModels,
-    submitNewModelOption
+    drugHasNoModel
     // selectedModel
   };
 };

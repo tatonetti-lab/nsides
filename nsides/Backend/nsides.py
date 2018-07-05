@@ -6,6 +6,7 @@ The nSides web front-end, (re)implemented in Flask
 @author: Joseph D. Romano
 @author: Rami Vanguri
 @author: Choonhan Youn
+@author: Kai Xiang Chen
 
 (c) 2017 Tatonetti Lab
 
@@ -17,6 +18,7 @@ from flask_cors import CORS
 # from urlparse import urlparse, urljoin
 # from werkzeug.security import generate_password_hash
 import query_nsides_mongo
+from query_nsides_mongo import query_nsides_in, drugs_from_effect, effects_from_ingredients, get_all_ingredients, drugs_and_effect_result
 import query_nsides_mysql
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
@@ -484,30 +486,6 @@ def api_call(service = None, meta = None, query = None):
             json = '''{"results": %s}''' %(str(service_result))
 
         # e.g. /api/v1/query?service=nsides&meta=topOutcomesForDrug&numResults=10&drugs=19097016
-        elif meta == 'topOutcomesForDrug': #'get_top_10_effects':
-            drugs = request.args.get('drugs')
-            # print type(drugs), drugs
-            all_drugs_ingredients = convertDrugsToIngredients(drugs)
-
-            print('DRUGS:'), 'ingredients', all_drugs_ingredients
-            # print(drugs)
-            if drugs == [''] or drugs is None:
-                response.status = 400
-                return 'No drug(s) selected'
-
-            num_results = request.args.get('numResults')
-            if num_results == [''] or num_results is None:
-                num_results = 10
-
-            model_type = request.args.get('model')
-            if model_type == [''] or model_type is None:
-                model_type = 'all'
-
-            query = {'drugs': all_drugs_ingredients, 'numResults': num_results, 'model': model_type}
-            # print "Parsed query:", query
-
-            service_result = query_nsides_mongo.query_db(service, meta, query)
-            json = '''{"results": %s}''' %(str(service_result))
 
     elif service == 'druginfo':
         # e.g. /api/v1/query?service=druginfo&meta=jobIndexes&drugs=19097016
@@ -593,12 +571,23 @@ def api_call(service = None, meta = None, query = None):
     print 'Completing requests with ', json[0:14]
     return json
 
-@app.route('/drugsFromEffect', methods=['POST'])
-def drugsFromEffect():
-    data = request.get_json()
-    print data
-    query_nsides_mongo.query_effect(data)
-    return 'k'
+@app.route('/api/drugsFromEffect/query', methods=['GET'])
+def route_drugs_from_effect():
+    effect = request.args.get('effect')
+    return query_nsides_mongo.drugs_from_effect(effect)
+
+@app.route('/api/effectsFromDrugs/query', methods=['GET'])
+def route_effects_from_drugs():
+    drugs = request.args.get('drugs')
+    return query_nsides_mongo.effects_from_ingredients(drugs)
+
+@app.route('/api/drugs_and_effect_result/query')
+def route_drugs_and_effect_result():
+    return query_nsides_in(drugs_and_effect_result, request)
+
+@app.route('/api/ingredientRxnormToName', methods=['GET'])
+def mapping():
+    return query_nsides_mongo.get_all_ingredients()
 
 ###################
 #     ROUTES      #

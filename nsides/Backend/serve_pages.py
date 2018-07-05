@@ -1,3 +1,9 @@
+'''
+File to handle and modularize the serving of frontend pages
+
+@author: Kai Xiang Chen, 2018
+'''
+
 from flask import Blueprint, render_template, abort, make_response, send_from_directory
 from jinja2 import TemplateNotFound
 from nsides_helpers import authenticated
