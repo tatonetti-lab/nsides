@@ -18,7 +18,7 @@ from flask_cors import CORS
 # from urlparse import urlparse, urljoin
 # from werkzeug.security import generate_password_hash
 import query_nsides_mongo
-from query_nsides_mongo import query_nsides_in, drugs_from_effect, effects_from_ingredients, get_all_ingredients, drugs_and_effect_result
+from query_nsides_mongo import query_nsides_in, drugs_from_effect, effects_from_ingredients, get_dictionary_of_all_ingredients_or_effects, drugs_and_effect_result
 import query_nsides_mysql
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
@@ -31,6 +31,7 @@ from oauth2client.client import flow_from_clientsecrets
 from pprint import pprint
 from nsides_helpers import convertDrugsToIngredients, setUpFor, authenticated
 from serve_pages import serve_pages
+from nsides_api import nsides_api
 # response is automatically created for each app.route
 
 # setUpFor('prod') #USE FOR PRODUCTION
@@ -46,6 +47,7 @@ app.secret_key = 'changeme'
 #app.config.from_envvar('NSIDES_FRONTEND_SETTINGS', silent=True)
 app.config.from_pyfile('nsides_flask.conf')
 app.register_blueprint(serve_pages)
+app.register_blueprint(nsides_api)
 
 with open(app.config['JOB_TEMPLATE']) as f:
     jobtemplate = json.load(f)
@@ -571,23 +573,6 @@ def api_call(service = None, meta = None, query = None):
     print 'Completing requests with ', json[0:14]
     return json
 
-@app.route('/api/drugsFromEffect/query', methods=['GET'])
-def route_drugs_from_effect():
-    effect = request.args.get('effect')
-    return query_nsides_mongo.drugs_from_effect(effect)
-
-@app.route('/api/effectsFromDrugs/query', methods=['GET'])
-def route_effects_from_drugs():
-    drugs = request.args.get('drugs')
-    return query_nsides_mongo.effects_from_ingredients(drugs)
-
-@app.route('/api/drugs_and_effect_result/query')
-def route_drugs_and_effect_result():
-    return query_nsides_in(drugs_and_effect_result, request)
-
-@app.route('/api/ingredientRxnormToName', methods=['GET'])
-def mapping():
-    return query_nsides_mongo.get_all_ingredients()
 
 ###################
 #     ROUTES      #
@@ -691,7 +676,6 @@ def get_session():
         }
         return jsonify(obj)
     return jsonify({})
-
 
 if __name__ == "__main__":
     app.run(host='localhost',

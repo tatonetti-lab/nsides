@@ -583,9 +583,9 @@ const getDrugsFromEffect = (effect) => {
 };
 
 const callOrNotDrugAndEffectData = (formattedDrugstring, effectObj) => {
-  console.log('callOrNOtDrugAndEffectData params', formattedDrugstring, effectObj);
   let drugValuesExist = formattedDrugstring.length > 0;
-  let effectValueExist = effectObj != null;
+  let effectValueExist = effectObj !== null;
+  console.log('callOrNOtDrugAndEffectData params', formattedDrugstring, effectObj, drugValuesExist, effectValueExist);
   if (drugValuesExist && effectValueExist) {
     showLoading();
     var api_call = "/api/drugs_and_effect_result/query?drugs=" + formattedDrugstring + "&outcome=" + effectObj.value;

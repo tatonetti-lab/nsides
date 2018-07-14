@@ -1,4 +1,4 @@
-import { rxnormIngredients } from '../../Helpers/drugs-top-200';
+import { rxnormIngredients } from '../../Helpers/drugs-reference';
 import effects from '../../Helpers/effects-7084';
 
 const start = {

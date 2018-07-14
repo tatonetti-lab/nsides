@@ -1,5 +1,5 @@
 import React from 'react';
-import { conceptIdDrugs } from '../../Helpers/drugs-top-200';
+import { conceptIdDrugs } from '../../Helpers/drugs-reference';
 import Select from 'react-select';
 import '../../css/jobsubmission/jobsubmission.css';
 import '../../css/react-select.css';

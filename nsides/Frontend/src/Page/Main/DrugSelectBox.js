@@ -22,10 +22,6 @@ class DrugSelectBox extends React.Component {
     this.apiTopOutcomes = this.apiTopOutcomes.bind(this);
   }
 
-  // componentDidMount () {
-
-  // }
-
   apiTopOutcomes(value) {
     let { handleDrugChange, formSelectedDrugString, props } = this;
     let { numOutcomeResults: numResults, drugSelectBoxSetDrug, effectValue, drugSelectBoxDrugChange } = props;
@@ -37,20 +33,23 @@ class DrugSelectBox extends React.Component {
     console.log("selectedDrug", selectedDrug, "numResults", numResults, 'value', value);
 
     callOrNotDrugAndEffectData(selectedDrug, effectValue);
-
-    var api_call = '/api/effectsFromDrugs/query?drugs=' + selectedDrug;
-    // console.log('apicall', api_call);
-    axios(api_call)
-      .then((j) => {
-        j = j.data;
-        if (j.topOutcomes.length > 0) {
-          outcomeOptions = j.topOutcomes;
-          // console.log("outcomeOptions", outcomeOptions.map(item => JSON.stringify(item)).join(', \n'));
-          drugSelectBoxDrugChange(selectedDrug, outcomeOptions, '');
-        } else {
-          drugSelectBoxDrugChange('', [], 'no data for this combination');
-        }
-      })
+    if (value.length > 0) {
+      var api_call = '/api/effectsFromDrugs/query?drugs=' + selectedDrug;
+      // console.log('apicall', api_call);
+      axios(api_call)
+        .then((j) => {
+          j = j.data;
+          if (j.topOutcomes.length > 0) {
+            outcomeOptions = j.topOutcomes;
+            // console.log("outcomeOptions", outcomeOptions.map(item => JSON.stringify(item)).join(', \n'));
+            drugSelectBoxDrugChange(selectedDrug, outcomeOptions, '');
+          } else {
+            drugSelectBoxDrugChange('', [], 'no data for this combination');
+          }
+        })
+    } else {
+      drugSelectBoxDrugChange('', [], '')
+    }
   }
 
   formSelectedDrugString (value) {
