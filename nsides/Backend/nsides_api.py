@@ -8,6 +8,8 @@ from flask import Blueprint, request, render_template, abort, make_response, sen
 from jinja2 import TemplateNotFound
 from query_nsides_mongo import query_nsides_in, drugs_from_effect, effects_from_ingredients, get_dictionary_of_all_ingredients_or_effects, drugs_and_effect_result, get_suggestions_of_all_ingredients_or_effects
 import query_nsides_mongo
+import json
+from nsides_helpers import mongodbRxnormToName, effectsSnomedToName
 
 nsides_api = Blueprint('nsides_api', __name__, template_folder='../Frontend/dist', static_folder='../Frontend/dist')
                         #name of the blueprint is what you will use in the html
@@ -36,6 +38,11 @@ def get_all_suggestions():
 
 @nsides_api.route('/test')
 def test():
+    data = None
     # query_nsides_mongo.add_field_maximum_lower_bound()
-    query_nsides_mongo.sort_by_mlb()
-    return 'hi'
+    data = query_nsides_mongo.sort_by_mlb()
+
+    if data == None:
+        return json.dumps([])
+    else:
+        return data

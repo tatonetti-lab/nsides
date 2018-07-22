@@ -677,6 +677,7 @@ def get_session():
         return jsonify(obj)
     return jsonify({})
 
+
 if __name__ == "__main__":
     app.run(host='localhost',
     ssl_context=('static/nsides.crt', 'static/nsides.key'))

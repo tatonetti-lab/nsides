@@ -46,7 +46,7 @@ class App extends Component {
 }
 
 const mapStateToProps = (state) => {
-  //console.log('state is ',state);
+  // console.log('state is ',state);
   let requestedSession = state.UserReducer.requestedSession;
   return { 
     requestedSession

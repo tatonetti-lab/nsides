@@ -37,9 +37,6 @@ const HomeReducer = (state = start, action) => {
     }
     case `HOMEACTION DRUGSELECTBOX SET DRUG`: {  //initial selection of drug, trigger loading for effect box
       drugSelectBox.value = data.value;
-      // if (data.value === '') {
-      //   effectSelectBox.value = null;
-      // }
       effectSelectBox.outcomeOptions = [{
         label: `Loading...`,
         value: `N/A`
@@ -49,8 +46,8 @@ const HomeReducer = (state = start, action) => {
     case `HOMEACTION DRUGSELECTBOX DRUG CHANGE`: {  //after initial selection update with retrieved data
       newState.drugs = data.newDrugs;
       newState.drugHasNoModel = data.drugHasNoModel;
-      // effectSelectBox.outcome = '';
       if (data.topOutcomes.length) {
+        // console.log('eff changed', data.topOutcomes[0]);
         effectSelectBox.outcomeOptions = data.topOutcomes;
       } else {
         effectSelectBox.outcomeOptions = effects;
@@ -68,6 +65,7 @@ const HomeReducer = (state = start, action) => {
     }
     case `HOMEACTION EFFECTSELECTBOX SET TEXT`: {
       effectSelectBox.text = data;
+      var originalOptions = effectSelectBox.outcomeOptions;
       if (data.length === 0) {
         console.log('cleared')
         drugSelectBox.options = rxnormIngredients;
@@ -76,7 +74,12 @@ const HomeReducer = (state = start, action) => {
           text: '', //text in input field
           value: null, // object containing value and label of selected effect
           outcome: '', //name
-          outcomeOptions: effects
+        };
+
+        if (drugSelectBox.value === null) {
+          newState.effectSelectBox.outcomeOptions = effects;
+        } else {
+          newState.effectSelectBox.outcomeOptions = originalOptions;
         }
       }
       return newState;

@@ -13,15 +13,13 @@
 // https://github.com/tatonetti-lab/nsides or go to:
 // http://creativecommons.org/licenses/by-nc-sa/4.0/
 import React from 'react';
-// import Select from 'react-select';
-import Autosuggest from 'react-autosuggest';
+import Select from 'react-select';
+import '../../css/react-select.css';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import axios from 'axios';
 import EffectSelectBoxActions from '../../Redux/Actions/HomeActions/EffectSelectBoxActions';
-import { drawTimeSeriesGraph, showLoading, callOrNotDrugAndEffectData } from '../../Helpers/graphTools/graphing';
-import { escapeRegexCharacters } from '../../Helpers/utility';
-import '../../css/react-Autosuggest.css';
+import { callOrNotDrugAndEffectData } from '../../Helpers/graphTools/graphing';
 
 class EffectSelectBox extends React.Component {
 	// displayName: 'EffectSelectBox';
@@ -29,95 +27,71 @@ class EffectSelectBox extends React.Component {
     super(props);
     this.state = {      
     };
-    this.onSuggestionsFetchRequested = this.onSuggestionsFetchRequested.bind(this);
-    this.onSuggestionsClearRequested = this.onSuggestionsClearRequested.bind(this);
-    this.getSuggestionValue = this.getSuggestionValue.bind(this);
-    this.getSuggestions = this.getSuggestions.bind(this);
-    this.renderSuggestion = this.renderSuggestion.bind(this);
-    this.onChange = this.onChange.bind(this);    
-	}
-  
-  getSuggestions(value) {
-    const escapedValue = escapeRegexCharacters(value.trim());
-    let { suggestions, outcomeOptions } = this.props;
-    let options = suggestions.length > 0 ? suggestions : outcomeOptions;
-    // console.log('options', options, suggestions, outcomeOptions);
-    if (escapedValue === '') {
-      return [];
-    }
-  
-    const regex = new RegExp(escapedValue, 'i');
-    return options.filter((option) => {
-      // console.log(option);
-      return regex.test(option.label);
+    this.filterOptions = this.filterOptions.bind(this);
+    this.apiTopOutcomes = this.apiTopOutcomes.bind(this);
+  }
+
+  filterOptions(options, typedString) {
+    let label;
+    typedString = typedString.toLowerCase();
+
+    let filtered = options.filter(option => {
+      label = option.label.toLowerCase();
+      return label.includes(typedString);
     });
+
+    // console.log(options.length, filtered.length, typedString);
+
+    if (filtered.length > 1000) {
+      return [];
+    } else {
+      return filtered;
+    }
   }
 
-  onSuggestionsFetchRequested({ value }) {
-    let { setSelectionSuggestions } = this.props;
-    let filteredSuggestions = this.getSuggestions(value);
-    // console.log('length of suggestions is ', suggestions.length);
-    if (filteredSuggestions.length < 1001) {
-      setSelectionSuggestions(filteredSuggestions);
-    } else {
-      setSelectionSuggestions([]);
-    }
-  };
+  apiTopOutcomes(value) {
+    let { numOutcomeResults: numResults, drugSelectBoxSetDrug, effectValue, drugSelectBoxDrugChange } = this.props;
+    drugSelectBoxSetDrug(value);
+    
+    // var numResults = this.props.numOutcomeResults;
+    var outcomeOptions;
+    console.log("selectedDrug", selectedDrug, "numResults", numResults, 'value', value);
 
-  onSuggestionsClearRequested() {
-    this.props.setSelectionSuggestions([]);
-  };
-
-  getSuggestionValue(suggestion) {
-    console.log('selected',suggestion);
-    let { effectSelectBoxEffectChange, drugs } = this.props;
-    if (drugs.length) {
-      effectSelectBoxEffectChange(suggestion);
-    } else {
-      let url = '/api/drugsFromEffect/query?effect=' + suggestion.value;
-      axios(url)
-        .then(result => {
-          let drugOptions = result.data.topOutcomes;
-          effectSelectBoxEffectChange(suggestion, drugOptions);
+    callOrNotDrugAndEffectData(selectedDrug, effectValue);
+    if (value.length > 0) {
+      var api_call = '/api/effectsFromDrugs/query?drugs=' + selectedDrug;
+      // console.log('apicall', api_call);
+      axios(api_call)
+        .then((j) => {
+          j = j.data;
+          if (j.topOutcomes.length > 0) {
+            outcomeOptions = j.topOutcomes;
+            // console.log("outcomeOptions", outcomeOptions.map(item => JSON.stringify(item)).join(', \n'));
+            drugSelectBoxDrugChange(selectedDrug, outcomeOptions, '');
+          } else {
+            drugSelectBoxDrugChange('', [], 'no data for this combination');
+          }
         })
+    } else {
+      drugSelectBoxDrugChange('', [], '')
     }
-    callOrNotDrugAndEffectData(drugs, suggestion);
-    return suggestion.label;
   }
-
-  renderSuggestion(suggestion) {
-    // console.log(suggestion, 'k');
-    return (
-      <div>{suggestion.label}</div>
-    );
-  }
-
-  onChange(event, { newValue, method }) {
-    // console.log('new', newValue);
-    this.props.setEffectBoxText(newValue);
-  };
     
 	render () {        
     // console.log(this.props);
-    const { props, handleSelectChange } = this;
-    const { text, options, suggestions } = props;
-    const inputProps = {
-      placeholder: 'Type an effect',
-      value: text,
-      onChange: this.onChange
-    };
+    const { props, apiTopOutcomes } = this;
+    const { value, options, suggestions } = props;
     // console.log('input', inputProps, suggestions);
 
     return (
       <div className="section select_container_effect">
         <div className="effect_title">Effect</div>
-        <Autosuggest
-          suggestions={suggestions} //
-          onSuggestionsFetchRequested={this.onSuggestionsFetchRequested} //
-          onSuggestionsClearRequested={this.onSuggestionsClearRequested} // 
-          getSuggestionValue={this.getSuggestionValue} //get the name of the suggestion
-          renderSuggestion={this.renderSuggestion} //
-          inputProps={inputProps}/>
+        <Select name="selected-effects" 
+          value={value}
+          placeholder="Type an effect..."
+          noResultsText="Effect not found"
+          options={suggestions}
+          onChange={apiTopOutcomes}/>
       </div>
     );
 	}

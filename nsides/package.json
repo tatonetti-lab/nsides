@@ -37,7 +37,6 @@
     "d3": "^4.13.0",
     "path": "^0.12.7",
     "react": "^15.6.1",
-    "react-autosuggest": "^9.3.4",
     "react-dom": "^15.6.1",
     "react-input-autosize": "^2.2.1",
     "react-redux": "^5.0.6",

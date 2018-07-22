@@ -606,7 +606,7 @@ def get_suggestions_of_all_ingredients_or_effects(request):
         match_type = 'rxnorm'
         nameConversion = get_suggestions_convertSnomedToName
 
-    print match_type, id_code, type(id_code)
+    # print match_type, id_code, type(id_code)
 
     if id_code != None:
         pipeline.insert(0, {"$match": { match_type : int(id_code) } })
@@ -631,7 +631,7 @@ def get_suggestions_of_all_ingredients_or_effects(request):
     estimate_records = collection.aggregate(pipeline)
     # ipdb.set_trace()
     estimate_records = list(estimate_records)
-    print pipeline, estimate_records, len(estimate_records) 
+    # print pipeline, estimate_records, len(estimate_records) 
 
     if len(estimate_records) == 0:
         return json.dumps({ 'topOutcomes': [] })
@@ -642,7 +642,6 @@ def get_suggestions_of_all_ingredients_or_effects(request):
         'suggests': suggestions,
         'ref': ref
     })
-
 
 def get_suggestions_convertSnomedToName (from_db, list_item):
     cursor = query_nsides_mysql.connect().cursor()
@@ -699,7 +698,7 @@ def add_field_maximum_lower_bound():
     db = client.nsides_in
     collection = db.estimates
     pipeline = [
-        {'$match': {'snomed': 31967}},
+        {'$match': {'snomed': 441408}},
         {"$unwind": "$estimates"},
         {
             "$group": {
@@ -741,18 +740,30 @@ def add_field_maximum_lower_bound():
 
         full_writes.append(write)
 
-    print full_writes[0]
+    # print full_writes[0]
     collection.bulk_write(full_writes)
 
 def sort_by_mlb():
     client = connect()
     db = client.nsides_in
     collection = db.estimates
-    collection.aggregate([
-        {'$match': {'snomed': 31967}},
+    data = collection.aggregate([
+        {'$match': {
+          'snomed': 4024567,
+          'maximum_lower_bound': {'$exists': True} 
+          }
+        },
+        {'$project': {'_id': 0, 'snomed': 1, 'rxnorm': 1, 'maximum_lower_bound': 1}},
         {'$sort': { 'maximum_lower_bound': -1}}
     ])
-    print 'done'
+
+    data = list(data)
+    # return data
+    return json.dumps({
+        'data': data
+    })
+
+
 # def convertNameToRxnorm (name):
 #     url = urlopen('https://rxnav.nlm.nih.gov/REST/rxcui.json?name=' + name)
 #     data = json.load(url)
@@ -771,7 +782,6 @@ def sort_by_mlb():
 #         ref[drug_name] = rx_id[0]
 #     print ref
 
-#264198 ms
 #
 
 if __name__ == '__main__':

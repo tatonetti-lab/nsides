@@ -12,18 +12,13 @@ class DrugSelectBox extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      // options: rxnormDrugs,
-      // value: '', //[],
-      // request: null
     };
-    // this.handleSelectChange = this.handleSelectChange.bind(this);
-    // this.handleDrugChange = this.handleDrugChange.bind(this);
     this.formSelectedDrugString = this.formSelectedDrugString.bind(this);
     this.apiTopOutcomes = this.apiTopOutcomes.bind(this);
   }
 
   apiTopOutcomes(value) {
-    let { handleDrugChange, formSelectedDrugString, props } = this;
+    let { formSelectedDrugString, props } = this;
     let { numOutcomeResults: numResults, drugSelectBoxSetDrug, effectValue, drugSelectBoxDrugChange } = props;
     let selectedDrug = formSelectedDrugString(value);
     drugSelectBoxSetDrug(value);
@@ -79,7 +74,7 @@ class DrugSelectBox extends React.Component {
     const { props, apiTopOutcomes } = this;
     const { value, options } = props;
     return (
-      <div className="section select_container">
+      <div className="section select_container">  
         <div className="drug_title">Drug</div>
         <Select name="selected-drugs" 
           joinValues multi simpleValue
