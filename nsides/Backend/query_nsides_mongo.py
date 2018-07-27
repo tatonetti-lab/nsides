@@ -385,11 +385,11 @@ def drugs_from_effect(effect):
     # print len(estimate_records)
     listOptions = []
 
-    for record in estimate_records:
+    for position, record in enumerate(estimate_records):
         rxnormId = record['_id']
         listOptions.append({
             'value': str(rxnormId),
-            'label': mongodbRxnormToName[rxnormId]
+            'label': str(position + 1) + " - " + mongodbRxnormToName[rxnormId]
         })
     print len(listOptions)
     
@@ -454,7 +454,7 @@ def effects_from_ingredients(drugs):
             outcome_options.append( { 'value': concept_id, 'label': str(position + 1) + " - " + concept_id2name[concept_id].replace("'", "") } )
         else:
             print "could not find", concept_id
-
+    print 'got effects'
     return json.dumps({
             "topOutcomes" : outcome_options,
             "drug" : drugs,
@@ -463,7 +463,7 @@ def effects_from_ingredients(drugs):
 
 def drugs_and_effect_result(db, request):
     drugs = str(request.args.get('drugs'))
-    outcome = request.args.get('outcome')
+    effect = request.args.get('effect')
     splitDrug = drugs.split(',')
     print drugs
 
@@ -477,11 +477,11 @@ def drugs_and_effect_result(db, request):
     estimate_records = collection.find(
                         { '$and':
                             [ { 'rxnorm': drugs },
-                            { 'snomed': int(outcome) }
+                            { 'snomed': int(effect) }
                             ]
                         })
 
-    results = { 'results': []}
+    results = { 'results': [] }
     estimate_records = list(estimate_records)
     if len(estimate_records) == 0:
         print "  No record found"
@@ -519,7 +519,7 @@ def drugs_and_effect_result(db, request):
                 "nreports": processed_nreports,
                 "model": model_type
             })
-
+    print 'got back results for combo'
     return json.dumps(results)
 
 

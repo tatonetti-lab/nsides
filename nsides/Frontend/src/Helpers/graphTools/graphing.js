@@ -573,6 +573,7 @@ const showLoading = () => {
   loading.className = 'main-graph-loading';
   viz_container.innerHTML = "";
   viz_container.append(loading);
+  console.log(loading)
 };
 
 const getDrugsFromEffect = (effect) => {
@@ -583,12 +584,13 @@ const getDrugsFromEffect = (effect) => {
 };
 
 const callOrNotDrugAndEffectData = (formattedDrugstring, effectObj) => {
-  let drugValuesExist = formattedDrugstring.length > 0;
-  let effectValueExist = effectObj !== null;
+  let drugValuesExist = formattedDrugstring != null && formattedDrugstring.length;
+  let effectValueExist = effectObj != null && effectObj.length;
   console.log('callOrNOtDrugAndEffectData params', 'formattedDrugString', formattedDrugstring, 'effectObj', effectObj, drugValuesExist, effectValueExist);
   if (drugValuesExist && effectValueExist) {
     showLoading();
-    var api_call = "/api/drugs_and_effect_result/query?drugs=" + formattedDrugstring + "&outcome=" + effectObj.value;
+    console.log('showed loading')
+    var api_call = "/api/drugs_and_effect_result/query?drugs=" + formattedDrugstring + "&effect=" + effectObj;
     axios(api_call)
       .then((j) => {
         j = j.data;

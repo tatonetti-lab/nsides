@@ -1,10 +1,17 @@
-const effectSelectBoxEffectChange = (effect, drugOptions) => {
-  // console.log(value);
+const effectSelectBoxEffectChange = (topOutcomes) => {
   return {
     type: `HOMEACTION EFFECTSELECTBOX EFFECT CHANGE`,
     payload: {
-      effect,
-      drugOptions
+      topOutcomes
+    }
+  }
+};
+
+const effectSelectBoxSetEffect = (value) => {
+  return {
+    type: `HOMEACTION EFFECTSELECTBOX SET EFFECT`,
+    payload: {
+      value
     }
   }
 };
@@ -26,6 +33,7 @@ const setSelectionSuggestions = (suggestions) => {
 
 let all = {
   effectSelectBoxEffectChange,
+  effectSelectBoxSetEffect,
   setEffectBoxText,
   setSelectionSuggestions
 };
@@ -33,6 +41,7 @@ let all = {
 export default all;
 export {
   effectSelectBoxEffectChange,
+  effectSelectBoxSetEffect,
   setEffectBoxText,
   setSelectionSuggestions
 }

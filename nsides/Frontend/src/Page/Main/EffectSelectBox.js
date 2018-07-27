@@ -34,6 +34,10 @@ class EffectSelectBox extends React.Component {
   filterOptions(options, typedString) {
     let label;
     typedString = typedString.toLowerCase();
+    // if (typedString === '') {
+    //   console.log('empty', options[0])
+    //   return [];
+    // }
 
     let filtered = options.filter(option => {
       label = option.label.toLowerCase();
@@ -50,46 +54,52 @@ class EffectSelectBox extends React.Component {
   }
 
   apiTopOutcomes(value) {
-    let { numOutcomeResults: numResults, drugSelectBoxSetDrug, effectValue, drugSelectBoxDrugChange } = this.props;
-    drugSelectBoxSetDrug(value);
+    // console.log('value', value);
+    let { effectSelectBoxSetEffect, drugValue, effectSelectBoxEffectChange } = this.props;
+    effectSelectBoxSetEffect(value);
     
     // var numResults = this.props.numOutcomeResults;
     var outcomeOptions;
-    console.log("selectedDrug", selectedDrug, "numResults", numResults, 'value', value);
-
-    callOrNotDrugAndEffectData(selectedDrug, effectValue);
-    if (value.length > 0) {
-      var api_call = '/api/effectsFromDrugs/query?drugs=' + selectedDrug;
-      // console.log('apicall', api_call);
+    // console.log("selectedDrug", drugValue, 'effvalue', value);
+    if (drugValue != null) {
+      callOrNotDrugAndEffectData(drugValue, value);
+    }
+    if (value != null && value.length > 0) {
+      var api_call = '/api/drugsFromEffect/query?effect=' + value;
+      console.log('apicall', api_call);
       axios(api_call)
         .then((j) => {
           j = j.data;
           if (j.topOutcomes.length > 0) {
             outcomeOptions = j.topOutcomes;
             // console.log("outcomeOptions", outcomeOptions.map(item => JSON.stringify(item)).join(', \n'));
-            drugSelectBoxDrugChange(selectedDrug, outcomeOptions, '');
+            effectSelectBoxEffectChange(outcomeOptions);
           } else {
-            drugSelectBoxDrugChange('', [], 'no data for this combination');
+            effectSelectBoxEffectChange([]);
           }
         })
     } else {
-      drugSelectBoxDrugChange('', [], '')
+      effectSelectBoxEffectChange([])
     }
   }
     
 	render () {        
     // console.log(this.props);
-    const { props, apiTopOutcomes } = this;
-    const { value, options, suggestions } = props;
-    // console.log('input', inputProps, suggestions);
+    const { props, apiTopOutcomes, filterOptions } = this;
+    const { value, suggestions } = props;
+    // console.log('input', suggestions);
 
     return (
       <div className="section select_container_effect">
         <div className="effect_title">Effect</div>
-        <Select name="selected-effects" 
+        <Select
+          simpleValue
+          name="selected-effects" 
           value={value}
           placeholder="Type an effect..."
           noResultsText="Effect not found"
+          filterOptions={filterOptions}
+          // valueRenderer={valueRenderer}
           options={suggestions}
           onChange={apiTopOutcomes}/>
       </div>
@@ -99,31 +109,25 @@ class EffectSelectBox extends React.Component {
 
 const mapStateToProps = (state) => {
   const HomeReducer = state.HomeReducer;
-  const { submitNewModelOption, drugs, effectSelectBox, drugSelectBox } = HomeReducer;
-  const { value, outcome, outcomeOptions, text, suggestions } = effectSelectBox;
-  // console.log(state);
+  const { effectSelectBox, drugSelectBox } = HomeReducer;
+  const { value, suggestions } = effectSelectBox;
+  const { value: drugValue } = drugSelectBox;
+  // console.log(state, submitNewModelOption);
   return {
     suggestions,
-    text,
-    outcome,
-    outcomeOptions,
-    drugs,
-    submitNewModelOption,
-    value
+    value,
+    drugValue
   };
 };
   
 const mapDispatchToProps = (dispatch) => {
-  const { effectSelectBoxEffectChange, setSelectionSuggestions, setEffectBoxText } = EffectSelectBoxActions;
+  const { effectSelectBoxSetEffect, effectSelectBoxEffectChange } = EffectSelectBoxActions;
   return {
-    setEffectBoxText: (value) => {
-      dispatch(setEffectBoxText(value));
+    effectSelectBoxSetEffect: (value) => {
+      dispatch(effectSelectBoxSetEffect(value));
     },
-    setSelectionSuggestions: (suggestions) => {
-      dispatch(setSelectionSuggestions(suggestions));
-    },
-    effectSelectBoxEffectChange: (effect, drugOptions) => {
-      dispatch(effectSelectBoxEffectChange(effect, drugOptions));
+    effectSelectBoxEffectChange: (drugOptions) => {
+      dispatch(effectSelectBoxEffectChange(drugOptions));
     }
   };
 };

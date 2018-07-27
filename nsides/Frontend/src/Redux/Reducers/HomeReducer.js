@@ -4,7 +4,6 @@ import effects from '../../Helpers/effects-7084';
 const start = {
   drugEffectModels: [],
   selectedModel: null,
-  drugs: '',
   numOutcomeResults: 'all',
   drugHasNoModel: '',
   drugSelectBox: {
@@ -12,11 +11,8 @@ const start = {
     options: rxnormIngredients
   },
   effectSelectBox: {
-    suggestions: [],
-    text: '', //text in input field
-    value: null, // object containing value and label of selected effect
-    outcome: '', //name
-    outcomeOptions: effects
+    value: null, // id
+    suggestions: effects
   }
 };
 
@@ -24,7 +20,7 @@ const HomeReducer = (state = start, action) => {
   let newState = Object.assign({}, state);
   let { effectSelectBox, drugSelectBox } = newState;
   let data = action.payload;
-  // console.log('home state', newState, 'data', data);
+  // console.log('home state', newState, 'data', data, action.type);
   switch (action.type) {
     case `HOMEACTION SET DRUG EFFECT MODELS`: {
       newState.drugEffectModels = data;
@@ -36,58 +32,69 @@ const HomeReducer = (state = start, action) => {
       return newState;
     }
     case `HOMEACTION DRUGSELECTBOX SET DRUG`: {  //initial selection of drug, trigger loading for effect box
-      drugSelectBox.value = data.value;
-      effectSelectBox.outcomeOptions = [{
-        label: `Loading...`,
-        value: `N/A`
-      }];
+      const { value } = data;
+      drugSelectBox.value = value;
+      // if (effectSelectBox.value === null) {
+      //   effectSelectBox.suggestions = [{
+      //     label: `Loading...`,
+      //     value: `N/A`
+      //   }];
+      // }
       return newState;
     }
     case `HOMEACTION DRUGSELECTBOX DRUG CHANGE`: {  //after initial selection update with retrieved data
-      newState.drugs = data.newDrugs;
-      newState.drugHasNoModel = data.drugHasNoModel;
-      if (data.topOutcomes.length) {
+      const { drugHasNoModel, topOutcomes } = data;
+      newState.drugHasNoModel = drugHasNoModel;
+      if (topOutcomes.length) { // if drug has outcomes
         // console.log('eff changed', data.topOutcomes[0]);
-        effectSelectBox.outcomeOptions = data.topOutcomes;
+        effectSelectBox.suggestions = topOutcomes;
       } else {
-        effectSelectBox.outcomeOptions = effects;
+        effectSelectBox.suggestions = effects;
       }
       return newState;
     }
-    case `HOMEACTION EFFECTSELECTBOX EFFECT CHANGE`: {
-      let { effect, drugOptions } = data;
-      effectSelectBox.value = effect;
-      effectSelectBox.outcome = effect.label;
-      if (drugOptions) {
-        drugSelectBox.options = drugOptions;
-      }
-      return newState;
-    }
-    case `HOMEACTION EFFECTSELECTBOX SET TEXT`: {
-      effectSelectBox.text = data;
-      var originalOptions = effectSelectBox.outcomeOptions;
-      if (data.length === 0) {
-        console.log('cleared')
-        drugSelectBox.options = rxnormIngredients;
-        newState.effectSelectBox = {
-          suggestions: [],
-          text: '', //text in input field
-          value: null, // object containing value and label of selected effect
-          outcome: '', //name
-        };
-
-        if (drugSelectBox.value === null) {
-          newState.effectSelectBox.outcomeOptions = effects;
-        } else {
-          newState.effectSelectBox.outcomeOptions = originalOptions;
-        }
-      }
-      return newState;
-    }
-    case `HOMEACTION EFFECTSELECTBOX SET SUGGESTIONS`: {
-      effectSelectBox.suggestions = data;
+    case `HOMEACTION EFFECTSELECTBOX SET EFFECT`: {
+      let { value } = data;
+      effectSelectBox.value = value;
+      // if (drugSelectBox.value === null) {
+      //   drugSelectBox.options = [{
+      //     label: `Loading...`,
+      //     value: `N/A`
+      //   }];
+      // }
       return newState
     }
+    case `HOMEACTION EFFECTSELECTBOX EFFECT CHANGE`: {  //after initial selection update with retrieved data
+      let { topOutcomes } = data;
+      if (topOutcomes.length) {
+        // console.log('eff changed', data.topOutcomes[0]);
+        drugSelectBox.options = topOutcomes;
+      } else {
+        drugSelectBox.options = rxnormIngredients;
+      }
+      return newState;
+    }
+    // case `HOMEACTION EFFECTSELECTBOX SET TEXT`: {
+    //   effectSelectBox.text = data;
+    //   var originalOptions = effectSelectBox.outcomeOptions;
+    //   if (data.length === 0) {
+    //     console.log('cleared')
+    //     drugSelectBox.options = rxnormIngredients;
+    //     newState.effectSelectBox = {
+    //       suggestions: [],
+    //       text: '', //text in input field
+    //       value: null, // object containing value and label of selected effect
+    //       outcome: '', //name
+    //     };
+
+    //     if (drugSelectBox.value === null) {
+    //       newState.effectSelectBox.outcomeOptions = effects;
+    //     } else {
+    //       newState.effectSelectBox.outcomeOptions = originalOptions;
+    //     }
+    //   }
+    //   return newState;
+    // }
     default: {
       return newState;
     }

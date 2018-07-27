@@ -13,11 +13,10 @@ const setSelectedModel = (modelType) => {
   }
 };
 
-const drugSelectBoxDrugChange = (newDrugs, topOutcomes, drugHasNoModel) => {
+const drugSelectBoxDrugChange = (topOutcomes, drugHasNoModel) => {
   return {
     type: `HOMEACTION DRUGSELECTBOX DRUG CHANGE`,
     payload: {
-      newDrugs,
       topOutcomes,
       drugHasNoModel
     }

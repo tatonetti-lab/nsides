@@ -32,16 +32,8 @@ class Main extends React.Component {
       <div id='selection'>
         <div className='select-row'>
           <div className='drug-effect-boxes standardStyle'>
-            <DrugSelectBox
-              // numOutcomeResults={this.state.numOutcomeResults}
-              // onDrugChange={(newDrug, topOutcomes, drugHasNoModel) => this.handleDrugChange(newDrug, topOutcomes, drugHasNoModel)}
-            />
-            <EffectSelectBox
-              // outcomeOptions={this.state.outcomeOptions}
-              // outcome={this.state.outcome}
-              // selectedDrug={this.state.drugs}
-              // onDrugOutcomeChange={(newDrug, newOutcome) => this.handleDrugOutcomeChange(newDrug, newOutcome)}
-            />
+            <DrugSelectBox/>
+            <EffectSelectBox/>
           </div>
           {/* <div>
             <ModelType/>
