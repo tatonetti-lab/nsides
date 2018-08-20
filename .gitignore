@@ -1,6 +1,7 @@
 nsides.cnf
 nsides-mongo.cnf
 *client_secrets.json
+nsides/Backend/credentials
 
 *.log
 *.mtx

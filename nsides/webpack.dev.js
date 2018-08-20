@@ -10,15 +10,15 @@ module.exports = merge(common, {
     path: DIST_DIR
   },
   devtool: '#eval-source-map',
-  devServer: {
-    // contentBase: path.join(__dirname, "Frontend/dist"),
-    // compress: true,
-    // port: 5000
-    publicPath: "/",
-    contentBase: "./public",
-    port: 5000,
-    hot: true
-  },
+  // devServer: {
+  //   // contentBase: path.join(__dirname, "Frontend/dist"),
+  //   // compress: true,
+  //   // port: 5000
+  //   publicPath: "/",
+  //   contentBase: "./public",
+  //   port: 5000,
+  //   hot: true
+  // },
   // module: {
   //   rules: [
   //     {

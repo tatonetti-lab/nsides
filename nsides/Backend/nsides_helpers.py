@@ -12,7 +12,9 @@ from nsides import session
 
 urlopen = urllib.urlopen
 
-with open('./job_template.json') as f:
+CREDENTIALS_DIR = './credentials/'
+
+with open(CREDENTIALS_DIR + 'job_template.json') as f:
     jobtemplate = json.load(f)
 
 ###########
@@ -187,33 +189,6 @@ def convertDrugsToIngredients (drugs):
     else:
         all_drugs_ingredients = ','.join(all_drugs_ingredients)
     return all_drugs_ingredients
-
-def setUpFor (code_type):
-    serve_pages_file_header_lines = 6
-    file_name = os.listdir('../Frontend/dist/bundles/' + code_type)[0]
-    hashDictionary = {}
-    hashDictionary[file_name[0]] = file_name[1]
-    with open('./serve_pages.py','r') as f:
-        code = f.readlines()
-        f.close()
-    start_line = "    resp = make_response(send_from_directory('../Frontend/dist/bundles/"
-    end_line = '))\n'
-
-    new_line = start_line + code_type + "', '" + file_name + "'" + end_line
-
-    target1Index = 10 + serve_pages_file_header_lines   #index is one lower than actual line number (starts at 0)
-
-    if code_type == 'prod':
-        code[target1Index] = "    resp.headers['Content-Encoding'] = 'gzip'\n"
-    elif code_type == 'dev':
-        code[target1Index] = '\n'
-    
-    target2Index = 9 + serve_pages_file_header_lines
-    if code[target2Index] != new_line:
-        code[target2Index] = new_line
-        with open('./serve_pages.py', 'w') as f:
-            f.write(''.join(code))
-            f.close()
 
 def authenticated(fn):
     """Decorator for requiring authentication on a route."""
@@ -22307,3 +22282,4 @@ allIngredientRxnormToName = {
     '1649134': 'zucchini extract',
     '114176': 'Zuclopenthixol'
 }
+

@@ -1,14 +1,16 @@
 import pymysql
 
 # Define table names
-#CONFIG_FILE = "nsides.cnf"           # log-in credentials for database
+CREDENTIALS_DIR = './credentials/'
+CONFIG_FILE = CREDENTIALS_DIR + "nsides.cnf"           # log-in credentials for database
+
 def connect ():
     print "Connecting to the MySQL API..."
 
     # Connect to MySQL database
     print "Connecting to MySQL database"
 
-    conn = pymysql.connect(read_default_file='nsides.cnf',
+    conn = pymysql.connect(read_default_file=CONFIG_FILE,
                 db='ebdb',
                 charset='utf8mb4',
                 cursorclass=pymysql.cursors.DictCursor)
@@ -21,7 +23,7 @@ def query_db(service, method, query=False, cache=False):
     # Connect to MySQL database
     print "Connecting to MySQL database"
 
-    conn = pymysql.connect(read_default_file='nsides.cnf',
+    conn = pymysql.connect(read_default_file=CONFIG_FILE,
                 db='ebdb',
                 charset='utf8mb4',
                 cursorclass=pymysql.cursors.DictCursor)

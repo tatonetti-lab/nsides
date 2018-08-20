@@ -6,12 +6,14 @@ import pymongo
 import json
 import os, sys
 
-MONGODB_HOST, MONGODB_UN, MONGODB_PW = open('../nsides-mongo.cnf').read().strip().split('\n')
+CREDENTIALS_DIR = './credentials/'
+
+MONGODB_HOST, MONGODB_UN, MONGODB_PW = open(CREDENTIALS_DIR + 'nsides-mongo.cnf').read().strip().split('\n')
 MONGODB_PORT = 27017
 
 RXNORM_BASE = 'https://rxnav.nlm.nih.gov/REST/rxcui'
 
-rxcuimap = np.load('concept2rxnorm.npy').flatten()[0]
+rxcuimap = np.load(CREDENTIALS_DIR + 'concept2rxnorm.npy').flatten()[0]
 
 client = pymongo.MongoClient('mongodb://%s:%s@%s:%s/admin' % (MONGODB_UN, MONGODB_PW, MONGODB_HOST, MONGODB_PORT))
 db = client.nsides

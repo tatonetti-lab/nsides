@@ -29,30 +29,32 @@ import json
 from datetime import datetime
 from oauth2client.client import flow_from_clientsecrets
 from pprint import pprint
-from nsides_helpers import convertDrugsToIngredients, setUpFor, authenticated
+from nsides_helpers import convertDrugsToIngredients, authenticated
 from serve_pages import serve_pages
 from nsides_api import nsides_api
+from setUp import setUpFor
 # response is automatically created for each app.route
 
 # setUpFor('prod') #USE FOR PRODUCTION
-setUpFor('dev') #USE FOR DEVELOPMENT
+# setUpFor('dev') #USE FOR DEVELOPMENT
 
 #########
 # INITS #
 #########
+CREDENTIALS_DIR = './credentials/'
 
 app = Flask(__name__, template_folder='../Frontend/dist', static_folder='../Frontend/dist')
 CORS(app)
 app.secret_key = 'changeme'
 #app.config.from_envvar('NSIDES_FRONTEND_SETTINGS', silent=True)
-app.config.from_pyfile('nsides_flask.conf')
+app.config.from_pyfile(CREDENTIALS_DIR + 'nsides_flask.conf')
 app.register_blueprint(serve_pages)
 app.register_blueprint(nsides_api)
 
 with open(app.config['JOB_TEMPLATE']) as f:
     jobtemplate = json.load(f)
 
-MONGODB_HOST, MONGODB_UN, MONGODB_PW = open('./nsides-mongo.cnf').read().strip().split('\n')
+MONGODB_HOST, MONGODB_UN, MONGODB_PW = open(CREDENTIALS_DIR + './nsides-mongo.cnf').read().strip().split('\n')
 MONGODB_PORT = 27017
 
 class UserDb(object):

@@ -32,7 +32,8 @@ EXTRACTED_DIR = './results/extracted'
 REFERNCE_DIR = './reference'
 MONGODB_HOST = 'localhost'
 MONGODB_PORT = 27017
-
+CREDENTIAL_DIR = './credentials/'
+NSIDES_MONGO_CNF = CREDENTIAL_DIR + 'nsides-mongo.cnf'
 # Document Structure
 # {
 #     'rxnorm': 0,
@@ -51,8 +52,8 @@ MONGODB_PORT = 27017
 
 def main():
     
-    print >> sys.stderr, "Loading password from ./nsides-mongo.cnf..."
-    MONGODB_HOST, MONGODB_UN, MONGODB_PW = open('./nsides-mongo.cnf').read().strip().split('\n')
+    print >> sys.stderr, "Loading password from ./credentials/nsides-mongo.cnf..."
+    MONGODB_HOST, MONGODB_UN, MONGODB_PW = open(NSIDES_MONGO_CNF).read().strip().split('\n')
     
     client = pymongo.MongoClient('mongodb://%s:%s@%s:%s/nsides_in?authSource=admin' % (MONGODB_UN, MONGODB_PW, MONGODB_HOST, MONGODB_PORT))
     db = client.nsides_in
@@ -72,7 +73,7 @@ def connect():
     print "Connecting to database"
 
     print >> sys.stderr, "Loading password from ./nsides-mongo.cnf..."
-    MONGODB_HOST, MONGODB_UN, MONGODB_PW = open('./nsides-mongo.cnf').read().strip().split('\n')
+    MONGODB_HOST, MONGODB_UN, MONGODB_PW = open(NSIDES_MONGO_CNF).read().strip().split('\n')
 
     # print 'MongoDB host: ', MONGODB_HOST
     # print 'MongoDB username: ', MONGODB_UN
@@ -90,7 +91,7 @@ def query_db(service, method, query=False, cache=False):
     print "Connecting to database"
 
     print >> sys.stderr, "Loading password from ./nsides-mongo.cnf..."
-    MONGODB_HOST, MONGODB_UN, MONGODB_PW = open('./nsides-mongo.cnf').read().strip().split('\n')
+    MONGODB_HOST, MONGODB_UN, MONGODB_PW = open(NSIDES_MONGO_CNF).read().strip().split('\n')
 
     # print 'MongoDB host: ', MONGODB_HOST
     # print 'MongoDB username: ', MONGODB_UN
