@@ -10,4 +10,3 @@ flask_cors==3.0.3
 numpy==1.14.2
 pymysql==0.8.0
 pandas==0.22.0
-json==2.0.9

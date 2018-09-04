@@ -429,6 +429,10 @@ path {
   text-align: right;
 }
 
+#login-link a {
+  margin: 0px 5px;
+}
+
 .flashes {
   max-width: 200px;
   list-style-type: none;
