@@ -20,6 +20,9 @@ class Header extends React.Component {
       </div>
     ) : (
       <div id="login-link">
+        <a href="https://public.agaveapi.co/create_account">
+          sign up
+        </a>
         <a href="/login">
           log in
         </a>

@@ -9,4 +9,8 @@ flask==0.12.2
 flask_cors==3.0.3
 numpy==1.14.2
 pymysql==0.8.0
+<<<<<<< HEAD
 pandas==0.22.0
+=======
+pandas==0.22.0
+>>>>>>> dev

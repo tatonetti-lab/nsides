@@ -97,7 +97,7 @@ class EffectSelectBox extends React.Component {
           name="selected-effects" 
           value={value}
           placeholder="Type an effect..."
-          noResultsText="Effect not found"
+          noResultsText="Too many or No Effects found"
           filterOptions={filterOptions}
           // valueRenderer={valueRenderer}
           options={suggestions}
