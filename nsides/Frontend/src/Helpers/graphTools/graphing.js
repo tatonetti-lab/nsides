@@ -5,6 +5,15 @@ import axios from 'axios';
 
 const d = document;
 
+const trimAxis = function (selector) {
+  let axis = document.querySelectorAll(selector);
+  axis.forEach((tick, i) => {
+    if (i % 2) {
+      tick.remove();
+    }
+  });
+};
+
 const createXAxis = function (svg, x, height) {
   let xAxis = d3.axisBottom()
     .scale(x)
@@ -30,8 +39,7 @@ const createYAxis = function (svg, y, width, height) {
   svg.append('g')
     .attr("class", "y axis")
     .call(yAxis);
-  trimAxis('.y.axis g text');
-    // Y axis title
+  // Y axis title
   svg.append("text")
     .attr("class", "ylabel")
     .attr("text-anchor", "middle")  // this makes it easy to center the text as the transform is applied to the anchor
@@ -240,13 +248,9 @@ const createFocusAndMouseHandler = function (svg, height, width, data, x, y, bis
       d = x0 - d0.year > d1.year - x0 ? d1 : d0;
       // console.log(x0, '\ni', i, '\nd0', d0, '\nd1', d1, '\nd', d);
       focus.select("circle.y")
-        .attr("transform",
-        "translate(" + x(d.year) + "," +
-        y(d.prr) + ")");
+        .attr("transform", "translate(" + x(d.year) + "," + y(d.prr) + ")");
       focus.select("text.y2")
-        .attr("transform",
-        "translate(" + x(d.year) + "," +
-        y(d.prr) + ")")
+        .attr("transform", "translate(" + x(d.year) + "," + y(d.prr) + ")")
         .attr("font-size", "12px")
         .text(d.prr.toFixed(2));
       focus.select("text.y4")
@@ -256,14 +260,10 @@ const createFocusAndMouseHandler = function (svg, height, width, data, x, y, bis
         .attr("font-size", "12px")
         .text(formatDate(d.year));
       focus.select(".x")
-        .attr("transform",
-        "translate(" + x(d.year) + "," +
-        y(d.prr) + ")")
+        .attr("transform", "translate(" + x(d.year) + "," + y(d.prr) + ")")
         .attr("y2", height - y(d.prr));
       focus.select(".y")
-        .attr("transform",
-        "translate(" + width * -1 + "," +
-        y(d.prr) + ")")
+        .attr("transform", "translate(" + width * -1 + "," + y(d.prr) + ")")
         .attr("x2", width + width);
     }
   }
@@ -460,15 +460,6 @@ const yearAxis = [
   {value: 2015},
   {value: 2016},
 ];
-
-const trimAxis = function (selector) {
-  let axis = document.querySelectorAll(selector);
-  axis.forEach((tick, i) => {
-    if (i % 2) {
-      tick.remove();
-    }
-  });
-};
 
 const drawNreportsAndControlGraph = function (data2, parseDate) {
   data2 = modifyData2YearToDate(data2, parseDate);
