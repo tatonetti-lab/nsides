@@ -32,7 +32,7 @@ pbr==1.8.0
 pexpect==4.2.1
 pickleshare==0.7.4
 prompt-toolkit==1.0.15
-psutil==5.0.1
+psutil==5.6.6
 ptyprocess==0.5.2
 pyasn1==0.1.9
 Pygments==2.2.0
