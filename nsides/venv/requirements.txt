@@ -35,7 +35,7 @@ prompt-toolkit==1.0.15
 psutil==5.6.6
 ptyprocess==0.5.2
 pyasn1==0.1.9
-Pygments==2.2.0
+Pygments==2.7.4
 PyICU==1.9.2
 pymongo==3.5.1
 pyOpenSSL>=17.5.0
