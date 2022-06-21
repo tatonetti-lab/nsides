@@ -7,6 +7,6 @@ oauth2client==4.1.2
 pprint
 flask>=0.12.3
 flask_cors==3.0.3
-numpy==1.14.2
+numpy==1.22.0
 pymysql==0.8.0
 pandas==0.22.0
